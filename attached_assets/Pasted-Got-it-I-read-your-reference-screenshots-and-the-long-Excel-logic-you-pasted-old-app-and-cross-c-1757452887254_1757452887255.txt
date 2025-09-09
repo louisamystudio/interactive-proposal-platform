@@ -1,0 +1,238 @@
+Got it. I read your reference screenshots and the long Excel logic you pasted (old app), and cross-checked against the current repo’s architecture, components, and calculation contracts. Below is a crisp blueprint the agent can follow to recreate the **same visualization logic** in the **current dashboard**—without re-introducing any client-unsafe data.
+
+# What the old UI was doing (logic, not pixels)
+
+1. **Project Overview & Cost Ranges**
+
+* Inputs: building class, areas, multipliers, min/target/max PSF bands.
+* Logic: compute `newBudget`, `remodelBudget`, `totalBudget`, then split by Shell/Interior/Landscape shares; show a donut for New vs Remodel (percent from areas) and sliders anchored by min/target/max PSF.
+* Where this lives now: same math is codified in the app’s calculation engine (budgets + normalized shares) and should feed charts/cards directly.&#x20;
+
+2. **Discipline allocation cards**
+
+* Inputs: engineering shares table (structural/civil/mech/elect/plumb/telecom).
+* Logic: allocate each as a % of **Shell**; Architecture is the remainder; show per-discipline cards; clicking a card expands to show new vs remodel portions.
+* Same contract in current app logic: discipline breakdown from Shell, remainder to Architecture.&#x20;
+
+3. **Fee Analysis (two lenses)**
+
+* Top-Down (Market): percentage of construction (w/ category multiplier), per-scope toggles (in-house vs consultant) summing to an “industry market” fee.
+* Bottom-Up (Louis Amy): non-linear hours curve → hours by phase/role → internal cost → markup → Louis Amy fee.
+* Contract rule: show **contract price** as the **max(discounted market, LA fee)**; never reveal hours/rates to clients. (Admin can see both lenses.)&#x20;
+
+4. **Hours distribution**
+
+* Phase ladder (Discovery/Creative/Technical with % weights) and Role Leverage (Designer/Architect/Engineer/Principal) used to visualize where hours land.
+* The formula + leverage wisdom are in the model; use them for admin diagnostics only. Client view only shows investment outcomes.&#x20;
+
+5. **Sanity Check & Pricing**
+
+* A triad: Top-Down vs Bottom-Up vs Final Contract; applied-discount slider (admin) that drives the final contract price; a “variance” indicator.
+* Client sees only **Investment** cards (A/B/C), not hours/discount mechanics.&#x20;
+
+6. **Final “Investment Summary”**
+
+* Three columns: Market rate, Louis Amy price, Final Contract (green savings), plus a services list and a distribution chart (Scan to BIM, Shell, Interior, Landscape).
+* In the new app this becomes the **Option cards A/B/C** + **Budget donut**; keep Option A anchored first.&#x20;
+
+# Map that logic onto the current app (components + data)
+
+## Data contract (engine → UI)
+
+Your calculation engine already emits the needed structures: budgets, disciplines, hours, fees, and option A/B/C (SSOT). Keep these shapes and feed charts/cards from them; do not compute in components.&#x20;
+
+**Engine outputs driving the UI:**
+
+* `budgets`: `{ newBudget, remodelBudget, totalBudget, shellBudget, interiorBudget, landscapeBudget }` → Overview cards + donuts.&#x20;
+* `disciplines`: `{ architecture, structural, civil, mechanical, electrical, plumbing, telecom }` (all from Shell; architecture = remainder) → discipline cards grid.&#x20;
+* `hours`: `{ totalHours, newHours, remodelHours }` + your existing phase/role mapping → phase bars and role ring (admin-only).&#x20;
+* `fees`: `{ marketFee, louisAmyFee, contractPrice }` → admin “Sanity Check” and final “Contract” card; client never sees internal.&#x20;
+* `options`: `{ A,B,C }` with fixed investments, scope bullets, exclusions → client “Option Comparison” cards; **anchor A**.&#x20;
+
+These are already specified in **APP\_LOGIC** and repeated across your package docs; adhere to them as the SSOT.&#x20;
+
+## Pages & components (where everything goes)
+
+Follow the repo’s page/component plan and plug the data into these shells (names from your docs so agents can navigate fast):&#x20;
+
+* **Admin calculator** (`/app/admin/calculator/page.tsx`):
+
+  * ProjectSetupForm → inputs & multipliers
+  * CostRangeSliders → PSF min/target/max control
+  * BudgetAllocationCard → Shell/Interior/Landscape cards + New/Remodel donut
+  * DisciplineCards → 8 cards w/ Architecture remainder
+  * HoursBreakdown → phase bars + role ring (admin only)
+  * FeeComparison → Top-Down vs Bottom-Up vs Contract + variance & admin discount slider
+  * ProposalExport → freeze client-safe slice for proposal.&#x20;
+
+* **Client proposal** (`/proposal/[token]/page.tsx`):
+
+  * PersonalizedHero (copy)
+  * OptionComparison (A/B/C, A first)
+  * InvestmentBreakdown (budget donut + client-safe scope list—no hours)
+  * ProofSection (Nira)
+  * ConversionFlow (select option → contact/next).&#x20;
+
+Your **Design Guidelines** include the exact chart/card styling patterns (donut/bar configs, card styles, mobile behavior). Use the budget donut and bar patterns there; don’t invent new ones.&#x20;
+
+## “Pure logic” for each visualization (admin vs client)
+
+1. **Overview totals**
+
+* Cards: `totalBudget`, `buildingArea` (new/existing), `siteArea`, `targetPSF(remodel/new)`.
+* Charts:
+
+  * Donut A (New vs Remodel): `newArea / (new+existing)` and `existingArea / total`.
+  * Donut B (Budget shares): `shellBudget`, `interiorBudget`, `landscapeBudget`.
+* Source: engine budgets + inputs; no recalcs in UI.&#x20;
+
+2. **Shell/Interior/Landscape cards**
+
+* Each card shows amount + % of `totalBudget`.
+* Expand state (admin): show new/remodel split within each (derived from `newBudget` vs `remodelBudget` proportion).
+* Color mapping from design system’s chart palette.&#x20;
+
+3. **Discipline grid**
+
+* Values = Shell × discipline share; Architecture = Shell − Σ(engineering).
+* Admin expand: show tiny spark bars for new vs remodel by scaling by the same area ratio you used for New/Remodel donut.
+* Client: do not show discipline dollars; keep as narrative bullets inside Option scope if needed.&#x20;
+
+4. **Fee Analysis (admin only)**
+
+* Left panel (Top-Down): show market fee subtotal + per-scope toggles (these are presentational, they shouldn’t change math unless you intentionally model outsourcing).
+* Right panel (Bottom-Up): show **only** total hours & blended “internal” cost as a single number (for admins), not rates per role.
+* “Contract Price” card = `max(market×(1−MAX_DISCOUNT), louisAmyFee)` per SSOT. The **client** never sees this mechanics—only the chosen **Option A/B/C**.&#x20;
+
+5. **Hours distribution (admin only)**
+
+* Stacked bars by phase using your phase weights; ring/legend by role using leverage weights; center label “Total Hours”.
+* Keep the formula constants centralized (HFA\_OFFSET, multipliers) and never render those constants in UI.&#x20;
+
+6. **Sanity Check trio (admin only)**
+
+* Three tiles: **Top-Down**, **Bottom-Up**, **Contract**; include a small green/red variance indicator between the first two; add an admin-only **discount slider** \[0…MAX\_DISCOUNT].
+* This tile governs the internal “chosen” fee that ultimately decides the Option envelope if you want a “single option” workflow; for **A/B/C** proposals, leave options fixed as published.&#x20;
+
+7. **Client Investment section**
+
+* Three **OptionCards** (A/B/C): fixed “Investment” numbers and bullet scopes (decoupled from internal hours/fee), A first.
+* “Design Services Distribution” donut: re-use discipline colors but show **client-safe buckets** (e.g., Scan to BIM, Building Shell, Interior, Landscape) without line-item rates.&#x20;
+
+# How to implement quickly in this repo
+
+1. **Use the documented file map** (pages + components) and wire them to the engine outputs (don’t compute in UI). The directory plan already lists each page and component we need.&#x20;
+
+2. **Pull the exact chart specs & UI patterns** from the design guide (donut config, tooltip formatting, color tokens, card structure). This guarantees visual parity with the reference screenshots.&#x20;
+
+3. **Keep client safety rules on by default.** Admin pages may see hours/variance/discount; client pages show only investment and value. This split is called out repeatedly in Requirements and Prompts.
+
+4. **Respect SSOT formulas & constants.** Budgets, shares, disciplines, hours, fees must come from the calculation module; constants centralized (and calibratable to Excel if needed). The docs define all of it.&#x20;
+
+5. **Build to the sprint plan.** The 24-hour strategy shows when to finish admin screens, client proposal, and the integration glue. Use those success gates.
+
+# Concrete payloads the components expect (agent-ready)
+
+* **Budget Donut (client/admin)**
+
+  ```ts
+  // percentages optional for tooltips
+  { category: 'Shell', value: shellBudget }
+  { category: 'Interior', value: interiorBudget }
+  { category: 'Landscape', value: landscapeBudget }
+  ```
+
+  Use the `BudgetDonut` spec from TECH\_STACK / Design Guidelines.
+
+* **New vs Remodel Donut (admin)**
+
+  ```ts
+  { category: 'New', value: newAreaFt2 }
+  { category: 'Remodel', value: existingAreaFt2 }
+  ```
+
+  It’s a visual area split (not \$), matching the prior app.&#x20;
+
+* **Discipline Cards (admin)**
+
+  ```ts
+  {
+    architecture, structural, civil, mechanical, electrical, plumbing, telecom
+  }
+  ```
+
+  Each number = `shellBudget * share` (architecture = remainder).&#x20;
+
+* **Sanity Check Trio (admin)**
+
+  ```ts
+  { topDown: marketFee, bottomUp: louisAmyFee, contract: contractPrice }
+  ```
+
+  Add `variance = bottomUp - topDown`. The slider drives `contract = max(market*(1−discount), LA)` with `discount ≤ MAX_DISCOUNT`.&#x20;
+
+* **Option Cards (client)**
+
+  ```ts
+  { option: 'A', investment: 187099, scope: [...], excluded: [...] }
+  // idem B, C
+  ```
+
+  Always show A first; keep copy/value framing per Chris Do guidance.&#x20;
+
+# Guardrails & acceptance
+
+* **Never show hours/rates on client pages.** This is a hard rule in Prompts/Requirements/Readme.
+* **Exact math:** All visuals must come from the calculation module (no ad-hoc math in components). Acceptance criteria require SSOT accuracy to the Excel model (±\$100).&#x20;
+* **Performance:** Use the documented chart/iframe patterns and lazy-load heavy blocks; mobile first.&#x20;
+* **Layout:** Use the documented admin/client layouts and component names so multiple agents can work in parallel.&#x20;
+
+# Step-by-step for the agent (do this now)
+
+1. **Scaffold components named in DIRECTORY\_STRUCTURE** and wire props that match the payloads above (no logic in components).&#x20;
+2. **Import engine outputs** from `/lib/calculations.ts` and map directly to the charts/cards.&#x20;
+3. **Style & charts**: copy the donut/bar specs and token colors from DESIGN\_GUIDELINES; keep tooltips currency-formatted.&#x20;
+4. **Admin vs client**: route guards—hours/variance/discount only in admin; client gets Options + budget donut + copy.&#x20;
+5. **Definition of done**: match the 24-h checkpoints in DEVELOPMENT\_STRATEGY; run the acceptance tests from QUICK\_START/DEPLOYMENT\_CHECKLIST.
+
+---
+
+If you want, I can turn this into a small PR checklist with exact file stubs (`BudgetDonut.tsx`, `DisciplineCards.tsx`, `FeeComparison.tsx`, `OptionComparison.tsx`, etc.) so the agent can paste and wire immediately—using the same names and patterns your docs already standardize.&#x20;
+
+
+It looks like the two reference files you mentioned (“PR\_Construction\_Cost\_Index\_2025\_filled (1).csv” and “https228e14bc‑bad3‑43e9‑b6a1‑c18bd2.txt”) aren’t available in the current workspace or in the connected Google Drive, so I couldn’t open them directly.  However, I’ve reviewed the old screenshots you provided along with the comprehensive list of formulas, and compared them against the current codebase and documentation.  Below is a distilled explanation of how the **data‑visualization logic** in the old app worked and how to extrapolate that into the new dashboard.
+
+### 1. How the old UI mapped data to visuals
+
+The older dashboard essentially consisted of four layers of calculations and visualisations:
+
+* **Project overview & cost ranges** – Input fields (building use, tier, areas, multipliers) were translated into budget numbers using min/target/max cost‑per‑ft² bands.  Donut charts showed the split between new and remodel areas and between Shell/Interior/Landscape budgets, while sliders let the user adjust target PSF within the min‑max range.  This gives immediate feedback on how changing PSF affects the total budget.
+* **Discipline allocation cards** – The Shell budget was apportioned to structural, civil, mechanical, electrical, plumbing and telecommunications based on fixed percentages from the engineering cost table; Architecture received whatever remained.  Each card showed the dollar amount and % share, and clicking a card expanded to reveal new vs remodel contributions.  That data comes straight from the Shell share calculation—no re‑calculation happens in the component.
+* **Fee analysis (admin only)** – Two panels compared **Top‑Down (market)** fees (cost‑as‑%‑of‑construction) against **Bottom‑Up (Louis Amy)** fees (non‑linear hours curve × labor & overhead rates).  A variance card displayed the difference, and an admin‑only discount slider adjusted the final contract price.  Clients never saw hours or rates.
+* **Phase & role charts (admin only)** – The total hours from the non‑linear formula were distributed by phase (e.g. Discovery 8%, Technical 34%) and by role (e.g. Designer, Architect, Engineer, Principal) using leverage factors.  The admin view included a bar chart for phases and a ring chart for role leverage.  Clients only saw the outcome: fixed Option A/B/C prices with a short narrative.
+
+These visual structures mirror the formulas you provided: budgets derive from area × PSF × multipliers; discipline shares are fixed percentages of the shell; hours use the non‑linear curve; and fees compare market and in‑house calculations.  The “Investment Summary” section distilled everything into three price options (A/B/C) and hid all the mechanics.
+
+### 2. How the current GitHub project handles calculations
+
+The existing repository already encapsulates this logic in a clean API:
+
+* `/lib/calculations.ts` outputs `budgets`, `disciplines`, `hours`, `fees` and `options` objects.  These match the concepts in the Excel formulas: budget splits, discipline allocations, non‑linear hours and fee comparisons.
+* The docs stress non‑negotiables: exact Excel‑level accuracy, mobile‑first design, and no hourly rates exposed to clients.  They also call for Option A (highest price) to be shown first and for value‑based language to be used throughout.
+
+### 3. How to reproduce the old UI in the new dashboard
+
+To extrapolate the old visualization logic into the current app:
+
+1. **Bind UI components directly to engine outputs** – Do not re‑calculate in the UI.  Use the `budgets` object for the overall and per‑share amounts; `disciplines` for the eight discipline cards; `hours` for admin‑only phase/role charts; and `fees` for the sanity‑check/discount tile.  Fixed Option A/B/C prices come from `options`.
+2. **Reuse the old layout concept** – In the admin calculator, create:
+
+   * A project overview with area and PSF inputs, cost‑range sliders and a new‑vs‑remodel donut.
+   * A budget allocation section with Shell/Interior/Landscape cards.
+   * A discipline grid that shows Architecture + six engineering budgets with collapsible new/remodel details.
+   * An hours & fee section for internal analysis (phases, role leverage, market vs Louis Amy fees).
+3. **Show only investment options to clients** – In the proposal page, display a hero with project info, a comparison of Option A/B/C prices and scopes, and a simple donut or bar that shows how the investment breaks down across major services (Scan to BIM, Building Shell, Interior, Landscape).  Exclude hours and rates from this view, in keeping with the Chris‑Do‑style value pitch.
+4. **Use the design guide** – The design‑guideline document describes component styles (cards, donuts, bars, collapsibles), colour palettes and responsive behavior; adopt those patterns so the new dashboard feels consistent.  The project structure in the docs already lists where each page/component should live, which will help split the work across agents.
+5. **Keep calibration hooks** – The current engine supports both “Excel” and “SSOT” modes; keep the UI agnostic by reading prices/hours from the engine and allowing future calibration without altering the components.
+
+Although I couldn’t open the two specific reference files you named, the images and formulas you provided make it clear that the old app tightly coupled budgets, discipline allocations, hours, and fees into a coherent set of cards and charts.  The current codebase already exposes the same data structures, so the main task is to mirror the old visual logic in the new React components while respecting the updated design system and client‑safety constraints.
