@@ -181,37 +181,37 @@ export function useBuildingClassification(defaultValues?: Partial<BuildingClassi
   }, [state.buildingUse, state.buildingType, state.buildingTier, state.category])
 
   // Update functions
-  const setBuildingUse = (buildingUse: string) => {
-    setState(prev => ({ ...prev, buildingUse }))
-  }
+  // FIXED: Guarded setters to prevent render loops
+  const setBuildingUse = useCallback((buildingUse: string) => {
+    setState(prev => (prev.buildingUse === buildingUse ? prev : { ...prev, buildingUse }));
+  }, []);
 
-  const setBuildingType = (buildingType: string) => {
-    setState(prev => ({ ...prev, buildingType }))
-  }
+  const setBuildingType = useCallback((buildingType: string) => {
+    setState(prev => (prev.buildingType === buildingType ? prev : { ...prev, buildingType }));
+  }, []);
 
-  const setBuildingTier = (buildingTier: string) => {
-    setState(prev => ({ ...prev, buildingTier }))
-  }
+  const setBuildingTier = useCallback((buildingTier: string) => {
+    setState(prev => (prev.buildingTier === buildingTier ? prev : { ...prev, buildingTier }));
+  }, []);
 
-  const setCategory = (category: number) => {
-    setState(prev => ({ ...prev, category }))
-  }
+  const setCategory = useCallback((category: number) => {
+    setState(prev => (prev.category === category ? prev : { ...prev, category }));
+  }, []);
 
-  // Calculate multiplier based on category
-  const getCategoryMultiplier = () => {
-    if (!state.category) return 1
-    
-    // Category multipliers (from constants)
+  // Calculate multiplier based on category - FIXED: useCallback for stable reference
+  const getCategoryMultiplier = useCallback(() => {
+    const cat = state.category ?? 1;
+    // Category multipliers (from constants) - CORRECTED to match constants.ts
     const multipliers: Record<number, number> = {
-      1: 1.0,  // Simple
-      2: 1.1,  // Standard
-      3: 1.2,  // Medium
-      4: 1.3,  // High
-      5: 1.4,  // Very High
-    }
+      1: 0.9,  // Category 1
+      2: 1.0,  // Category 2  
+      3: 1.1,  // Category 3
+      4: 1.2,  // Category 4
+      5: 1.3,  // Category 5
+    };
     
-    return multipliers[state.category] || 1
-  }
+    return multipliers[cat] ?? 1.0;
+  }, [state.category]);
 
   // Get current construction costs
   const getConstructionCosts = () => {
@@ -255,8 +255,8 @@ export function useBuildingClassification(defaultValues?: Partial<BuildingClassi
     }
   }
 
-  // Get cost ranges for sliders (simplified shell costs)
-  const getCostRanges = () => {
+  // Get cost ranges for sliders (simplified shell costs) - FIXED: useCallback for stable reference
+  const getCostRanges = useCallback(() => {
     if (!state.costData) {
       return {
         newMin: 0,
@@ -265,23 +265,24 @@ export function useBuildingClassification(defaultValues?: Partial<BuildingClassi
         remodelMin: 0,
         remodelTarget: 0,
         remodelMax: 0
-      }
+      };
     }
     
-    const multiplier = getCategoryMultiplier()
+    const multiplier = getCategoryMultiplier();
+    const s = state.costData.costRanges.shell;
     
     return {
-      newMin: state.costData.costRanges.shell.newMin * multiplier,
-      newTarget: state.costData.costRanges.shell.newTarget * multiplier,
-      newMax: state.costData.costRanges.shell.newMax * multiplier,
-      remodelMin: state.costData.costRanges.shell.remodelMin * multiplier,
-      remodelTarget: state.costData.costRanges.shell.remodelTarget * multiplier,
-      remodelMax: state.costData.costRanges.shell.remodelMax * multiplier
-    }
-  }
+      newMin: Number(s.newMin) * multiplier,
+      newTarget: Number(s.newTarget) * multiplier,
+      newMax: Number(s.newMax) * multiplier,
+      remodelMin: Number(s.remodelMin) * multiplier,
+      remodelTarget: Number(s.remodelTarget) * multiplier,
+      remodelMax: Number(s.remodelMax) * multiplier
+    };
+  }, [state.costData, getCategoryMultiplier]);
 
-  // Get project shares
-  const getProjectShares = () => {
+  // Get project shares - FIXED: useCallback for stable reference
+  const getProjectShares = useCallback(() => {
     if (!state.costData) {
       return {
         shell: 0.45,
@@ -292,23 +293,24 @@ export function useBuildingClassification(defaultValues?: Partial<BuildingClassi
         projectShellShare: 0.45,
         projectInteriorShare: 0.35,
         projectLandscapeShare: 0.20
-      }
+      };
     }
     
+    const ps = state.costData.projectShares;
     return {
-      shell: state.costData.projectShares.shellShare,
-      interior: state.costData.projectShares.interiorShare,
-      landscape: state.costData.projectShares.landscapeShare,
+      shell: Number(ps.shellShare ?? 0.45),
+      interior: Number(ps.interiorShare ?? 0.35),
+      landscape: Number(ps.landscapeShare ?? 0.20),
       pool: 0, // Not in the data
       // Also include the required properties for BudgetShares
-      projectShellShare: state.costData.projectShares.shellShare,
-      projectInteriorShare: state.costData.projectShares.interiorShare,
-      projectLandscapeShare: state.costData.projectShares.landscapeShare
-    }
-  }
+      projectShellShare: Number(ps.shellShare ?? 0.45),
+      projectInteriorShare: Number(ps.interiorShare ?? 0.35),
+      projectLandscapeShare: Number(ps.landscapeShare ?? 0.20)
+    };
+  }, [state.costData]);
 
-  // Get design shares
-  const getDesignShares = () => {
+  // Get design shares - FIXED: useCallback for stable reference
+  const getDesignShares = useCallback(() => {
     if (!state.costData) {
       return {
         architectural: 0.30,
@@ -319,22 +321,37 @@ export function useBuildingClassification(defaultValues?: Partial<BuildingClassi
         mechanical: 0.10,
         electrical: 0.08,
         plumbing: 0.05,
-        telecommunications: 0.02
-      }
+        telecommunications: 0.02,
+        // Include the specific property names expected by the admin page
+        structuralDesignShare: 0.0858,
+        civilDesignShare: 0.033,
+        mechanicalDesignShare: 0.0396,
+        electricalDesignShare: 0.0297,
+        plumbingDesignShare: 0.0231,
+        telecomDesignShare: 0.0099
+      };
     }
     
+    const ds = state.costData.designShares;
     return {
-      architectural: state.costData.designShares.architectural,
-      interior: state.costData.designShares.interior,
-      landscape: state.costData.designShares.landscape,
-      structural: state.costData.designShares.structural,
-      civil: state.costData.designShares.civil,
-      mechanical: state.costData.designShares.mechanical,
-      electrical: state.costData.designShares.electrical,
-      plumbing: state.costData.designShares.plumbing,
-      telecommunications: state.costData.designShares.telecommunication || 0.02
-    }
-  }
+      architectural: Number(ds.architectural ?? 0.30),
+      interior: Number(ds.interior ?? 0.15),
+      landscape: Number(ds.landscape ?? 0.05),
+      structural: Number(ds.structural ?? 0.15),
+      civil: Number(ds.civil ?? 0.10),
+      mechanical: Number(ds.mechanical ?? 0.10),
+      electrical: Number(ds.electrical ?? 0.08),
+      plumbing: Number(ds.plumbing ?? 0.05),
+      telecommunications: Number((ds as any).telecommunication ?? 0.02),
+      // Include the specific property names expected by the admin page
+      structuralDesignShare: Number(ds.structural ?? 0.0858),
+      civilDesignShare: Number(ds.civil ?? 0.033),
+      mechanicalDesignShare: Number(ds.mechanical ?? 0.0396),
+      electricalDesignShare: Number(ds.electrical ?? 0.0297),
+      plumbingDesignShare: Number(ds.plumbing ?? 0.0231),
+      telecomDesignShare: Number((ds as any).telecommunication ?? 0.0099)
+    };
+  }, [state.costData]);
 
   return {
     ...state,

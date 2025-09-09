@@ -36,7 +36,7 @@ export default function AdminCalculatorPage() {
   // Initialize project data with database values
   const [projectData, setProjectData] = useState<CalcInput>(DR_DE_JESUS_PROJECT)
 
-  // Update project data when database values change
+  // Update project data when database values change - FIXED: Stable dependencies
   useEffect(() => {
     if (!buildingClass.costData) return
 
@@ -58,10 +58,27 @@ export default function AdminCalculatorPage() {
         newTargetPSF: costRanges.newTarget,
         remodelTargetPSF: costRanges.remodelTarget
       },
-      shares: projectShares,
-      engineering: designShares
+      shares: {
+        projectShellShare: projectShares.projectShellShare,
+        projectInteriorShare: projectShares.projectInteriorShare,
+        projectLandscapeShare: projectShares.projectLandscapeShare
+      },
+      engineering: {
+        structuralDesignShare: designShares.structuralDesignShare,
+        civilDesignShare: designShares.civilDesignShare,
+        mechanicalDesignShare: designShares.mechanicalDesignShare,
+        electricalDesignShare: designShares.electricalDesignShare,
+        plumbingDesignShare: designShares.plumbingDesignShare,
+        telecomDesignShare: designShares.telecomDesignShare
+      }
     }))
-  }, [buildingClass.costData, buildingClass])
+  }, [
+    buildingClass.costData,
+    buildingClass.buildingUse,
+    buildingClass.buildingType,
+    buildingClass.buildingTier,
+    buildingClass.category
+  ])
 
   // Check database status
   useEffect(() => {
