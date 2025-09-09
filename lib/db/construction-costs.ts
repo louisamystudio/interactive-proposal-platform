@@ -1,4 +1,5 @@
 import { supabase } from '../supabase'
+import { getFallbackData, COMPREHENSIVE_FALLBACK_DATA } from '../comprehensive-fallback-data'
 
 // Types for construction cost data
 export interface BuildingClassification {
@@ -72,7 +73,8 @@ export interface ConstructionCostData {
   designShares: DesignShares
 }
 
-// Row type matching Supabase table schema
+// Row type matching Supabase table schema (used internally by queries)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type PrConstructionCostIndex2025Row = {
   id: string
   building_use: string
@@ -134,8 +136,10 @@ export const constructionCostService = {
       return uniqueUses
     } catch (error) {
       console.error('Error fetching building uses:', error)
-      // Fallback to default values
-      return ['Residential', 'Commercial', 'Healthcare', 'Educational', 'Industrial']
+      console.log('🔄 Using comprehensive fallback building uses...')
+      
+      // Extract all building uses from comprehensive fallback data
+      return Object.keys(COMPREHENSIVE_FALLBACK_DATA)
     }
   },
 
@@ -155,10 +159,14 @@ export const constructionCostService = {
       return uniqueTypes
     } catch (error) {
       console.error('Error fetching building types:', error)
-      // Fallback based on building use
-      if (buildingUse === 'Residential') {
-        return ['Custom Houses', 'Public Social Housing', 'Private Housing Development', 'Condominiums', 'Multifamily Apartments']
+      console.log('🔄 Using comprehensive fallback building types...')
+      
+      // Extract building types for the specific use from comprehensive fallback
+      const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
+      if (useData) {
+        return Object.keys(useData)
       }
+      
       return []
     }
   },
@@ -180,6 +188,22 @@ export const constructionCostService = {
       return uniqueTiers
     } catch (error) {
       console.error('Error fetching building tiers:', error)
+      console.log('🔄 Using comprehensive fallback building tiers...')
+      
+      // Extract tiers for the specific use/type from comprehensive fallback
+      const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
+      const typeData = useData?.[buildingType as keyof typeof useData]
+      
+      if (typeData) {
+        // Get all tiers across all categories
+        const allTiers = new Set<string>()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any  
+        Object.values(typeData).forEach((categoryData: any) => {
+          Object.keys(categoryData).forEach(tier => allTiers.add(tier))
+        })
+        return Array.from(allTiers).sort()
+      }
+      
       return ['Low', 'Mid', 'High']
     }
   },
@@ -201,6 +225,17 @@ export const constructionCostService = {
       return uniqueCategories
     } catch (error) {
       console.error('Error fetching categories:', error)
+      console.log('🔄 Using comprehensive fallback categories...')
+      
+      // Extract categories for the specific use/type from comprehensive fallback
+      const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
+      const typeData = useData?.[buildingType as keyof typeof useData]
+      
+      if (typeData) {
+        const categories = Object.keys(typeData).map(Number).filter(n => !isNaN(n))
+        return categories.sort((a, b) => a - b)
+      }
+      
       return [1, 2, 3, 4, 5]
     }
   },
@@ -286,7 +321,34 @@ export const constructionCostService = {
       }
     } catch (error) {
       console.error('Error fetching cost data:', error)
-      return null
+      console.log('🔄 Using comprehensive fallback data...')
+      
+      // Use comprehensive fallback data generated from CSV
+      const fallbackData = getFallbackData(buildingUse, buildingType, category, buildingTier)
+      
+      if (!fallbackData) {
+        console.error(`No fallback data available for: ${buildingUse}/${buildingType}/${category}/${buildingTier}`)
+        return null
+      }
+      
+      return {
+        id: 0, // Fallback ID
+        buildingUse,
+        buildingType,
+        category,
+        buildingTier,
+        costRanges: {
+          shell: fallbackData.costRanges.shell,
+          interior: fallbackData.costRanges.interior,
+          landscape: fallbackData.costRanges.landscape,
+          pool: {
+            newMin: 0, newTarget: 0, newMax: 0,
+            remodelMin: 0, remodelTarget: 0, remodelMax: 0
+          }
+        },
+        projectShares: fallbackData.projectShares,
+        designShares: fallbackData.designShares
+      }
     }
   },
 

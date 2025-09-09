@@ -6,6 +6,7 @@ import { CalculationResults, CalcInput } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Building2, CheckCircle, Eye, ArrowRight, Phone, Mail } from 'lucide-react'
+import { ThreeDModelViewer } from '@/components/ui/3d-model-viewer'
 
 interface ProposalPageProps {
   params: { token: string }
@@ -179,19 +180,15 @@ export default function ProposalPage({ params }: ProposalPageProps) {
               </Button>
             </div>
 
-            {/* 3D Model Placeholder */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center">
-              <div className="w-full h-64 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                <div className="text-center">
-                  <Building2 className="h-16 w-16 text-white/60 mx-auto mb-4" />
-                  <p className="text-white/80">Interactive 3D Model</p>
-                  <p className="text-sm text-white/60">Casa Vista Exterior</p>
-                </div>
-              </div>
-              <p className="text-sm text-blue-200">
-                Explore your future home in immersive detail
-              </p>
-            </div>
+            {/* Interactive 3D Model */}
+            <ThreeDModelViewer
+              title="Casa Vista Exterior"
+              showQRCode={true}
+              className="bg-white/10 backdrop-blur-sm"
+            />
+            <p className="text-sm text-blue-200 text-center mt-4">
+              Explore your future home in immersive detail
+            </p>
           </div>
         </div>
       </div>

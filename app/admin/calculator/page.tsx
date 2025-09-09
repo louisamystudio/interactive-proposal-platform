@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { Calculator, Building2, DollarSign, PieChart, Send, Copy, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react'
+import { BudgetDonutChart } from '@/components/ui/budget-donut-chart'
+import { DisciplineChart } from '@/components/ui/discipline-chart'
 
 export default function AdminCalculatorPage() {
   const [results, setResults] = useState<CalculationResults | null>(null)
@@ -544,18 +546,40 @@ export default function AdminCalculatorPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Shell & Structure</span>
-                        <span className="text-lg font-semibold">${results.budgets.shellBudget.toLocaleString()}</span>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Budget Numbers */}
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">Shell & Structure</span>
+                          <span className="text-lg font-semibold">${results.budgets.shellBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-gray-600">
+                          <span>Interior Finishes</span>
+                          <span>${results.budgets.interiorBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-gray-600">
+                          <span>Landscape</span>
+                          <span>${results.budgets.landscapeBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="border-t pt-3 mt-4">
+                          <div className="flex justify-between items-center font-semibold">
+                            <span>Total Budget</span>
+                            <span className="text-xl">${results.budgets.totalBudget.toLocaleString()}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between items-center text-gray-600">
-                        <span>Interior Finishes</span>
-                        <span>${results.budgets.interiorBudget.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-gray-600">
-                        <span>Landscape</span>
-                        <span>${results.budgets.landscapeBudget.toLocaleString()}</span>
+
+                      {/* Interactive Budget Donut Chart */}
+                      <div className="flex flex-col items-center">
+                        <BudgetDonutChart
+                          shellBudget={results.budgets.shellBudget}
+                          interiorBudget={results.budgets.interiorBudget}
+                          landscapeBudget={results.budgets.landscapeBudget}
+                          totalBudget={results.budgets.totalBudget}
+                        />
+                        <p className="text-xs text-gray-500 mt-2 text-center">
+                          Interactive • Hover for details
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -570,28 +594,57 @@ export default function AdminCalculatorPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span>Architecture</span>
-                        <span className="font-semibold">${results.disciplines.architectureBudget.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        <span>Structural</span>
-                        <span>${results.disciplines.structuralBudget.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        <span>Mechanical</span>
-                        <span>${results.disciplines.mechanicalBudget.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        <span>Electrical</span>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Discipline Numbers */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <span>Architecture</span>
+                          <span className="font-semibold">${results.disciplines.architectureBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-600">
+                          <span>Structural</span>
+                          <span>${results.disciplines.structuralBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-600">
+                          <span>Civil</span>
+                          <span>${results.disciplines.civilBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-600">
+                          <span>Mechanical</span>
+                          <span>${results.disciplines.mechanicalBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-600">
+                          <span>Electrical</span>
                         <span>${results.disciplines.electricalBudget.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm text-gray-600">
                         <span>Plumbing</span>
                         <span>${results.disciplines.plumbingBudget.toLocaleString()}</span>
                       </div>
+                      <div className="flex justify-between text-sm text-gray-600">
+                        <span>Telecom</span>
+                        <span>${results.disciplines.telecomBudget.toLocaleString()}</span>
+                      </div>
                     </div>
+
+                    {/* Interactive Discipline Chart */}
+                    <div className="flex flex-col items-center">
+                      <DisciplineChart
+                        architectureBudget={results.disciplines.architectureBudget}
+                        structuralBudget={results.disciplines.structuralBudget}
+                        civilBudget={results.disciplines.civilBudget}
+                        mechanicalBudget={results.disciplines.mechanicalBudget}
+                        electricalBudget={results.disciplines.electricalBudget}
+                        plumbingBudget={results.disciplines.plumbingBudget}
+                        telecomBudget={results.disciplines.telecomBudget}
+                        totalBudget={results.budgets.shellBudget}
+                        className="mt-4"
+                      />
+                      <p className="text-xs text-gray-500 mt-2 text-center">
+                        Engineering Discipline Distribution • Hover for budget details
+                      </p>
+                    </div>
+                  </div>
                   </CardContent>
                 </Card>
 

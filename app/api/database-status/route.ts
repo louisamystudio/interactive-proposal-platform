@@ -10,19 +10,33 @@ export async function GET() {
     const constants = await constructionCostService.getCalculationConstants()
     const categoryMultiplier = await constructionCostService.getCategoryMultiplier(5)
 
+    // Determine if we're using fallback data vs actual database
+    const hasCredentials = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
+    
+    // If no credentials, we're definitely using fallback
+    const usingFallback = !hasCredentials || buildingUses.length === 0 || buildingTypes.length === 0
+    
+    const actualStatus = hasCredentials ? (usingFallback ? 'database-error-using-fallback' : 'connected') : 'fallback-only'
+    const actualMode = usingFallback ? 'comprehensive-fallback' : 'database'
+
     return NextResponse.json({
-      status: 'connected',
+      status: actualStatus,
+      mode: usingFallback ? 'comprehensive-fallback' : 'database',
+      credentials: hasCredentials ? 'configured' : 'missing',
       database: {
         buildingUses: {
           count: buildingUses.length,
-          sample: buildingUses.slice(0, 3)
+          sample: buildingUses.slice(0, 3),
+          source: (hasCredentials && buildingUses.length > 0) ? 'database' : 'csv-fallback'
         },
         buildingTypes: {
           count: buildingTypes.length,
-          sample: buildingTypes.slice(0, 3)
+          sample: buildingTypes.slice(0, 3),
+          source: (hasCredentials && buildingTypes.length > 0) ? 'database' : 'csv-fallback'
         },
         costData: costData ? {
           found: true,
+          source: (hasCredentials && costData.id !== 0) ? 'database' : 'csv-fallback',
           ranges: {
             shell: costData.costRanges.shell,
             interior: costData.costRanges.interior
@@ -31,6 +45,7 @@ export async function GET() {
         } : { found: false },
         calculationConstants: {
           count: Object.keys(constants).length,
+          source: 'fallback-constants',
           sample: {
             HFA_OFFSET: constants.HFA_OFFSET,
             MARKET_FEE_RATE: constants.MARKET_FEE_RATE
@@ -43,6 +58,8 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json({
       status: 'error',
+      mode: 'unknown',
+      credentials: 'unknown',
       error: error instanceof Error ? error.message : 'Unknown error',
       database: null,
       timestamp: new Date().toISOString()
