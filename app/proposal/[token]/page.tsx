@@ -279,7 +279,6 @@ export default function ProposalPage({ params }: ProposalPageProps) {
             </div>
           </div>
         )}
-      </div>
 
       {/* Final Call to Action */}
       <div className="max-w-7xl mx-auto px-6 py-20">
