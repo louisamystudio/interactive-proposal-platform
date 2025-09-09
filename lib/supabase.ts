@@ -1,14 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Create a single supabase client for interacting with your database
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase environment variables not configured')
+  console.warn('Supabase environment variables not configured - using fallback mode')
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '')
+// Only create client if we have valid environment variables
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
 // Types for our database tables
 export interface Proposal {

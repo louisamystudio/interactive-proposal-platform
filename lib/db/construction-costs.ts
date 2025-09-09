@@ -124,6 +124,11 @@ export const constructionCostService = {
   // Get all unique building uses
   async getBuildingUses(): Promise<string[]> {
     try {
+      if (!supabase) {
+        console.log('🔄 Supabase not available, using fallback building uses...')
+        return Object.keys(COMPREHENSIVE_FALLBACK_DATA)
+      }
+
       const { data, error } = await supabase
         .from('pr_construction_cost_index_2025')
         .select('building_use')
@@ -146,6 +151,12 @@ export const constructionCostService = {
   // Get building types for a specific building use
   async getBuildingTypes(buildingUse: string): Promise<string[]> {
     try {
+      if (!supabase) {
+        console.log('🔄 Supabase not available, using fallback building types...')
+        const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
+        return useData ? Object.keys(useData) : []
+      }
+
       const { data, error } = await supabase
         .from('pr_construction_cost_index_2025')
         .select('building_type')

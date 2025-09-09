@@ -12,6 +12,11 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: []
   },
+  // Allow cross-origin requests for Replit
+  allowedDevOrigins: [
+    '*.replit.dev',
+    '*.replit.app'
+  ],
   // Allow all hosts for Replit proxy
   async headers() {
     return [
