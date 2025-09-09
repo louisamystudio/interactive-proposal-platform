@@ -1,0 +1,262 @@
+Love this move. Turning your proposal into a **secure, interactive web app** makes the value unmistakable and shortens the path from *considering* to *committing*. Below is a complete, practical blueprint you can execute right away—grounded in your slides and the value‑based principles we’ve been using (no hourly tables, outcome‑first).
+
+---
+
+## 1) What this web‑app proposal does (MVP goals)
+
+* **Let the client compare A / B / C visually** with clear “what’s included” vs. “what’s not,” using tabs and collapsibles for details. This mirrors the UX ideas we outlined: interactive donuts, tabbed views, and collapsible assumptions/exclusions for controlled transparency.&#x20;
+* **Showcase technology** (VR, BIM, Reality Capture) with embedded media and proof‑point callouts from your deck.&#x20;
+* **Keep the pricing value‑based**: one fixed investment per option; remove hourly tables from the client view.&#x20;
+* **Convert**: in‑app e‑signature + **20% kickoff deposit** + automatic **Kick‑off meeting** booking.&#x20;
+
+---
+
+## 2) Option content (client‑facing copy, loaded from your slides)
+
+Use this content verbatim for the UI. It reflects exactly what’s in the deck, simplified.
+
+### Option A — **Fully Integrated Vision** (Premium Anchor) — **\$187,099**
+
+**Included**
+
+* **Single, integrated team**: Architecture, Interior Design, Landscape **plus** Structural/Civil/Plumbing coordination—one accountable studio.
+* **Reality Capture (Scan‑to‑BIM)** for building + site; **BIM federation & clash‑resolved documentation**.
+* **Visualization**: Interior **and** exterior VR/renders; optional 3D prints.
+* **Six‑Stage Process** from Discovery → Creative → Technical → Pre‑construction → Observation.
+* **Construction Oversight**: site visits, submittal reviews, RFI responses, change‑order advice, review of contractor pay apps.&#x20;
+
+**Best for** maximum cohesion, speed of decisions, and single‑point accountability.&#x20;
+
+---
+
+### Option B — **Collaborative Partnership** (Architecture‑led + your interior designer) — **\$126,636**
+
+**Included**
+
+* **Authored by Louis Amy**: Architecture + Structural/Civil/Plumbing permit deliverables.
+* **Landscape by Louis Amy**.
+* **Design Integration & Coordination** with your interior designer: interfaces matrix, BIM federation, clash detection/resolution, review gates & change‑management.
+* **Reality Capture baseline** (Scan‑to‑BIM).
+* **Visualization**: **Exterior** VR/renders (interior visuals available as priced add‑ons).
+* **Construction Oversight** as above.&#x20;
+
+**Best for** keeping a trusted interior designer while preserving architectural quality, technical integrity, and schedule certainty.&#x20;
+
+---
+
+### Option C — **Architectural Foundation** (Shell & Outdoor Baseline) — **\$87,898**
+
+**Included**
+
+* **Authored by Louis Amy**: Architecture + Structural/Civil/Plumbing for permits and compliance.
+* **Reality Capture baseline** (Scan‑to‑BIM).
+* **Visualization**: **Exterior only** (no interior VR/renders).
+* **Exclusions**: Interior & Landscape authored by others; interfaces documented; client leads coordination.&#x20;
+
+**Best for** a solid, compliant base when you’re prepared to self‑manage interior/landscape scope and coordination risks.&#x20;
+
+---
+
+### Supplemental services (available to add for any option)
+
+Electrical, Mechanical, Data/Comms, Geotechnical, specialized lighting, acoustics, energy modeling, security, FF\&E procurement, surveying, project management—structured as fixed‑fee add‑ons with coordination bundled (not “cost + %”).&#x20;
+
+> Client‑facing view **must not** display hourly tables or internal calculations—keep those in the admin only.&#x20;
+
+---
+
+## 3) UX flow (client side)
+
+1. **Personalized landing** (private link): hero, greeting, and three **Option Cards** with fixed investment and top three outcomes.
+2. **Compare view**:
+
+   * **Tabs**: *Summary* | *What’s Included* | *What’s Not* | *Proof (VR/BIM/Scan)*.
+   * **Collapsibles**: Assumptions, Exclusions, Owner Responsibilities.&#x20;
+   * **Interactive donuts**: (a) Design Services distribution by discipline; (b) Construction budget shell/interior/landscape (hover shows % + \$).&#x20;
+3. **Select option** → **E‑sign** (embedded) → **20% deposit** checkout → **auto‑book Kick‑off**.&#x20;
+4. **Receipt/confirmation** with a read‑only snapshot of the accepted scope and a shareable PDF.
+
+---
+
+## 4) Admin flow (your side)
+
+* Create proposal → set client, project name, and **three options** (title, fixed price, inclusions/exclusions, assets, add‑ons).
+* Toggle which proof assets to show per option (VR walkthrough, renders, scan screenshots).&#x20;
+* Publish **signed link** with expiry + optional passcode; track opens and events (compare, expand, accept).
+* When accepted: lock version, push DocuSign/Stripe records, and email internal notifications.
+
+---
+
+## 5) Tech stack (opinionated, fast to ship)
+
+**Frontend**: Next.js (App Router, TypeScript) + Tailwind + Radix UI; Recharts (donuts); React‑Aria/Headless UI for a11y; `<model-viewer>` or `react-three-fiber` for glTF/3D.
+**Backend**: Next.js API routes + **Supabase** (Postgres, Auth, Storage) or **Firebase**.
+**Auth**: Magic link for client (email‑only; no password).
+**E‑sign**: **Dropbox Sign** (HelloSign) or DocuSign embedded signing.
+**Payments**: **Stripe** checkout for the **20% kickoff** (variable set per option).&#x20;
+**Scheduling**: **Calendly** link with proposal+client context in querystring.
+**Storage/CDN**: Vercel + Supabase Storage or S3 for media (renders, VR).
+**Analytics**: PostHog (events: option\_view, compare\_toggle, expand\_details, accept\_click, payment\_success).
+**Monitoring**: Sentry.
+
+---
+
+## 6) Data model (minimum)
+
+```sql
+clients(id, name, email, company, created_at)
+
+proposals(id, client_id, title, status, published_at, expires_at, token, passcode_hash, version)
+
+options(id, proposal_id, code, title, investment_cents, best_for, summary_copy, included_md, excluded_md, vr_url, hero_image_url, sort_index)
+
+add_ons(id, option_id, title, description, fixed_fee_cents, is_visible)
+
+assets(id, option_id, kind, url, caption)  -- kind: 'render','vr','scan','chart'
+
+events(id, proposal_id, option_id, type, actor, meta_json, created_at) -- analytics/audit
+
+acceptances(id, proposal_id, option_id, signer_name, signer_email, signed_at, stripe_session_id, docusign_envelope_id, pdf_snapshot_url)
+```
+
+**Seed JSON** (load from CMS or a file) uses the copy above; A/B/C prices match your slides.&#x20;
+
+---
+
+## 7) Security & privacy
+
+* **Private, signed URLs** with short‑lived tokens; optional passcode; per‑proposal ACL.
+* **Version lock** at acceptance; immutable PDF snapshot stored; audit log of events.
+* **No hourly tables** displayed to clients; keep additional services billing rules in admin.&#x20;
+* Integrate the disclaimer exactly as in your slides (“informational; contract governs; confidentiality”).&#x20;
+
+---
+
+## 8) UI structure (component map)
+
+```
+/app/(public)/proposal/[token]/page.tsx
+  <ProposalHero />
+  <OptionCards />  // A/B/C; anchor A first
+  <CompareStrip /> // toggles
+  <AssumptionsCollapsible />
+  <ExclusionsCollapsible />
+  <BudgetDonuts /> // construction + design distributions
+  <ProofSection /> // VR, BIM, Scan to BIM callouts
+  <CTA_Accept />
+
+/app/api/accept/route.ts    // creates envelope + Stripe session
+/app/api/webhooks/stripe    // marks paid
+/app/api/webhooks/docusign  // marks signed
+
+/components/OptionCard.tsx
+/components/OptionDetailsTabs.tsx
+/components/DonutChart.tsx
+/components/AcceptDialog.tsx
+/components/CalendlyModal.tsx
+```
+
+---
+
+## 9) Sample front‑end snippets (ready to paste)
+
+**OptionCard.tsx** (summary + “See details”)
+
+```tsx
+type Option = {
+  code: 'A'|'B'|'C';
+  title: string;
+  investment: number; // dollars
+  bestFor: string;
+  bullets: string[];
+};
+
+export function OptionCard({ option, onSelect }: { option: Option; onSelect: () => void }) {
+  return (
+    <article className="rounded-xl border p-6 shadow-sm bg-white">
+      <header className="mb-3">
+        <h3 className="text-xl font-bold">{option.title}</h3>
+        <p className="text-sm text-neutral-500">Fixed Investment</p>
+        <p className="text-3xl font-extrabold">${option.investment.toLocaleString()}</p>
+      </header>
+
+      <ul className="mb-4 list-disc pl-6 space-y-1">
+        {option.bullets.map((b, i) => <li key={i}>{b}</li>)}
+      </ul>
+
+      <p className="text-sm text-neutral-600 mb-4">
+        <strong>Ideal when:</strong> {option.bestFor}
+      </p>
+
+      <div className="flex gap-2">
+        <button className="btn btn-primary" onClick={onSelect}>See details</button>
+        <a href="#cta-accept" className="btn btn-outline">Choose this option</a>
+      </div>
+    </article>
+  );
+}
+```
+
+**DonutChart.tsx** (distribution—hover reveals % and \$)
+
+```tsx
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+
+export function DonutChart({ data }: { data: {label:string; value:number}[] }) {
+  return (
+    <div className="h-64">
+      <ResponsiveContainer>
+        <PieChart>
+          <Pie dataKey="value" data={data} innerRadius={60} outerRadius={90} startAngle={90} endAngle={-270} />
+          <Tooltip formatter={(v:number, _n, p:any) => [`$${v.toLocaleString()}`, p.payload.label]} />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+```
+
+**Accept API (sketch)**
+
+```ts
+// POST /api/accept
+// body: { proposalId, optionId, signer: {name,email} }
+export async function POST(req: Request) {
+  const { proposalId, optionId, signer } = await req.json();
+  // 1) Create DocuSign/DropboxSign envelope (template with variables)
+  // 2) Create Stripe Checkout Session for 20% deposit
+  // 3) Save acceptance draft with both IDs; return urls
+  return Response.json({ signUrl: '...', payUrl: '...' });
+}
+```
+
+> The call flow keeps **one fixed price per option** and uses Stripe just for the **deposit**; the contract PDF/config mirrors your “Important Notice / Terms” content.&#x20;
+
+---
+
+## 10) Success metrics
+
+* Open → Compare → Expand details → **Accept click** → **Signature completed** → **Deposit paid** → **Kick‑off booked** (all tracked as events).
+* Heatmaps on the compare area to validate anchoring/contrast are working.&#x20;
+
+---
+
+## 11) Launch checklist
+
+* [ ] Copy for A/B/C options loaded exactly as above (no internal math, no hourly tables).&#x20;
+* [ ] VR/renders uploaded and linked per option.&#x20;
+* [ ] Stripe, DocuSign/Dropbox Sign, and Calendly connected; test end‑to‑end.&#x20;
+* [ ] Disclaimers & proposal validity screens match your slides (contract governs; confidentiality).&#x20;
+* [ ] Accessibility pass (keyboard, contrast, focus rings), mobile layout, and PDF snapshot.
+* [ ] Analytics & alerts wired (conversion funnel + acceptance notifications).
+
+---
+
+### Why this aligns perfectly with your principles
+
+* **Elevates client experience** with intuitive, interactive explanation of complex scope.&#x20;
+* **Showcases innovation** (VR, BIM, Reality Capture) *inside* the buying experience.&#x20;
+* **Frames value, not effort**—one fixed fee per option; no hourly tables or internal arithmetic.&#x20;
+* **Streamlines commitment** with embedded signing, **20% kickoff deposit**, and instant scheduling.&#x20;
+
+If you want, I can convert the option copy above into a **seed JSON** and a **starter Next.js repo structure** you can drop into Vercel—just say the word and I’ll output the files so you can download and run locally.

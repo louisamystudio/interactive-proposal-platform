@@ -1,0 +1,55 @@
+To ensure the new calculator is robust and free from the issues we saw previously, here are the immediate actions and next steps I recommend:
+
+---
+
+### 1. **Load and Inspect the New Data**
+
+* **Datasets provided:** `Building_Types.csv`, `Construction_Cost_Calculator.csv`, `projects_Data-Report.csv`, `projects_timings_data…`, `Project Quoute Calculations.csv`, and `New Project Cost Calculator Luis de Jesus.xlsx`.
+* **Action:** Use Python (pandas) to load each file, inspect column names and data types, and check for missing or anomalous values. Document what each dataset contains (e.g. new building types, cost bands, project durations, etc.).
+* **Goal:** Understand how these datasets fit into your existing cost‑range and cost‑calculator logic. You may find additional building categories, updated cost figures, or timing metrics that need to be reflected in your calculations and UI.
+
+### 2. **Integrate New Cost Data**
+
+* Compare the new `Building_Types.csv` and `Construction_Cost_Calculator.csv` with the existing `cost-ranges.csv` and `costs.csv`.
+* Update your `data-service.ts` or equivalent so it can read the new CSV files and support any additional building types, tiers, or cost parameters the new data introduces.
+* If the new datasets change how costs or multipliers are structured (e.g. different categories or calculation rules), adjust `calculations.ts` accordingly and add tests to ensure everything still aligns with the Excel model.
+
+### 3. **Cross‑Check With the Original Excel Model**
+
+* Use `Project Quoute Calculations.csv` and the `New Project Cost Calculator Luis de Jesus.xlsx` workbook to validate your formulas.
+* Ensure that for a given input (areas, category, multipliers) the new app produces the same budgets, discipline splits, fees and hours as the spreadsheet.
+* Where differences exist, determine whether the spreadsheet or the new CSVs reflect the most up‑to‑date logic and adjust accordingly.
+
+### 4. **Use Base Design System Guidelines**
+
+* The updated `ui_design_guidelines.md` (now reflecting Base’s Design System) should be your guide: adopt its modular scale, typography roles (Display, Heading, Label, Paragraph), 4 pt spacing grid and limited colour palette.
+* When implementing the UI, structure the dashboard into clear sections (Inputs → Budgets → Discipline Budgets → Fee Analysis → Hours → Sanity Check) and use appropriate typography and spacing to maintain clarity.
+
+### 5. **Build the New Replit Project**
+
+1. **Scaffold a React/TS project:** Follow the Vite setup instructions I provided earlier (use the `react-ts` template).
+2. **Implement calculation service:** Adapt the logic from `desired_logic.ts` into a reusable module. This should handle all inputs (areas, multipliers, overrides) and return budgets, discipline splits, fees and hours.
+3. **Create UI components:**
+
+   * **Inputs:** sliders and selects for areas, category, multipliers.
+   * **Budget cards:** show new/remodel breakdowns with share overrides that enforce 100 % totals.
+   * **Discipline cards:** show total/new/remodel budgets with editable discipline shares and in‑house/outsourced toggles.
+   * **Fee analysis:** tabbed view for top‑down and bottom‑up calculations, with editable labour/overhead/markup/discount fields.
+   * **Hours analysis:** show hours by phase and role, with non‑linear toggle.
+   * **Sanity check:** compare top‑down vs bottom‑up fees, allow discounts and show contract price.
+4. **Real‑time updates:** Ensure every input triggers recalculation; use debouncing to avoid performance issues.
+
+### 6. **Test Thoroughly**
+
+* For each interactive control (sliders, toggles, share overrides, discipline percentages), verify that changing the value immediately recalculates budgets, fees and hours.
+* Test multiple scenarios (different categories, historic property ON/OFF, varied share overrides) and compare results against the spreadsheet.
+* Make sure the non‑linear hours toggle actually switches calculation methods and that sanity‑check warnings appear only when thresholds are exceeded.
+
+### 7. **Documentation and Export**
+
+* Provide an export function that saves both the project configuration (inputs and overrides) and a summary of the formulas used (methodology).
+* Document how to use the calculator, including what each input does and how to interpret the outputs.
+
+---
+
+By following these steps—starting with data inspection, then integrating and validating the new information, building the UI according to Base’s design principles, and thoroughly testing the logic—you’ll avoid repeating past mistakes and ensure the new calculator is accurate, flexible and user‑friendly.

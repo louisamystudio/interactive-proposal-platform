@@ -1,0 +1,166 @@
+Below is a set of detailed instructions for the Replit AI agent to enhance the proposal page while **preserving all existing data** and staying true to the original dummy project. These improvements focus on interactivity, progressive disclosure, visual hierarchy, and client‑engagement, without introducing or modifying any underlying data.
+
+---
+
+### 1. Interactive Data Visualizations
+
+Use the existing budgets and services to make the page more dynamic and intuitive.
+
+#### 1.1 Discipline budget donut chart
+
+* **Goal:** Replace static discipline cards with an interactive donut chart showing the proportion of each discipline (Architecture, Interior, Landscape, Structural, Civil, Mechanical, Electrical, Plumbing, Telecommunications).
+* **Implementation:**
+
+  ```jsx
+  import { Doughnut } from 'react-chartjs-2';
+
+  const disciplineData = {
+    labels: [
+      'Architecture','Interior','Landscape',
+      'Structural','Civil','Mechanical',
+      'Electrical','Plumbing','Telecommunications'
+    ],
+    datasets: [{
+      data: [
+        data.budgets.architecture,
+        data.budgets.interior,
+        data.budgets.landscape,
+        data.budgets.structural,
+        data.budgets.civil,
+        data.budgets.mechanical,
+        data.budgets.electrical,
+        data.budgets.plumbing,
+        data.budgets.telecommunications
+      ],
+      backgroundColor: [
+        '#13315C','#386FA4','#59A5D8',
+        '#84D2F6','#91E5F6','#6FA8DC',
+        '#4178BE','#5DA5CD','#92C5E2'
+      ],
+      borderWidth: 0
+    }]
+  };
+
+  const donutOptions = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: context => {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            return `${label}: $${value.toLocaleString()}`;
+          }
+        }
+      }
+    }
+  };
+  ```
+* Place the `<Doughnut>` component in the “Project Overview” or “Budget Distribution” section. The tooltip will reveal the dollar amount and percentage on hover.
+
+#### 1.2 Cost comparison timeline
+
+* Use the existing cost range (min/target/max) to create a horizontal bar or stepper that visualizes how costs build up from minimum to target to total budget.
+* Implement with simple `<div>` elements styled to represent each band (min range, target range, total budget) rather than adding new numeric data.
+
+#### 1.3 Market comparison chart
+
+* Create a small bar or line chart comparing the project’s cost per sq ft to local market ranges (already present in your dataset).
+* Use Chart.js or Recharts. Keep axes simple and label clearly.
+
+---
+
+### 2. Progressive Information Disclosure
+
+Keep the interface clean by allowing users to expand sections for more details.
+
+#### 2.1 Collapsible sections for assumptions/exclusions
+
+* Wrap “Assumptions”, “Exclusions”, and “Owner Responsibilities” in a `Collapsible` component.
+
+  ```jsx
+  const [openSection, setOpenSection] = useState(null);
+
+  const toggleSection = section => {
+    setOpenSection(prev => prev === section ? null : section);
+  };
+  // Example usage:
+  <div>
+    <h3 onClick={() => toggleSection('assumptions')}>
+      Assumptions
+    </h3>
+    {openSection === 'assumptions' && (
+      <ul>…list items…</ul>
+    )}
+  </div>
+  ```
+* Use simple CSS transitions for a smooth slide‑down effect.
+
+#### 2.2 Expandable service cards
+
+* For each discipline in the “Services Included” list, add an icon and a caret that reveals a short list of deliverables when clicked (e.g., Architecture → Schematic Design, Design Development, Construction Documents).
+* The deliverables text should come from existing copy or be generic; do **not** inject new data or calculations.
+
+#### 2.3 Tabbed cost views
+
+* Implement a `Tabs` component with two tabs: **Summary** and **Detailed Breakdown**.
+
+  * Summary: Show total budget, shell/interior/landscape distribution, and contract price.
+  * Detailed Breakdown: Show the interactive donut chart, the discipline amounts, and the cost comparison timeline.
+* Use React state to track the current tab; maintain accessible markup with `<button>` elements and ARIA attributes.
+
+---
+
+### 3. Enhanced Visual Hierarchy & Polish
+
+Ensure the proposal feels refined and brand‑consistent.
+
+#### 3.1 Visual separators and section dividers
+
+* Introduce horizontal rules or subtle gradient bands between major sections (Project Overview, What You Get, Your Investment Summary, Construction Budget Allocation, etc.).
+* Use a consistent margin (e.g., `margin-top: 4rem`) to separate sections.
+
+#### 3.2 Branded styling & watermarks
+
+* Apply your company’s colour palette and logo to headers and footers.
+* For PDF exports, add a faint watermark with the company logo behind the content and ensure print‑friendly CSS (`@media print`) to manage page breaks.
+
+#### 3.3 Mobile‑responsive layout
+
+* Use CSS grid or Flexbox to stack cards on smaller screens.
+* Hide the table of contents navigation icon on mobile or compress it into a hamburger menu.
+
+---
+
+### 4. Interactive Engagement & Client Focus
+
+Add elements that allow clients to explore scenarios without changing the underlying data.
+
+#### 4.1 Hover tooltips
+
+* Add tooltips to technical terms like “Scan to BIM”, “BIM & Coordination”, and “Telecommunications”.
+
+  ```jsx
+  <span data-tooltip="Building Information Modeling">BIM & Coordination</span>
+  ```
+
+  with a CSS rule to display the tooltip on hover.
+
+#### 4.2 Optional services toggles
+
+* Keep the existing optional services (Visualization, VR, Reality Capture) but present them as toggle switches. Toggling should visually indicate inclusion/exclusion but **must not change the underlying price**; it’s for demonstration only.
+* You can display “Included” or “Not Included” badges that change colour when toggled.
+
+#### 4.3 Small reference portfolio slider
+
+* Integrate a small carousel (e.g., using [react-slick](https://github.com/akiran/react-slick)) that shows 3–4 images of similar completed projects at the bottom of the page.
+* Keep the images static (no new data calculation). They serve to inspire confidence.
+
+---
+
+### 5. Alignment With Original Data
+
+* **Do not create any new budget lines or change any amounts.** All charts and breakdowns should use values directly from the existing project dataset (`totalBudget`, `shellBudget`, `interiorBudget`, `landscapeBudget`, and each discipline’s allocation).
+* **Do not reveal internal margins, hours, or proprietary calculation logic.** Continue to hide Top‑Down Fee Analysis, Bottom‑Up Fee Analysis, project phases/hours and margin-related data.
+* **Keep the same contract price and cost ranges.** Interactivity should only present the data in different visual formats, not recalculate it.
+
+Following these guidelines will result in a more engaging and premium proposal experience while staying true to the original dummy project’s data and protecting sensitive information.

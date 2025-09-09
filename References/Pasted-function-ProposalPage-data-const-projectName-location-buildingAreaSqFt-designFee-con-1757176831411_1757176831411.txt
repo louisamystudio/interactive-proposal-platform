@@ -1,0 +1,88 @@
+function ProposalPage({ data }) {
+  const { projectName, location, buildingAreaSqFt, designFee, constructionBudget, feeAllocation, constructionAllocation, timeline, assumptions, exclusions, ownerResponsibilities, commercialTerms } = data;
+
+  return (
+    <div className="proposal-page">
+      {/* Hero */}
+      <section className="hero">
+        <h1>Designing your future home</h1>
+        <p>A bespoke residence in {location} crafted with uncompromising detail.</p>
+        <p>We are delighted to present a vision for <strong>{projectName}</strong>, a custom residence of {buildingAreaSqFt.toLocaleString()} sq ft.</p>
+      </section>
+
+      {/* Executive summary */}
+      <section className="summary">
+        <div className="summary-card">
+          <h2>${designFee.toLocaleString()}</h2>
+          <p>Design Services Investment</p>
+        </div>
+        <div className="summary-card">
+          <h2>${constructionBudget.min.toLocaleString()}–${constructionBudget.target.toLocaleString()}</h2>
+          <p>Construction Budget Envelope</p>
+        </div>
+        <div className="summary-card">
+          <h2>76–78 weeks</h2>
+          <p>Project Duration (est.)</p>
+        </div>
+      </section>
+
+      {/* Scope of services */}
+      <section className="scope">
+        <h3>What you get</h3>
+        <ScopeCard title="Architecture" description="Signature concept through fully coordinated documents." included />
+        <ScopeCard title="Interior Design" description="Curated finishes, lighting and built‑ins for daily delight." included />
+        {/* Repeat for other disciplines… */}
+      </section>
+
+      {/* Fee allocation donut chart */}
+      <section className="fee-allocation">
+        <h3>Design Fee Allocation</h3>
+        <DonutChart data={feeAllocation} />
+      </section>
+
+      {/* Construction budget allocation bar chart */}
+      <section className="construction-allocation">
+        <h3>Construction Budget Allocation</h3>
+        <StackedBarChart data={constructionAllocation} />
+      </section>
+
+      {/* Process timeline */}
+      <section className="timeline">
+        <h3>Process Timeline</h3>
+        <Timeline data={timeline} />
+      </section>
+
+      {/* Technology & craft */}
+      <section className="tech-craft">
+        <h3>Technology & Craft</h3>
+        <ul>
+          <li><strong>Reality Capture:</strong> 3D scanning & photogrammetry for accurate starting data.</li>
+          <li><strong>BIM & Coordination:</strong> Clash‑resolved models minimize surprises.</li>
+          <li><strong>Visualization & VR:</strong> Immersive reviews for confident decisions.</li>
+        </ul>
+      </section>
+
+      {/* Assumptions & exclusions */}
+      <section className="assumptions">
+        <h3>Assumptions</h3>
+        <ul>{assumptions.map((item, i) => <li key={i}>{item}</li>)}</ul>
+        <h3>Exclusions</h3>
+        <ul>{exclusions.map((item, i) => <li key={i}>{item}</li>)}</ul>
+        <h3>Owner Responsibilities</h3>
+        <ul>{ownerResponsibilities.map((item, i) => <li key={i}>{item}</li>)}</ul>
+      </section>
+
+      {/* Commercial terms & actions */}
+      <section className="terms">
+        <p><strong>Deposit:</strong> {commercialTerms.depositPercentage}% of design fee due at kickoff.</p>
+        <p><strong>Billing Cadence:</strong> {commercialTerms.billingCadence}.</p>
+        <p><strong>Proposal Validity:</strong> {commercialTerms.validityDays} days.</p>
+        <div className="actions">
+          <button>Proceed to Agreement</button>
+          <button>Schedule Consultation</button>
+          <button>Download Proposal PDF</button>
+        </div>
+      </section>
+    </div>
+  );
+}

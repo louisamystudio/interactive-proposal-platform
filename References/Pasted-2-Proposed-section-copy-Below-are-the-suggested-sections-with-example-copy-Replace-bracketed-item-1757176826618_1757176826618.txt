@@ -1,0 +1,93 @@
+2. Proposed section copy
+
+Below are the suggested sections with example copy. Replace bracketed items with project‑specific values or remove if not applicable.
+
+2.1 Hero – Your Project, Tailored
+
+Heading: Designing your future home
+
+Subheading: A bespoke residence in [Ponce] crafted with uncompromising detail.
+
+Intro paragraph:
+
+We are delighted to present a vision for Casa Vista, a custom residence situated on a [972 m²] site. Our integrated team of architects, interior and landscape designers, engineers and digital specialists will guide your project from first sketches to move‑in.
+
+2.2 Executive Investment Summary
+
+Use three side‑by‑side cards.
+
+Design Services Investment — $137 744
+
+This investment covers the complete architectural, interior and landscape design services required to realize your vision, delivered by a senior team employing advanced digital tools.
+
+Construction Budget Envelope — $3.5M–$4.3M
+
+A planning range for construction, reflecting current market conditions and including allowances for shell, interiors, site and special features. This is not a contractor’s bid.
+
+Project Duration — 76–78 weeks
+
+From discovery through construction administration.
+
+2.3 Scope of Services — What You Get
+
+Present as cards with icons and short outcomes. Below each card list if included.
+
+Architecture – Signature concept through fully coordinated construction documents. ✔ Included
+
+Interior Design – Curated finishes, lighting and built‑ins for daily delight. ✔ Included
+
+Landscape Architecture – Outdoor rooms, privacy planting and microclimates. ✔ Included
+
+Engineering – Structure, MEP and civil fully integrated. ✔ Included
+
+Reality Capture & BIM – Survey‑grade LiDAR scans and federated models. ✔ Included
+
+Visualization & VR – Photoreal renderings and immersive virtual walk‑throughs. ✔ Included
+
+2.4 Design Fee Allocation
+
+Show a donut chart using the feeAllocation data. Example caption:
+
+The diagram illustrates how your design investment is distributed across disciplines. Integrated coordination ensures efficiency and reduces surprises during construction.
+
+2.5 Construction Budget Allocation
+
+Use a stacked bar or multiple bars using the constructionAllocation data. Example caption:
+
+Each component of your project contributes to the total budget envelope. Early cost planning guides design decisions and helps align scope with investment goals.
+
+2.6 Process Timeline — From Idea to Move‑In
+
+Display a horizontal timeline based on the timeline array. Example introduction:
+
+Structured checkpoints keep progress clear and predictable. Each phase culminates in a tangible deliverable and an opportunity for your review.
+
+2.7 Technology & Craft
+
+Focus on proof points (no sensitive data). Suggested bullets:
+
+Reality Capture – We start with truth through 3D scanning and photogrammetry.
+
+BIM & Coordination – Clash‑resolved models minimize change orders and delays.
+
+Visualization & VR – Immersive reviews ensure confident decision‑making.
+
+2.8 Assumptions, Exclusions & Owner Responsibilities
+
+Summarize using lists from the JSON fields. Clarify that anything not listed may require additional services or budget.
+
+2.9 Commercial Terms & Next Steps
+
+Key points:
+
+Deposit: 20% of the design fee is due at project kickoff.
+
+Billing Cadence: Monthly progress billing.
+
+Proposal Validity: Proposal valid for 30 days.
+
+End with buttons: “Proceed to Agreement”, “Schedule Consultation” and “Download Proposal PDF”.
+
+3. Example component layout (React‑style pseudocode)
+
+Below is a simple skeleton showing how to compose the sections using React. It assumes clientSafeProject is available in props or from state.

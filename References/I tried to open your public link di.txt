@@ -1,0 +1,47 @@
+I tried to open your public link directly, but my browser tool couldn’t retrieve the page’s contents (it looks like a JS-rendered app that blocks scraping). Since I can’t pull it automatically, here are two fast, copy-paste ways for you to extract **all** the proposal text yourself in your browser—no installs needed.
+
+## Option A — One-click bookmarklet (copies all text to your clipboard)
+
+1. Create a new bookmark and paste this as the **URL**:
+
+```
+javascript:(()=>{const t=(sel)=>{const el=document.querySelector(sel)||document.body;const txt=el.innerText.trim();navigator.clipboard.writeText(txt).then(()=>alert('✅ Proposal text copied to clipboard ('+txt.length+' chars). Paste into Word/Docs.')).catch(e=>alert('Copy failed: '+e));};t('#root,main,#app');})();
+```
+
+2. Open your proposal page, click the bookmark.
+3. Paste into Word/Google Docs/Notion.
+
+## Option B — Save a clean TXT file (downloads automatically)
+
+1. Open the page, press **F12** (or Right-click → Inspect) → **Console**.
+2. Paste and run:
+
+```js
+(() => {
+  const pick = (s) => document.querySelector(s);
+  const el = pick('#root') || pick('main') || pick('#app') || document.body;
+  // Strip likely nav/footers if present
+  el.querySelectorAll('nav,footer,script,style,[aria-hidden="true"]').forEach(n => n.remove());
+  const text = el.innerText.replace(/\n{3,}/g, '\n\n').trim();
+  const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'LouisAmy_Proposal_Extract.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+  console.log('✅ Saved', text.length, 'chars to LouisAmy_Proposal_Extract.txt');
+})();
+```
+
+## (Optional) Target just the proposal block
+
+If your proposal lives inside a specific container (e.g., `.proposal`, `#proposal`), replace `'#root'` in the snippets with that selector to avoid grabbing dashboard bits.
+
+---
+
+### Next step (I’ll do this part for you)
+
+Once you paste or upload the extracted text here, I’ll immediately format it into a clean, client-ready document (headings, short paragraphs, and tidy lists), matching your proposal style. If you’d like, I can also drop it into a canvas so you can print or share it.
+
+
+Here’s the proposal text extracted and organized into a document: {{file\:file-R39Rj3Aw4qpWqsaJsEw1TM}}. Let me know if you need any edits or a different format!

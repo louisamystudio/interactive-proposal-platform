@@ -1,0 +1,231 @@
+Louis Amy Quote 	Calculation Formulas	//Notes to AI Agent Coder														
+Building Use	Residential	//Drop Drown Selection 														
+Building Type	Residence - Private	//Drop Drown Selection filtered by Building Type														
+Building Tier	Mid-Range Standard Residential	//Drop Drown Selection filtered by Building use selection														
+Category	Category 5	//Map Category by previous selections // Category 1 = 0.9 // Category 2 = 1.0 // Category 3 =1.1 // Category 4 = 1.2 // Category 5 = 1.3														
+Design Level	3	//Map "Design Level" equals to " Tier  (1,2,3)" // 1=Basic Design // 2=Standard Design // 3=Full Design // map this to the databbase "cost_ranges" this afect construction cost and interior exterior and shell shares														
+New Building Area (ft²)	0	//New Construction														
+Existing Building Area (ft²)	4407	//Reconstruction / Remodel														
+Site Area (m2)	1000	//Use Site Area for Scan to Bim calculation														
+																
+																
+Multipliers	Selection															
+Historic Property Multiplier	1	1	1.2													
+Remodel Multiplier	0.55															
+																
+																
+																
+Key	Mid-Range Standard Residential|3	// Do not display														
+New Construction 	0	//display with a dounugth chart														
+Existing to Remodel	1	//display with a dougnuth chart														
+																
+New Construction Min $/ft²	380	// minimum end (bracket)  of slider //Fixed 														
+Existing to Remodel Min $/ft²	209	// minimum end (bracket)  of slider //Fixed 														
+																
+New Construction Target $/ft²	390	// Average by default // Allow Overwrite by moving a dot on the slider 														
+Existing to Remodel Target $/ft²	214.5	// Average by default // Allow Overwrite by moving a dot on the slider 														
+																
+New Construction  Max $/ft²	400	// Max end (bracket)  of slider //Fixed 														
+Existing to Remodel Max $/ft²	220	// Max end (bracket)  of slider //Fixed 														
+																
+																
+Total Budget 	945301.5	//Calculate														
+New Construction Budget 	0															
+Existing to Remodel Budget	945301.5															
+																
+Project Shell  Share	0.66	//From database to set the default // Allow Overwrite with a slider														
+Project Interior Share	0.22	//From database to set the default // Allow Overwrite with a slider														
+Project Landscape Share	0.12	//From database to set the default // Allow Overwrite with a slider														
+																
+Building Shell Minimum Total Budget	623898.99	//Card														
+New Construction Shell Minimum Total Budget	0	Hidden inside - display number and graphically 														
+Existing to Remodel Shell Minimum Total Budget	623898.99	Hidden inside - display number and graphically 														
+																
+Interior Minimum Budget	207966.33	//Card														
+New Construction Interior Minimum Total Budget	0	Hidden inside - display number and graphically 														
+Existing to Remodel Interior Minimum Total Budget	207966.33	Hidden inside - display number and graphically 														
+																
+Landscape Minimum Budget	113436.18	//Card														
+New Construction Landscape Minimum Total Budget	0	Hidden inside - display number and graphically 														
+Existing to Remodel Landscape Minimum Total Budget	113436.18	Hidden inside - display number and graphically 														
+	New construction Leverage	Existing to Remodel Leverage														
+Architectural Design Share	0.3531	0.43032														
+Interior Design Share	0.22	0.22														
+Landscape Design Share	0.12	0.12														
+Structural Design Share	0.1716	0.09438														
+Civil Design Share	0.033	0.033														
+Mechanical Design Share	0.0396	0.0396														
+Electrical Design Share	0.0297	0.0297														
+Plumbing Design Share	0.0231	0.0231														
+Telecomunication Design	0.0099	0.0099														
+																
+Architecture Budget	406782.1415	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	406782.1415	//Hidden inside - display number and graphically 														
+																
+Interior Budget	207966.33	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	207966.33	//Hidden inside - display number and graphically 														
+																
+Landscape Budget	113436.18	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	113436.18	//Hidden inside - display number and graphically 														
+																
+Structural Budget	89217.55557	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	89217.55557	//Hidden inside - display number and graphically 														
+																
+Civil Budget	31194.9495	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	31194.9495	//Hidden inside - display number and graphically 														
+																
+Mechanical Budget	37433.9394	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	37433.9394	//Hidden inside - display number and graphically 														
+																
+Electrical Budget	28075.45455	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	28075.45455	//Hidden inside - display number and graphically 														
+																
+Plumbing Budget	21836.46465	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	21836.46465	//Hidden inside - display number and graphically 														
+																
+Telecomunication Budget	9358.48485	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.														
+New Construction	0	//Hidden inside - display number and graphically 														
+Existing to Remodel	9358.48485	//Hidden inside - display number and graphically 														
+																
+Working Minimum Budget	945301.5															
+New Construction	0	Hidden inside - display number and graphically 														
+Existing to Remodel	945301.5	Hidden inside - display number and graphically 														
+																
+																
+Category Multiplier	1.3	// Do Not Display  // Base on Building Category 														
+Coordination Fee	0.15															
+Markup	1															
+																
+																
+																
+Top Down Fee Analysis	9358.48485															
+Scope	Percent of Project Cost %	Rate per sq-ft	Market Fee	Louis Amy Market Fee	Aproximate Hours	Cordination Fee	Consultants									
+Scan to Bim - Building		1.170160953	5156.899321	5156.899321	31.44450806	0	0									
+Scan to Bim - Site		0.200949637	2161.896573	2161.896573	13.18229618	0	0									
+Architecture (Design + Consultant Admin.)	0.170458367	15.73392771	69339.41941	69339.41941	422.8013378	0	0									
+Interior design	0.227543642	10.73778447	47321.41616	47321.41616	288.5452205	0	0									
+Landscape architecture	0.198649266	5.113232099	22534.01386	22534.01386	137.4025235	0	0									
+Structural engineer	0.167690686	3.394815774	14960.95312	14960.95312	91.22532389	0	0									
+Civil / site engineer	0.245977753	1.741153523	7673.263577	7673.263577	46.78819254	0	0									
+Mechanical (HVAC, energy, pools)	0.227632671	1.933557433	8521.187605	0	0	1278.178141	8521.187605									
+Electrical (power / lighting)	0.257779744	1.642224529	7237.283497	0	0	1085.592525	7237.283497									
+Plumbing engineer	0.289995872	1.436915048	6332.484618	6332.484618	38.61271108	0	0									
+Telecomunication	0.456461572	0.969318971	4271.788703	0	0	640.7683055	4271.788703									
+Total				175480.3466	1070.002114	3004.538971	20030.25981									
+																
+I. Buttom Up Fee Analysis																
+Team Member	Designer 1	Designer 2	Architect	Engineer 	Principal	Ave Rates										
+Rate 	26	26	26	26	26											
+Total Labor Cost	74318.15	74318.15	74318.15	74318.15	74318.15	371590.75										
+Total Expenses	80707.13673	80707.13673	93356.75401	93356.75401	175579.2663	523707.0478										
+Total Expenses	155025.2867	155025.2867	167674.904	167674.904	249897.4163	895297.7978										
+II. Cost & Pricing-Per Hour																
+Team Member	Designer 1	Designer 2	Architect	Engineer 	Principal	Ave Rates										
+Rate- Labor Cost per hour	35.72987981	35.72987981	35.72987981	35.72987981	35.72987981	35.72987981										
+Rate -Overhead per hour	39.40706103	39.40706103	42.44995411	42.44995411	66.79309875	46.10142581										
+Rate -Total Cost	75.13694084	75.13694084	78.17983392	78.17983392	102.5229786	81.83130561										
+Margin	0.499087061	0.499087061	0.498847218	0.498847218	0.499887909	0.501028624										
+Rate -Pricing per hour	150	150	156	156	205	164										
+III. Project Hours & Leverage																
+																
+New CostructionHours Factor	0.304545384	//Hide Do not show														
+Existing to Remodel  Hours Factor	0.270707008	//Hide Do not show														
+New Costruction Total Hours All-In	0	//Hide Do not show														
+Existing to Remodel Total Hours All-In	1371.956651	//Hide Do not show														
+Scope	Scope Share Percentage	Hours	Hours by Louis Amy 	Hours Out of Scope												
+Scan to Bim - Building	0.026376571	36.1875115	36.1875115													
+Scan to Bim - Site	0.011057695	15.17067762	15.17067762													
+Architecture (Design + Consultant Admin.)	0.354658096	486.5755333	486.5755333													
+Interior design	0.242040148	332.068591	332.068591													
+Landscape architecture	0.115257245	158.1279438	158.1279438													
+Structural engineer	0.076522463	104.9855018	104.9855018													
+Civil / site engineer	0.039247301	53.84559532	53.84559532													
+Mechanical (HVAC, energy, pools)	0.043584273	59.79573292		59.79573292												
+Electrical (power / lighting)	0.037017345	50.78619215		50.78619215												
+Plumbing engineer	0.032389468	44.43694664	44.43694664													
+Telecomunication	0.021849396	29.97642444		29.97642444												
+Total	1	1371.956651	1231.398301	140.5583495												
+																
+																
+																
+Project Hours by Phases																
+Discovery	0.08	98.51186408														
+Creative - Conceptual	0.08	98.51186408														
+Creative - Shematic	0.34	418.6754224														
+Creative - Preliminary	0.08	98.51186408														
+Technical - Shematic	0.34	418.6754224														
+Technical - Preliminary	0.08	98.51186408														
+Total 	1	1231.398301														
+																
+																
+																
+Leverage % Per Employees	Designer 1 Leverage	Designer 2 Leverage	Architect Leverage	Engineer Leverage	Principal Leverage	Verification										
+Discovery	0.37	0.37	0.1	0.02	0.14	1										
+Creative - Conceptual	0	0	0.95	0	0.05	1										
+Creative - Shematic	0.32	0.32	0.32	0.02	0.02	1										
+Creative - Preliminary	0.32	0.32	0.32	0.02	0.02	1										
+Technical - Shematic	0.26	0.26	0.1	0.32	0.06	1										
+Technical - Preliminary	0.26	0.26	0.1	0.32	0.06	1										
+Percentage Sum Product	0.2732	0.2732	0.2604	0.1444	0.0488	1										
+Total Hours Per Employees	Designer 1 Hours	Designer 2 Hours	Architect Hours	Engineer Hours	Principal Hours	Total 										
+Discovery	36	36	10	2	14	98										
+Creative - Conceptual	0	0	94	0	5	99										
+Creative - Shematic	134	134	134	8	8	418										
+Creative - Preliminary	32	32	32	2	2	100										
+Technical - Shematic	109	109	42	134	25	419										
+Technical - Preliminary	26	26	10	32	6	100										
+Total	337	337	322	178	60	1234										
+Project Fees	Designer 1 Hours	Designer 2 Hours	Architect Hours	Engineer Hours	Principal Hours	Total 										
+Discovery	4590	4590	1326	265.2	2439.5	13210.7										
+Creative - Conceptual	0	0	12464.4	0	871.25	13335.65										
+Creative - Shematic	17085	17085	17768.4	1060.8	1394	54393.2										
+Creative - Preliminary	4080	4080	4243.2	265.2	348.5	13016.9										
+Technical - Shematic	13897.5	13897.5	5569.2	17768.4	4356.25	55488.85										
+Technical - Preliminary	3315	3315	1326	4243.2	1045.5	13244.7										
+Total	42967.5	42967.5	42697.2	23602.8	10455	162690										
+																
+																
+																
+Sanity Check	Market % of Construction	Market Rate Per (ft²)	Market Total Hours	Market Fee	Percent Diference	Diference										
+Top Down Summary	0.185634262	39.81854927	1070.002114	175480.3466	-0.090720435	-15919.65336										
+Bottom Up Summary 	0.202475083	35.39855743	1234	191400	0.083174782	15919.65336										
+																
+																
+Market Price 				191400												
+Maximum Discount				-7959.826682												
+Discounted Final Price	0.194054673		1167.073171	183440.1733												
+Applied Discount %				0.041587391												
+Discount Manual Overwrite				0.15												
+Discount Selection				-0.15												
+Market Price 				191400												
+Applied Discount %				-28710												
+Contract Price	0.172103821	30.08877381	992.0121951	162690												
+																
+Hours Rebalance by Phases																
+Discovery	0.08	79.36097561														
+Creative - Conceptual	0.08	79.36097561														
+Creative - Shematic	0.34	337.2841463														
+Creative - Preliminary	0.08	79.36097561														
+Technical - Shematic	0.34	337.2841463														
+Technical - Preliminary	0.08	79.36097561														
+Total 	1	992.0121951														
+																
+Rebalanced Hours Per Employees	Designer 1 Hours	Designer 2 Hours	Architect Hours	Engineer Hours	Principal Hours	Total 										
+Discovery	29	29	8	2	11	79										
+Creative - Conceptual	0	0	75	0	4	79										
+Creative - Shematic	108	108	108	7	7	338										
+Creative - Preliminary	25	25	25	2	2	79										
+Technical - Shematic	88	88	34	108	20	338										
+Technical - Preliminary	21	21	8	25	5	80										
+Total	271	271	258	144	49	993										
+																
+																
+																

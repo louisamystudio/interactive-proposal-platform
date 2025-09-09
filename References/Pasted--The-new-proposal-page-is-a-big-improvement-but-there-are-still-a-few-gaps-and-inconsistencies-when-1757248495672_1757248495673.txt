@@ -1,0 +1,41 @@
+
+The new proposal page is a big improvement, but there are still a few gaps and inconsistencies when compared to the Project Overview data. Here’s what I found and the steps to fix it:
+
+Observations from testing the “Generate Proposal” flow
+	1.	Project Overview metrics: The proposal now correctly displays Total Budget, Building Area, Site Area and Cost per sq ft.
+	2.	Budget distribution: Shell, interior and landscape budgets are shown, but the numbers include decimals (e.g. $567,180.9) instead of being rounded and formatted as integers.
+	3.	Investment summary: The “Your Contract Price” card shows $183,658 (which is the in‑house market price), whereas the dashboard’s final contract price is $137,744. The labels (“Market Rate”, “Our Price”, “Your Contract Price”) need to reflect the correct values.
+	4.	Services included: The list under “Services Included” doesn’t show all services (e.g., Structural, Civil, Mechanical, Electrical, Plumbing, Telecommunications) with their amounts; it ends at “Scan to BIM Services”.
+	5.	Design fee distribution & pie chart: The pie chart for design fee distribution is good, but ensure the labels match the services and percentages shown in the dashboard.
+	6.	Construction budget allocation: The bar chart is present; verify that the figures correspond to the shell, interior and landscape budgets from the dashboard and that the y‑axis scales correctly.
+	7.	Final contract price & savings: The savings figure is missing; there’s no “You Save” card here.
+	8.	Remaining sections: Technology & Craft, Assumptions, Exclusions, Owner Responsibilities, and Commercial Terms all look correct.
+
+Instructions for the Replit agent
+	1.	Fix the investment summary cards
+	•	Fetch the finalContractPrice (137744 in the sample) and use it as the value for “Your Contract Price”.
+	•	Keep “Market Rate” and “Our Price” (in‑house market price) cards with values $187,099 and $183,658 respectively, as on the dashboard.
+	•	Add a fourth card “You Save” showing the difference between market rate and final contract price (e.g., $45,915).
+	•	Ensure all currency values are formatted as integers with commas (no decimals).
+	2.	Round and format budget numbers
+	•	In the Project Overview and Budget Distribution sections, format dollar amounts to whole numbers (e.g., $567,181 instead of $567,180.9). You can use Math.round() on the values before rendering and toLocaleString() for formatting.
+	3.	Complete the services list
+	•	Use the servicesIncluded array from the internal data (e.g., Scan to BIM – Building, Scan to BIM – Site, Architecture, Interior Design, Landscape Architecture, Structural Engineer, Civil/Site Engineer, Mechanical, Electrical, Plumbing, Telecommunications).
+	•	Render all service names with their respective cost allocations.
+	4.	Verify design fee distribution
+	•	The pie chart must show the same disciplines and percentages as the services list. Ensure the sum of the slice values equals 100%.
+	•	Match the colours and labels to the legend; avoid truncated labels (e.g., show “Reality Capture & BIM” instead of abbreviations).
+	5.	Check construction budget allocation data
+	•	Confirm that the “Minimum” and “Target” values used in the bar chart correspond to the shell, interior and landscape budgets calculated from the Project Overview.
+	•	Label each bar clearly (“Shell”, “Interior”, “Landscape”) and use consistent colours with the budget distribution section.
+	6.	Retain narrative sections
+	•	Keep Technology & Craft, Assumptions, Exclusions, Owner Responsibilities, and Commercial Terms as they are; they provide important context and don’t reveal sensitive data.
+	7.	Wire up the Generate Proposal button
+	•	Ensure that clicking “Generate Proposal” from the dashboard always opens the /proposal/[project‑id] page with the updated client‑safe data.
+	•	Handle any asynchronous loading states gracefully (e.g., show a spinner until data is loaded).
+	8.	General polish
+	•	Double‑check responsive behaviour on smaller screens.
+	•	Use consistent typography and spacing so the new sections blend seamlessly with the existing design.
+	•	Remove any remaining console warnings or errors.
+
+By implementing these adjustments, the proposal page will accurately reflect all client‑safe data from the dashboard and present it in a polished, persuasive format for clients.

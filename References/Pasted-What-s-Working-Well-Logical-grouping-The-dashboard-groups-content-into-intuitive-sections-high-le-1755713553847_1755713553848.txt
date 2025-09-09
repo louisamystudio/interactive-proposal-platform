@@ -1,0 +1,70 @@
+What’s Working Well
+
+Logical grouping: The dashboard groups content into intuitive sections: high-level project metrics and cost distribution at the top, cost range configuration sliders, discipline budget cards, fee analysis tables, hours distribution charts, and sanity check/contract pricing cards. This helps users scan the page quickly.
+
+Clear visual hierarchy: Key figures (total budget, shell/interior/landscape budgets, contract price) are presented in large, bold text, while supporting details use smaller type
+b5bfb0f2-880f-40af-b1b5-5140eb5be230-00-133l6hy6izr4x.picard.replit.dev
+.
+
+Interactive elements: Sliders for new and remodel cost per ft² and toggles for in‑house vs. consultant in the discipline cards provide direct manipulation of key parameters
+b5bfb0f2-880f-40af-b1b5-5140eb5be230-00-133l6hy6izr4x.picard.replit.dev
+.
+
+Data visualisation: A donut chart conveys new vs. remodel distribution, and bar charts show phase distribution and team leverage
+b5bfb0f2-880f-40af-b1b5-5140eb5be230-00-133l6hy6izr4x.picard.replit.dev
+b5bfb0f2-880f-40af-b1b5-5140eb5be230-00-133l6hy6izr4x.picard.replit.dev
+. These visual summaries complement the tables.
+
+Suggestions for Improvement
+
+Adopt Base typography roles and modular scale.
+
+Use Display style for the most important single values (e.g., total budget, contract price) and Heading style for section titles (e.g., “Budget Distribution,” “Discipline Budget Allocation”).
+
+Use Label style for small descriptors (e.g., “New Construction (ft²)”) and Paragraph style for explanatory text.
+
+Apply a consistent modular scale (Base uses an 8:9 ratio with a 14 px base) and a 4 pt baseline grid for spacing
+base.uber.com
+.
+
+Streamline colour and spacing with design tokens.
+
+Define a limited set of colours via design tokens (e.g., primary, secondary, success, warning) and use them consistently for text, charts and progress bars.
+
+Increase white space between sections and cards using increments of the 4 pt grid to avoid visual crowding, particularly around the cost range sliders and the discipline cards.
+
+Clarify interactions and override controls.
+
+The dummy layout shows toggles for in‑house vs. consultant but doesn’t indicate share override inputs for disciplines (structural, civil, etc.). If these will be editable, provide number input fields or sliders and ensure they’re clearly labelled.
+
+Add tooltips or info icons on cards (e.g., next to “Market Fee” or “Effective Rate”) to explain how figures are calculated and where overrides can be applied.
+
+Use consistent component sizing.
+
+The discipline cards vary slightly in height and margin. Align them to a common height and spacing to create a uniform grid.
+
+Ensure that chart containers align with the grid; for example, the team-leverage bar chart could be horizontally centered with equal padding on either side.
+
+Enhance visual storytelling.
+
+Consider a secondary colour in the donut chart to differentiate new vs. remodel (even if remodel is 100 %, the colour cue will remind users of the two possible states).
+
+In the discipline section, a small stacked bar could depict new vs. remodel splits for each discipline; this would reinforce how the remodel factor affects budgets.
+
+Improve accessibility and keyboard navigation.
+
+Ensure sliders and toggles are reachable via keyboard and have visible focus states.
+
+Provide ARIA labels for interactive elements so screen readers can announce their purpose.
+
+Use sufficient colour contrast for text and charts for better readability.
+
+Add advanced controls and methodology summary.
+
+As the final app will allow overrides (share percentages, labour/overhead rates, category multipliers), incorporate number inputs or sliders for these controls. Group them under an “Advanced Settings” panel that users can collapse or expand.
+
+Include a section or modal that briefly explains the methodology (e.g., fee curves, remodel multipliers, hours formulas) so users can understand how the numbers are derived.
+
+Summary
+
+The dummy layout provides a solid foundation: it organises information logically and introduces interactive controls and charts. To refine it, apply Base’s typographic hierarchy and modular scale, tighten colour and spacing with design tokens, ensure all interactive overrides are clearly surfaced, and enrich the discipline and fee sections with additional visual cues and explanatory text. These changes will make the interface more consistent, accessible and informative.

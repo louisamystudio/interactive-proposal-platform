@@ -1,0 +1,112 @@
+Absolutely—here’s the client‑facing Quote Sheet copy, cleaned up for value‑based framing (no internal math, no “savings” language) and ready to paste into your proposal deck/page.
+
+De Jesús Residence — Quote Sheet (Design Services)
+
+Client: Dr. Luis De Jesús
+Project: High‑end residential remodel (approx. 6,000 sq ft)
+Studio: Louis Amy AE Studio — Integrated Architecture, Engineering, Interiors & Landscape
+Date: September 8, 2025
+
+We offer three modular scope options engineered to protect design integrity, reduce risk, and fit how you want to work—whether you prefer our fully integrated, in‑house team or bringing your own interior designer.
+
+Option A — Fully Integrated Vision (Premium, single‑team delivery)
+
+Scope (included)
+
+Architecture + Interiors + Landscape + Structural/Civil/Plumbing engineering coordination
+
+Reality Capture (Scan‑to‑BIM) for millimeter‑level accuracy from day one
+
+BIM federation & clash‑resolved documentation; core visualization for confident decisions
+
+One accountable team, unified design language, fewer surprises through coordinated deliverables
+
+Investment (fixed): $137,743.50
+
+Ideal when you want maximum cohesion, faster decisions, and single‑point accountability across all disciplines.
+
+Option B — Architecture‑Led + Your Interior Designer (Louis Bernard)
+
+Scope (included)
+
+Architecture + Structural/Civil/Plumbing engineering; permitting documents
+
+Design Integration & Coordination to harmonize your interior designer’s work with the architecture/engineering:
+
+BIM federation, interfaces & tolerance matrices (openings, casework envelopes, MEP rough‑ins)
+
+Clash detection / resolution, review windows, and change‑management gateways
+
+Finish schedules marked “by others,” with our cross‑checks for constructability and compliance
+
+Investment (fixed): $126,636.41
+
+Ideal when you wish to keep a trusted designer while preserving architectural coherence, technical integrity, and schedule certainty.
+
+Option C — Core Architecture Only (Lean baseline)
+
+Scope (included)
+
+Planning & permitting documents; baseline BIM and coordination of core building systems
+
+Explicit exclusions on Interiors authoring and Landscape; interfaces noted “by others”
+
+Tight caps on redesign cycles; program changes are add‑services
+
+Investment (fixed): $87,898.41
+
+Ideal when you want a compliant architectural foundation and will self‑manage interiors and associated coordination risk with your designer.
+
+What’s Inside Our Integrated Delivery (applies wherever included)
+
+BIM + Coordination: clash‑resolved documentation to minimize downstream change orders
+
+Reality Capture (LiDAR/Photogrammetry): “survey‑grade truth” to de‑risk surprises
+
+Visualization & VR: decide with confidence before building
+
+In‑house disciplines: architecture, interiors, landscape, and engineering coordination for a seamless, single‑team experience
+
+Optional Enhancements (Add‑ons)
+
+Visualization Packs — Light / Standard / Premium: calibrated to decision velocity and review needs (photoreal imagery, VR walk‑through, optional large‑format 3D prints). Fixed‑fee packages.
+
+Acceleration Surcharge — for compressed schedules with locked decision windows.
+
+Interfaces & Coordination Gateways (for tiers using your interior designer)
+
+Interfaces Matrix: clear hand‑offs, responsibilities, and tolerances
+
+BIM submission & review windows with change‑management rules
+
+Fee‑scope coupling: specialty complexity (custom millwork, wellness spaces, specialty lighting) uplifts the fee or moves to add‑services
+
+Commercial Terms
+
+Kickoff Deposit: 20% non‑refundable at acceptance; monthly progress billing thereafter
+
+Proposal Validity: Prices and scope valid for 30 days; after that we re‑baseline to reflect current conditions and resource availability
+
+Decision Windows & Changes: Iteration caps per scope; decisions outside agreed windows may shift dates or incur resequencing fees; out‑of‑scope changes are billed as add‑services
+
+Acceptance & Next Steps
+
+Select your option (A, B, or C) and accept the proposal.
+
+Remit the 20% kickoff to reserve studio time.
+
+Kickoff Meeting: we schedule Discovery, confirm interfaces (if using your interior designer), and lock the initial review calendar.
+
+(Internal note — keep private, not client‑facing)
+
+This sheet follows value‑based guidelines: we removed internal arithmetic and any “savings” framing in the client view.
+
+Option B is framed as integration & coordination for a client‑selected ID—charge for strategy and risk mitigation, not hours.
+
+If you want Option A to act as a true premium anchor, consider presenting it at the Market/Louis‑Amy price card (e.g., $187,099 or $183,658) and re‑spreading B/C accordingly; that strengthens contrast during negotiation.
+
+Keep the negotiation ladder: if fee pressure arises, trade scope for price, keep paid coordination when Interiors are external, and lock decision windows for schedule requests.
+
+The integrated service mix and original client‑safe numbers (including the $137,744 integrated figure and discipline allocations) come from the current proposal artifacts.
+
+UX tips (optional for the proposal page): interactive charts, collapsibles, tabbed summary/detail, floating ToC, and print‑optimized output.

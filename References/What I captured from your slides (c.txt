@@ -1,0 +1,51 @@
+What I captured from your slides (cleanly organized)
+
+01 · Option A — Fully Integrated Vision
+
+Fixed investment: $187,099
+
+Included: Single, integrated team (Architecture, Interior, Landscape + full Structural/Civil/Plumbing coordination); Scan‑to‑BIM (building + site, clash‑resolved docs); Interior & Exterior VR.
+
+Ideal for: Maximum cohesion, speed, and single‑point accountability.
+
+Breakdown (as shown): Scan‑to‑BIM 4% ≈ $7,484 • Building Shell 60% ≈ $112,259 • Interior 24% ≈ $44,904 • Landscape 12% ≈ $22,452.
+
+02 · Option B — Collaborative Partnership
+(Louis Amy — architecture‑led + your interior designer, Louis Bernard)
+
+Fixed investment: $126,636
+
+Included: LA authors Architecture + Structural/Civil/Plumbing permit deliverables; Scan‑to‑BIM baseline; Landscape Architecture; LA coordinates your interior designer’s work.
+
+Visualization (needs decision): Slide states “Exterior VR; 3D interior renderings & interior VR are out of scope,” but elsewhere repeats “Interior & Exterior VR.”
+
+Ideal for: Keep your trusted interior designer while preserving architectural coherence and schedule certainty.
+
+Breakdown (as shown): Scan‑to‑BIM 5% ≈ $6,332 • Building Shell 65% ≈ $82,314 • Landscape 12% ≈ $15,196 • Coordination Fee labeled 15% but shown as $22,794.
+
+03 · Option C — Architectural Foundation (Shell & Outdoor Baseline)
+(Louis Amy — architecture‑led + your interior designer consultant)
+
+Fixed investment: $87,898
+
+Included: LA authors Architecture + Structural/Civil/Plumbing permit deliverables; Scan‑to‑BIM; Exterior VR; coordination with your interior designer.
+
+Exclusions: Interiors & Landscape authored by others; interfaces documented.
+
+Breakdown (as shown): Scan‑to‑BIM 6% ≈ $5,274 • Building Shell 94% ≈ $82,624.
+
+Flags to resolve (already noted in the draft)
+
+Option B – Coordination Fee math: Dollar figure $22,794 equals ~18% of $126,636.
+
+If the fee is 15%, it should be ≈ $18,995 (and ~3%/$3,799 remains unallocated).
+
+If $22,794 is correct, the label should read 18%.
+
+Option B – Visualization wording: Choose one of the following for consistency:
+
+Exterior‑only VR (interior VR/renderings out of scope), or
+
+Interior + Exterior VR (if upgrading scope).
+
+Option C – Landscape phrasing: Confirm final wording as “baseline only; authored by others in this tier; interfaces documented.”

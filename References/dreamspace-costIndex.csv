@@ -1,0 +1,71 @@
+buildingUse,buildingType,feeCategory,costCategory
+Agriculture/Utility,Utility Structure,Category 1,IX
+Agriculture/Utility,Garages,Category 1,IX
+Agriculture/Utility,Speculative Developments,Category 1,XVII
+Civic/Institutional,Public Safety Facilities,Category 4,XI
+Civic/Institutional,Armories,Category 2,III
+Civic/Institutional,Correctional Facilities,Category 3,III
+Civic/Institutional,Courthouses,Category 4,XI
+Civic/Institutional,Churches,Category 4,XI
+Civic/Institutional,State Capitols,Category 5,III
+Civic/Institutional,Civic & Country Clubs,Category 5,VII
+Commercial,Department Stores,Category 2,VIII
+Commercial,Expositions,Category 2,VII
+Commercial,Retail Shops,Category 2,VIII
+Commercial,Shopping Centers,Category 2,I
+Commercial,Markets,Category 2,VIII
+Commercial,Hotels,Category 3,XV
+Commercial,Cafeterias,Category 3,VIII
+Commercial,Restaurants and Cocktail Lounges,Category 4,VIII
+Cultural/Recreational,Bowling Alleys,Category 2,VII
+Cultural/Recreational,Convention Halls,Category 3,VII
+Cultural/Recreational,Playgrounds,Category 3,VII
+Cultural/Recreational,Parks and Recreation Structures,Category 3,VIII
+Cultural/Recreational,Swimming Pools,Category 3,VII
+Cultural/Recreational,Parks,Category 3,VIII
+Cultural/Recreational,Stadiums,Category 3,I
+Cultural/Recreational,Movie Theaters,Category 4,III
+Cultural/Recreational,Performing Arts Theaters,Category 4,III
+Cultural/Recreational,Theaters,Category 4,II
+Cultural/Recreational,Art Galleries,Category 4,II
+Cultural/Recreational,Memorials,Category 5,VII
+Cultural/Recreational,Museums,Category 5,VII
+Cultural/Recreational,Funeral Structures,Category 5,VII
+Cultural/Recreational,Historical Restoration,Category 5,XIX
+Educational,Schools (Public & Private),Category 2,XI
+Educational,Colleges and University Buildings,Category 3,XVI
+Educational,Libraries,Category 3,XI
+Educational,Dormitories,Category 3,XI
+Healthcare,Asylums,Category 2,III
+Healthcare,Sanitariums,Category 2,III
+Healthcare,Laboratories,Category 3,XII
+Healthcare,Clinics,Category 3,XII
+Healthcare,Child Care Centers,Category 3,VI
+Healthcare,Senior Care Centers,Category 3,V
+Healthcare,Medical and Health Centers,Category 3,XII
+Healthcare,Nursing Homes,Category 3,V
+Healthcare,Hospitals,Category 4,XII
+Industrial,Industrial Buildings,Category 2,XIV
+Industrial,Lift Buildings,Category 1,IX
+Industrial,Warehouses,Category 1,XIII
+Industrial,Light Industries,Category 2,XIII
+Industrial,Heavy Industries,Category 3,XIV
+Office/Administrative,Administration Buildings,Category 2,IV
+Office/Administrative,Office Buildings,Category 2,IV
+Office/Administrative,Gateways,Category 3,IV
+Office/Administrative,Finance Institutions,Category 3,IV
+Office/Administrative,Banks,Category 3,IV
+Residential,Housing: Limited Divided,Category 1,XVII
+Residential,New Public Housing,Category 1,XVII
+Residential,Private Housing,Category 2,XVII
+Residential,Residential Condominiums,Category 2,X
+Residential,Low Cost Housing,Category 2,XVII
+Residential,Average Cost Housing,Category 2,XVIII
+Residential,High-End Housing,Category 5,XIX
+Residential,Custom Residential,Category 4,XIX
+Transportation,Small Airport,Category 2,I
+Transportation,Bus Stations,Category 2,I
+Transportation,Gas Stations,Category 2,XII
+Transportation,Radio & TV Stations,Category 4,XIII
+Transportation,Parking Buildings,Category 4,VIII
+Transportation,Large Airports,Category 4,I

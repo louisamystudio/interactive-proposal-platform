@@ -1,0 +1,107 @@
+{
+  "projectName": "Casa Vista",
+  "location": "Ponce, PR",
+  "buildingType": "Custom Residence",
+  "buildingAreaSqFt": 4407,
+  "siteAreaSqM": 972,
+  "costPerSqFt": 195,
+  "totalBudget": 859365,
+  "budgetDistribution": {
+    "shellBudget": { "amount": 567181, "percentage": 66 },
+    "interiorBudget": { "amount": 189060, "percentage": 22 },
+    "landscapeBudget": { "amount": 103124, "percentage": 12 },
+    "newVsRemodel": { "new": 0, "remodel": 100 }
+  },
+  "constructionAllocation": [ /* as defined previously */ ],
+  "designServices": {
+    "finalContractPrice": 137744,
+    "marketRate": 187099,
+    "inHousePrice": 183658,
+    "servicesIncluded": [
+      { "name": "Scan to BIM - Building", "amount": 3797 },
+      { "name": "Scan to BIM - Site", "amount": 1547 },
+      { "name": "Architecture", "amount": 49434 },
+      /* etc. */
+    ],
+    "designFeeDistribution": [ /* same as feeAllocation but safe */ ]
+  },
+  "assumptions": [ /* ... */ ],
+  "exclusions": [ /* ... */ ],
+  "ownerResponsibilities": [ /* ... */ ],
+  "commercialTerms": { /* ... */ }
+}
+5. Updated page layout & pseudocode
+Remove the Process Timeline section from the proposal page and insert the Project Overview and Budget Distribution sections in its place. Below is an updated React‑style skeleton illustrating the revised structure. Only the changed parts are shown.
+
+jsx
+Copy code
+function ProposalPage({ data }) {
+  const { buildingAreaSqFt, siteAreaSqM, costPerSqFt, totalBudget, budgetDistribution, constructionAllocation, designServices } = data;
+
+  return (
+    <div className="proposal-page">
+      {/* ... existing hero and summary sections ... */}
+
+      {/* NEW: Project Overview metrics */}
+      <section className="project-overview">
+        <h3>Project Overview</h3>
+        <div className="metrics">
+          <MetricCard label="Total Budget" value={`$${totalBudget.toLocaleString()}`} />
+          <MetricCard label="Building Area" value={`${buildingAreaSqFt.toLocaleString()} sq ft`} />
+          <MetricCard label="Site Area" value={`${siteAreaSqM.toLocaleString()} m²`} />
+          <MetricCard label="Cost per sq ft" value={`$${costPerSqFt}/sf`} />
+        </div>
+      </section>
+
+      {/* NEW: Budget distribution summary */}
+      <section className="budget-distribution">
+        <h3>Budget Distribution</h3>
+        <div className="distribution-cards">
+          <BudgetCard title="Shell" amount={budgetDistribution.shellBudget.amount} percentage={budgetDistribution.shellBudget.percentage} />
+          <BudgetCard title="Interior" amount={budgetDistribution.interiorBudget.amount} percentage={budgetDistribution.interiorBudget.percentage} />
+          <BudgetCard title="Landscape" amount={budgetDistribution.landscapeBudget.amount} percentage={budgetDistribution.landscapeBudget.percentage} />
+        </div>
+        <DonutChart data={[{ label: 'New', value: budgetDistribution.newVsRemodel.new }, { label: 'Remodel', value: budgetDistribution.newVsRemodel.remodel }]} />
+      </section>
+
+      {/* Construction allocation remains */}
+      <section className="construction-allocation">
+        <h3>Construction Budget Allocation</h3>
+        <StackedBarChart data={constructionAllocation} />
+      </section>
+
+      {/* Design services summary remains; ensure only finalContractPrice, marketRate and services included are shown */}
+      <section className="design-services">
+        <h3>Your Investment Summary</h3>
+        <SummaryCard label="Market Rate" value={`$${designServices.marketRate.toLocaleString()}`} />
+        <SummaryCard label="Our Price" value={`$${designServices.inHousePrice.toLocaleString()}`} />
+        <SummaryCard label="Contract Price" value={`$${designServices.finalContractPrice.toLocaleString()}`} />
+        <ServiceList items={designServices.servicesIncluded} />
+        <DonutChart data={designServices.designFeeDistribution} />
+      </section>
+
+      {/* Remove Process Timeline and hours distribution */}
+
+      {/* Retain Technology & Craft, Assumptions, Exclusions, Owner Responsibilities, Commercial Terms & Next Steps */}
+
+    </div>
+  );
+}
+6. Implementation steps for the Replit agent
+Refactor data source: Extend your server/data layer to expose the Project Overview metrics (totalBudget, buildingArea, siteArea, costPerSqFt, budgetDistribution) via the proposal API. Use the values from the internal dashboard while ensuring no sensitive fields are leaked.
+
+Update the proposal page component:
+
+Remove the ProcessTimeline and ProjectPhasesDistribution components from the client view.
+
+Add new components (ProjectOverviewSection, BudgetDistributionSection) as shown above.
+
+In the existing DesignServicesSection, hide or remove the Project Margin, Effective Rate, Discount Selection, and Total Hours elements. Display only the finalContractPrice, marketRate, and list of included services with their cost allocations.
+
+Keep narrative sections (Technology & Craft, Assumptions, Exclusions, Responsibilities, Terms) unchanged unless new client‑safe copy is provided.
+
+Style adjustments: Ensure the new sections match the existing visual language (typography, spacing, colour palette) of the proposal page. Cards should align horizontally on larger screens and stack vertically on smaller screens.
+
+Testing: Verify that the page displays all necessary data from the Project Overview, that sensitive data is omitted, and that there are no console errors. Test on multiple viewport sizes.
+
+By following these instructions, the proposal page will align precisely with the data shown on the Project Overview dashboard while presenting it in a polished, client‑appropriate manner.

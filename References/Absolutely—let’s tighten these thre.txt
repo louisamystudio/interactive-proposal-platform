@@ -1,0 +1,88 @@
+Absolutely—let’s tighten these three slides so they’re crisp, value‑based, and contradiction‑free, and give you a fresh, format‑ready deck you can drop into the proposal now.
+
+What I fixed (at a glance)
+
+Removed internal math/explanations and any “minus X + Y = total” language (keeps the focus on value, not components).
+
+Corrected scope conflicts you had on B and C (duplicate “Core visualization” on B; C listed Landscape in inclusions but also in exclusions).
+
+Standardized visualization language per tier (A = interior & exterior VR; B = exterior VR + optional add‑on for interior; C = no VR).
+
+Kept one fixed price per option and disciplines distribution phrased as “illustrative” (value framing, not cost‑plus).
+
+Preserved the premium anchor for Option A. If you want to push anchoring harder, we can float $183,658 (Louis Amy price) or the $187,099 market card as the leading anchor.
+
+Polished, paste‑ready copy (use this verbatim on each slide)
+Slide 01 — Option A · Fully Integrated Vision (Premium Anchor)
+
+Fixed Investment: $187,099
+What’s included
+
+Single, integrated team: Architecture, Interior Design, Landscape + full Structural/Civil/Plumbing coordination—one accountable studio.
+
+Reality Capture (Scan‑to‑BIM): building + site; BIM federation & clash‑resolved documentation to reduce surprises.
+
+Visualization: Interior + Exterior VR previews for confident decisions and fewer late changes.
+
+Ideal when you want maximum cohesion, faster decisions, and single‑point accountability.
+
+Design Services Distribution (illustrative):
+Scan‑to‑BIM ~4% ≈ $7,484 · Building Shell ~60% ≈ $112,259 · Interior ~24% ≈ $44,904 · Landscape ~12% ≈ $22,452.
+
+Slide 02 — Option B · Collaborative Partnership
+
+(Architecture‑led + your interior designer)
+Fixed Investment: $126,636
+What’s included
+
+Authored by Louis Amy: Architecture + Structural/Civil/Plumbing permit deliverables; Landscape Architecture by Louis Amy.
+
+Design Integration & Coordination with your interior designer: interfaces matrix, BIM federation, clash detection & resolution, review gates, change‑management.
+
+Reality Capture baseline (Scan‑to‑BIM).
+
+Visualization: Exterior VR for reviews; interior hero renders/VR available as a priced add‑on.
+
+Ideal when you want to keep a trusted interior designer while preserving architectural coherence and schedule certainty.
+
+Design Services Distribution (illustrative):
+Scan‑to‑BIM ~5% ≈ $6,332 · Building Shell ~65% ≈ $82,314 · Landscape ~12% ≈ $15,196 · Design Integration & Coordination ~18% ≈ $22,794.
+(Prices a strategic integration role—charging for thinking/oversight, not hours.)
+
+Slide 03 — Option C · Architectural Foundation (Shell + Outdoor Baseline)
+
+Fixed Investment: $87,898
+What’s included
+
+Authored by Louis Amy: Architecture + Structural/Civil/Plumbing permit deliverables.
+
+Reality Capture baseline (Scan‑to‑BIM).
+
+Exclusions: Interior & Landscape authored by others; our documents note interfaces only. Dedicated interior‑design integration is not included.
+
+Visualization: 3D interior renderings and VR are out of scope in this tier.
+
+Best for a compliant architectural base with client‑side coordination responsibility.
+
+Design Services Distribution (illustrative):
+Scan‑to‑BIM ~6% ≈ $5,274 · Building Shell ~94% ≈ $82,624 (no Interiors or Landscape authoring in this tier).
+
+Download the updated slides (ready to insert)
+
+Refined text‑only one‑pager per option:
+Download v2 slides
+
+If you prefer the version with donut charts for distribution, you also have:
+Download v1 with charts
+
+Micro‑notes to keep the deck “Chris‑Do clean”
+
+Keep one number per option (fixed investment). No internal arithmetic; no hourly tables.
+
+Use “Distribution (illustrative)” to communicate scope emphasis while avoiding cost‑plus vibes.
+
+For supplemental items (e.g., premium visualization packs, specialized engineering), present fixed‑fee add‑ons that bundle any coordination—avoid “cost + 15%”.
+
+Maintain your standard commercial terms on a separate slide (20% non‑refundable kickoff; 30‑day validity; decision‑window clause).
+
+If you want, I can append these 3 slides to your working file (Proposal Luis De Jesus.pptx) or replace your current “Your Investment” pages with these.

@@ -1,0 +1,54 @@
+{
+  "projectName": "Casa Vista",
+  "location": "Ponce, PR",
+  "buildingType": "Custom Residence",
+  "buildingAreaSqFt": 4407,
+  "siteAreaSqM": 972,
+  "designFee": 137744,
+  "constructionBudget": {
+    "min": 3500000,
+    "target": 4300000
+  },
+  "feeAllocation": [
+    { "discipline": "Architecture", "percentage": 36, "amount": 49434 },
+    { "discipline": "Interior Design", "percentage": 24, "amount": 33607 },
+    { "discipline": "Landscape Architecture", "percentage": 12, "amount": 15894 },
+    { "discipline": "Engineering", "percentage": 20, "amount": 20000 },
+    { "discipline": "Reality Capture & BIM", "percentage": 4, "amount": 5344 },
+    { "discipline": "Visualization & VR", "percentage": 4, "amount": 5465 }
+  ],
+  "constructionAllocation": [
+    { "category": "Building Shell", "percentage": 60, "min": 2100000, "target": 2500000 },
+    { "category": "Interior", "percentage": 24, "min": 800000, "target": 1030000 },
+    { "category": "Site & Landscape", "percentage": 12, "min": 420000, "target": 520000 },
+    { "category": "Special Features", "percentage": 4, "min": 140000, "target": 190000 }
+  ],
+  "timeline": [
+    { "phase": "Discovery", "durationWeeks": 4, "deliverable": "Program & inspirational direction" },
+    { "phase": "Concept Design", "durationWeeks": 6, "deliverable": "Concept sketches & mood boards" },
+    { "phase": "Schematic Design", "durationWeeks": 10, "deliverable": "Plans, elevations, 3D model" },
+    { "phase": "Design Development", "durationWeeks": 14, "deliverable": "Detailed layouts, finishes & coordination" },
+    { "phase": "Construction Documents", "durationWeeks": 12, "deliverable": "Full permit & bid set" },
+    { "phase": "Construction Administration", "durationWeeks": 30, "deliverable": "Site visits & coordination" }
+  ],
+  "assumptions": [
+    "New build on prepared site with typical permitting timeline.",
+    "Owner will engage a licensed General Contractor; our team assists in evaluation and coordination.",
+    "This budget envelope reflects current market conditions; it is not a contractor's bid."
+  ],
+  "exclusions": [
+    "Furnishings procurement and art curation.",
+    "Utility upgrades beyond meter connection.",
+    "Pool/spa design unless explicitly added."
+  ],
+  "ownerResponsibilities": [
+    "Provide timely approvals within review windows.",
+    "Make progress payments according to agreed billing schedule.",
+    "Contract and manage General Contractor following our recommendations."
+  ],
+  "commercialTerms": {
+    "depositPercentage": 20,
+    "billingCadence": "Monthly progress billing",
+    "validityDays": 30
+  }
+}

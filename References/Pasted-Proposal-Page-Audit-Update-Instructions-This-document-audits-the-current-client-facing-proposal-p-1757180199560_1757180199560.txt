@@ -1,0 +1,59 @@
+Proposal Page Audit & Update Instructions
+
+This document audits the current client‑facing proposal page hosted at /proposal/[id] and provides clear instructions for updating it to comply with project requirements. The new proposal page must only display data drawn from the Project Overview dashboard and approved summary sections, hiding any sensitive internal metrics such as hours, profit margins, and top‑down/bottom‑up fee analyses.
+
+1. Audit findings
+
+Extra content: The current proposal page includes a Process Timeline and Project Phases & Hours Distribution section (inherited from internal dashboards). These elements expose internal scheduling assumptions and staff hours. They are not present on the Project Overview page and should be removed entirely from the client‑facing proposal.
+
+Missing data: Key metrics from the Project Overview page—Total Budget, Building Area, Site Area, Cost per Square Foot, and Budget Distribution (shell, interior, landscape)—are not currently shown on the proposal page. These high‑level figures help clients understand the scale of the project and must be added.
+
+Sensitive data: Sections such as Sanity Check & Pricing (top‑down vs. bottom‑up analysis, discount slider, project margin) and Fee Analysis (top‑down and bottom‑up tables, hours distribution, rates) reveal sensitive internal information. Only the final contract price may be presented; all other elements should be hidden or aggregated into safe summaries.
+
+2. Components to display (client‑safe)
+
+The proposal page should incorporate the following components derived from the Project Overview dashboard:
+
+Project metrics card group
+
+Total Budget – overall construction budget (e.g., $859,365).
+
+Building Area – gross square footage (e.g., 4,407 sq ft).
+
+Site Area – site size in square metres or acres (e.g., 972 m²).
+
+Cost per Square Foot – target cost per square foot (e.g., $195/sf for remodel or new build).
+
+Budget distribution summary
+
+New vs Remodel – donut chart showing share of new vs. remodel (if applicable).
+
+Shell Budget, Interior Budget, Landscape Budget – bar or card display showing dollar amounts and percentages (e.g., $567,181 = 66%, $189,060 = 22%, $103,124 = 12%).
+
+Construction budget allocation (detailed categories)
+
+Display the breakdown across Architecture, Interior, Landscape, Structural, Civil, Mechanical, Electrical, Plumbing, Telecommunications, etc., as cards or a bar chart. Each item shows cost and percentage of total budget.
+
+Design services summary
+
+Final Contract Price – the design fee payable by the client (e.g., $137,744).
+
+Market Rate and Louis Amy Price (optional) – can be shown as a comparison to illustrate value and savings, without revealing discount percentages or project margin.
+
+Services included – list or cards of in‑house services (e.g., Scan to BIM, Architecture, Interior Design, Landscape Architecture, Structural Engineer, etc.) with their cost allocations.
+
+Design services distribution – a chart showing how the design fee is allocated across disciplines (Architecture, Interior, Landscape, Engineering, etc.).
+
+Technology & craft, Assumptions, Exclusions, Owner Responsibilities, Commercial Terms & Next Steps – these narrative sections add context and are client‑safe. They may remain similar to the existing proposal page.
+
+3. Components to hide
+
+Fee Analysis tables (top‑down and bottom‑up), including market fees, hours, and assignment toggles.
+
+Project Phases & Hours Distribution and any process timeline showing hours or durations.
+
+Sanity Check & Pricing internal comparison (top‑down vs bottom‑up), Discount Selection, Applied Discount, Project Margin, and Effective Rate. Only the final contract price may be displayed.
+
+4. Updated JSON schema
+
+Expand the clientSafeProject data model to include the Project Overview metrics and budget distribution. Suggested keys:

@@ -1,0 +1,222 @@
+{
+  "project": {
+    "name": "Louis Amy Interactive Proposal Platform",
+    "version": "1.0.0",
+    "description": "Premium web-based proposal platform for architectural engineering services",
+    "pilot_project": "Dr. Luis De Jesús - Casa Vista Residential Remodel"
+  },
+  
+  "timeline": {
+    "total_hours": 24,
+    "phases": {
+      "setup": "0-2 hours",
+      "core_development": "2-8 hours", 
+      "ui_implementation": "8-16 hours",
+      "integration": "16-20 hours",
+      "testing_deployment": "20-24 hours"
+    }
+  },
+
+  "target_metrics": {
+    "dr_de_jesus_project": {
+      "building_type": "Custom Houses",
+      "category": 5,
+      "building_tier": "High", 
+      "new_area_ft2": 0,
+      "existing_area_ft2": 4407,
+      "site_area_m2": 972,
+      "historic_multiplier": 1.0,
+      "remodel_multiplier": 1.0,
+      "note": "remodelMultiplier corrected from 0.5 to 1.0 for budget consistency (4407 ft² × $195/ft² × 1.0 = $859,365)",
+      "expected_outputs": {
+        "total_budget": 859365,
+        "shell_budget": 567180.9,
+        "interior_budget": 189060.3,
+        "landscape_budget": 103123.8,
+        "contract_price": "calibrated (EXCEL: 137743.5, SSOT: 187925.55)",
+        "total_hours": "calibrated (EXCEL: 1184, SSOT: 1148.27)",
+        "option_a_investment": 187099,
+        "option_b_investment": 126636,
+        "option_c_investment": 87898
+      }
+    }
+  },
+
+  "three_options": {
+    "option_a": {
+      "title": "Fully Integrated Vision",
+      "investment": 187099,
+      "positioning": "Premium anchor - present first",
+      "scope": [
+        "Architecture + Interiors + Landscape",
+        "Full Structural/Civil/Plumbing coordination", 
+        "Reality Capture (Scan-to-BIM)",
+        "Interior & Exterior VR",
+        "Construction oversight",
+        "Single accountable team"
+      ],
+      "excluded": [],
+      "ideal_when": "Maximum cohesion, single-point accountability",
+      "value_promise": "The pinnacle of bespoke luxury—one team, one vision, zero compromises"
+    },
+    "option_b": {
+      "title": "Collaborative Partnership", 
+      "investment": 126636,
+      "positioning": "Sweet spot - architecture + coordination",
+      "scope": [
+        "Architecture + Structural/Civil/Plumbing",
+        "Design Integration & Coordination with client ID",
+        "Landscape by Louis Amy",
+        "Exterior VR (interior as add-on)",
+        "BIM federation and clash resolution"
+      ],
+      "excluded": ["Interior design authorship"],
+      "ideal_when": "Keep trusted designer while preserving technical integrity",
+      "value_promise": "Strategic alliance—we orchestrate your interior designer"
+    },
+    "option_c": {
+      "title": "Architectural Foundation",
+      "investment": 87898,
+      "positioning": "Baseline - highlights value of A & B",
+      "scope": [
+        "Architecture + Structural/Civil/Plumbing permits",
+        "Reality Capture baseline", 
+        "Exterior visualization only"
+      ],
+      "excluded": ["Interior design", "Landscape authoring", "Interior coordination"],
+      "ideal_when": "Self-manage interiors and coordination risk",
+      "value_promise": "Robust foundation—permit-ready shell with self-managed coordination"
+    }
+  },
+
+  "chris_do_principles": {
+    "never_show_clients": [
+      "Hourly rates",
+      "Internal calculations", 
+      "Profit margins",
+      "Hours breakdowns",
+      "Team member rates",
+      "Effort-based metrics"
+    ],
+    "always_emphasize": [
+      "Transformation and outcomes",
+      "Risk mitigation and peace of mind",
+      "Value and legacy creation",
+      "Single-point accountability",
+      "Premium positioning",
+      "Precision and innovation"
+    ],
+    "language_guidelines": {
+      "use": ["Investment", "Legacy", "Transformation", "Peace of mind", "Precision", "Innovation"],
+      "avoid": ["Cost", "Price", "Hours", "Effort", "Work", "Cheap", "Discount"]
+    }
+  },
+
+  "technical_requirements": {
+    "performance": {
+      "page_load": "< 3 seconds",
+      "calculation_response": "< 300ms",
+      "chart_rendering": "< 500ms", 
+      "mobile_lighthouse": "> 90"
+    },
+    "responsive_breakpoints": {
+      "mobile": "375px",
+      "tablet": "768px", 
+      "desktop": "1024px",
+      "wide": "1280px"
+    },
+    "browser_support": [
+      "Chrome 90+",
+      "Firefox 88+", 
+      "Safari 14+",
+      "Edge 90+"
+    ]
+  },
+
+  "integration_points": {
+    "3d_models": {
+      "platform": "Nira",
+      "embed_method": "iframe",
+      "models_needed": [
+        "Casa Vista exterior rendering",
+        "Interior walkthrough model",
+        "Site plan visualization"
+      ]
+    },
+    "data_visualization": {
+      "library": "Recharts",
+      "chart_types": [
+        "Donut charts for budget allocation",
+        "Bar charts for option comparison", 
+        "Progress indicators for project phases"
+      ]
+    }
+  },
+
+  "content_requirements": {
+    "personalization": {
+      "client_name": "Dr. Luis De Jesús",
+      "project_name": "Casa Vista",
+      "location": "Mansion del Lago, Ponce, PR"
+    },
+    "copy_source": "Amazing direction. I took your note.txt",
+    "tone": ["Premium", "Confident", "Sophisticated", "Innovation-focused"],
+    "key_messages": [
+      "Meticulously brought to life",
+      "Unparalleled transformation",
+      "Bold innovation and precision", 
+      "Legacy residence",
+      "Inspire for generations"
+    ]
+  },
+
+  "validation_checklist": {
+    "calculations": [
+      "Total budget matches Excel: $859,365",
+      "Shell allocation: $567,180.90 (66%)",
+      "Interior allocation: $189,060.30 (22%)",
+      "Landscape allocation: $103,123.80 (12%)",
+      "Contract price: $137,743.50",
+      "Hours calculation: ~1,184 hours"
+    ],
+    "ui_ux": [
+      "Mobile responsive on 375px width",
+      "Option A displayed first (anchor high)",
+      "No hourly rates visible to clients",
+      "3D models load and function",
+      "Charts interactive with hover states",
+      "Conversion flow complete"
+    ],
+    "business_logic": [
+      "Chris Do principles implemented",
+      "Value-focused language throughout",
+      "Risk mitigation emphasized",
+      "Premium positioning maintained",
+      "Progressive disclosure working"
+    ]
+  },
+
+  "deployment": {
+    "platform": "Vercel",
+    "domain": "TBD - proposals.louisamy.com",
+    "database": "Supabase PostgreSQL",
+    "cdn": "Vercel Edge Network",
+    "monitoring": "Vercel Analytics + Sentry"
+  },
+
+  "success_criteria": {
+    "mvp_complete": [
+      "Dr. De Jesús can view personalized proposal",
+      "Three options display with accurate pricing", 
+      "Admin tool generates proposals efficiently",
+      "Mobile experience is flawless",
+      "3D models integrate successfully"
+    ],
+    "business_impact": [
+      "Proposal preparation time reduced 80%",
+      "Client engagement increased significantly",
+      "Premium positioning reinforced",
+      "Technology leadership demonstrated"
+    ]
+  }
+}

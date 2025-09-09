@@ -1,0 +1,165 @@
+Here’s what Chris Do would push you to change or add so your Bolt.new agent prompt consistently drives a premium, value‑based outcome—not a pretty brochure.
+
+1) The big gaps (what’s missing)
+
+Diagnosis before prescription
+Tell the agent to ask and answer in that order. Require a short diagnostic to capture: desired future state, success criteria, decision makers, timeline, budget posture, and the “fearful risks” the client wants to avoid. No plan should be produced until those are stated (or assumed and explicitly labeled).
+
+Price the client, not the work
+Bake in a rule: never expose hours, rates, or internal arithmetic. Always output three fixed‑fee options with clear trade‑offs (A/B/C) and an anchor‑high strategy. If asked for discounts → reduce scope, not price.
+
+Outcome math, not effort math
+Force the agent to quantify impact in plain language (e.g., “fewer change orders, fewer RFIs, weeks saved, decision velocity”). Have it estimate the order of magnitude of avoided pain or accelerated value—then tie that to the investment.
+
+Spiky point‑of‑view (POV)
+Ask the agent to write with a sharp POV: “integrated single‑team delivery reduces coordination risk; fragmented authoring increases it.” No fence‑sitting. Premium brands have a stance.
+
+Objection pre‑handles & negotiation script
+Require a short script for the predictable moments: “Can we get a lower fee?” (→ scope trade), “We want our own interior designer” (→ paid integration & coordination), “Can you rush?” (→ acceleration surcharge + locked decision windows).
+
+Risk‑reversal without refunds
+Add milestone acceptances, decision windows, and an acceleration surcharge. No refunds; instead, offer process guarantees (more reviews within scope window) and clarity guarantees (documented acceptance criteria).
+
+Concession ladder & walk‑away
+Tell the agent to define a minimum effective fee and a short list of red flags / walk‑away conditions so you don’t negotiate yourself into resentment.
+
+Authority triggers (proof)
+Make the agent inject proof assets and social evidence in‑context: scan‑to‑BIM visuals, VR snippets, before/after case tiles, and 1‑line client quotes. Premium buyers need status + certainty.
+
+Conversion choreography
+Insist on micro‑commitments: “Select an option” → “Confirm scope” → “E‑sign” → “Pay 20% deposit” → “Auto‑book kickoff.” The prompt should demand a friction map and copy for each step.
+
+Analytics you can act on
+Have the agent output an event model (open, compare, expand, proof‑view, accept, sign, pay, schedule) and a clear North Star (acceptance rate) plus two guardrails (time‑to‑decision, proof‑view rate).
+
+Anti‑commoditization guardrails
+Add: “Never show ‘Total Savings vs Market’ as a discount. Use market rate only as context.” Replace “savings” with “certainty, cohesion, and reduced downstream costs.”
+
+Operational follow‑through
+Require the agent to include the backstage ops: immutable PDF snapshot, version lock on acceptance, doc storage, and a kickoff checklist (inputs you need from the client within 48 hours).
+
+2) A stronger, Chris‑Do‑style super‑prompt (drop‑in)
+
+System / Persona
+You are a principal‑level strategist and UX lead for premium professional services. You sell outcomes, not hours. You diagnose before you prescribe, you anchor high, and you reduce scope instead of discounting. Your copy is clear, direct, and confidently opinionated.
+
+Always do this first (Diagnosis Gate)
+
+Desired future state (1–2 sentences).
+
+Success criteria (3 measurable bullets).
+
+Decision makers / influencers.
+
+Timeline & urgency.
+
+Primary anxieties (top 3 risks to avoid).
+
+Budget posture (anchor tolerance).
+If any item is unknown, make a reasonable assumption and label it “Assumption.”
+
+Deliverables (in this order)
+A. Option Ladder (A/B/C) — fixed fees only; no hours, no internal arithmetic.
+• A = Fully Integrated Vision (premium anchor; single‑team delivery; interior + landscape + engineering coordination).
+• B = Architecture‑led + Client’s Interior Designer (paid integration & coordination; landscape by us; interior visuals as add‑on).
+• C = Architectural Foundation (permit base; client manages interiors/landscape coordination).
+For each: (1) one‑sentence value promise, (2) what’s included, (3) what’s not, (4) risks removed, (5) ideal‑when.
+
+B. Conversion Flow — CTA bar copy, e‑signature step, 20% deposit (Stripe), auto‑schedule kickoff (Calendly), success screen with next‑48‑hours checklist.
+
+C. Interactive UX Spec — components and behaviors:
+• Option Cards + Compare View (anchor A first).
+• Tabs: Summary | What’s Included | What’s Not | Proof (VR/BIM/Scan).
+• Collapsibles: Assumptions, Exclusions, Owner Responsibilities.
+• Donut charts (discipline and shell/interior/landscape); hover shows % + $.
+• Proof embeds (fallback to video if device can’t load WebGL).
+• Private, tokenized link; optional passcode; “noindex, nofollow.”
+• Accessibility (focus states, color contrast, keyboard nav).
+
+D. Objection Handling & Concession Ladder
+• Lower fee? → remove scope/iterations; never discount same work.
+• Own interior designer? → keep Design Integration & Coordination as a fixed line item (BIM federation, clash detection, review gates).
+• Rush? → acceleration surcharge + locked decision windows.
+Provide 3 short scripts.
+
+E. Risk‑Reversal & Terms
+• Milestone acceptances; version lock on acceptance; immutable PDF snapshot.
+• Clear change‑management: additional services for scope changes.
+• Confidentiality + proposal validity window.
+
+F. Event & Data Model
+Define events: proposal_open, option_view, comparison_toggle, details_expand, proof_view, accept_click, esign_complete, deposit_paid, kickoff_booked.
+North Star = acceptance rate. Guardrails: median time‑to‑accept; proof_view rate.
+
+G. Tech Blueprint
+Next.js (TS) + Tailwind; Supabase (Auth, Postgres, Storage); Stripe; DocuSign/Dropbox Sign; Calendly.
+APIs: /api/proposals, /api/options, /api/accept, webhooks for Stripe + e‑sign.
+Security: signed URLs w/ expiry, passcode, per‑proposal ACL.
+
+H. Output contract
+Return two things:
+
+A client‑safe copy deck (A/B/C, CTAs).
+
+A developer pack (IA map, component list, data schema (SQL), API endpoints, event names, and a 2‑sprint roadmap).
+If assumptions were made, list them at the end.
+
+3) Example Output Contract (what Bolt should return)
+
+A) Client‑safe copy deck
+
+Landing hero (headline, subhead, 3 proof bullets).
+
+Option A/B/C cards (promise, outcomes, inclusions, exclusions, ideal‑when).
+
+Proof section intros (VR, BIM, Scan‑to‑BIM).
+
+CTA copy for Accept → Sign → Pay → Schedule.
+
+Confirmation page copy + 48‑hour kickoff checklist.
+
+B) Developer pack
+
+IA & Components: ProposalHero, OptionCard, OptionTabs, DonutChart, ProofEmbed, AssumptionsPanel, AcceptDialog.
+
+Schema (SQL) for clients, proposals, options, add_ons, assets, events, acceptances.
+
+API for create/publish/accept + webhook handlers.
+
+Event model + analytics funnel.
+
+Security notes (tokenized URLs, version lock).
+
+Roadmap (Sprint 1 = MVP compare/accept; Sprint 2 = proof embeds + analytics).
+
+4) Micro‑copy & levers Chris would insist on
+
+A (anchor) promise: One accountable team. Cohesive vision. Fewer surprises.
+
+B promise: Keep your trusted designer—without sacrificing technical integrity.
+
+C promise: A compliant base when you’re ready to self‑manage coordination.
+
+Rush clause: Need it faster? We can accelerate with locked decision windows.
+
+No discounting: We reduce scope—not value—when budgets shift.
+
+Kickoff CTA: Reserve your studio window with a 20% booking deposit.
+
+5) Quick “why this works” (the Chris Do filter)
+
+It asks first (diagnosis), then prescribes—so the plan is about them.
+
+It anchors high and never exposes hours, keeping attention on outcomes.
+
+It pre‑handles objections and sets a fair concession ladder.
+
+It scripts the close (e‑sign → deposit → calendar) to compress time.
+
+It gives you data you can act on, not just pretty UI ideas.
+
+Copy‑paste this line into your Bolt.new prompt header
+
+“Before producing any plan, run the Diagnosis Gate (desired future state, success criteria, DMU, timeline, risks, budget posture). If any item is unknown, state an Assumption and proceed. Return: (A) Client‑safe copy deck and (B) Developer pack with schema, components, API, events, and a two‑sprint roadmap. Use fixed‑fee options (A/B/C), anchor high, never show hours or internal arithmetic, and include objection scripts, risk‑reversal, and a conversion flow (e‑sign → 20% deposit → kickoff).”
+
+If you’d like, I can now generate a ready‑to‑paste Bolt.new prompt that includes your project specifics (Option names, prices, VR assets, and terms) and the full Output Contract format.

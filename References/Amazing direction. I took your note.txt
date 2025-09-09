@@ -1,0 +1,334 @@
+Amazing direction. I took your notes and rewrote the entire app copy so every line projects premium, peace of mind, and unparalleled outcomes—anchored high, outcome‑first, and consistent with the services and visuals in your “Proposal Luis De Jesus” deck. Below is final, paste‑ready copy for the web app, organized by sections/components so your devs can drop it straight into the UI.
+
+0) Brand Header / Meta
+
+Title: Louis Amy AE Studio — Interactive Proposal
+
+Tagline (sub): Where Vision Meets Bold Innovation
+
+Tone reminders (hidden to users): Luxury, assured, concise; avoid effort/hours; speak to legacy, precision, risk reduction.
+
+1) Personalized Welcome (Hero)
+
+Headline:
+Welcome, Dr. De Jesús.
+
+Subheadline:
+Your vision for a legacy residence at Mansion del Lago is about to be meticulously brought to life.
+
+Body:
+We’re not just proposing a design; we’re inviting you to experience an unparalleled transformation—powered by bold innovation, exacting precision, and an unwavering commitment to excellence. Explore a world where your new façade, reimagined interiors, and luxurious outdoor living are crafted with confidence and clarity. Thank you for the privilege to shape a space that will inspire for generations.
+
+Primary CTA: Explore Options
+Secondary CTA: See Proof of Precision (anchors to VR/BIM/Scan section)
+
+UI note: Use your “Spaces That Resonate” image as hero, plus a subtle overlay that hints at interactive hotspots. Integrate the slide renders directly; link any QR → in‑app “View in 3D”.
+
+2) Table of Contents (Floating)
+
+Your Vision
+
+Our Approach
+
+Compare Options
+
+Proof (VR · BIM · Scan)
+
+Investment & Distribution
+
+Assumptions & Exclusions
+
+Accept & Schedule
+
+Progressive disclosure: sections scroll‑snap; each has a persistent CTA bar: Select Option · Ask a Question.
+
+3) Our Approach (Value, not effort)
+
+Headline: A premium process designed for certainty
+Body (3 bullets):
+
+Single‑team orchestration: one accountable studio coordinating architecture, interiors, landscape, and engineering for cohesion and speed.
+
+Precision beyond the eye: Reality Capture (Scan‑to‑BIM) and clash‑resolved BIM so decisions are informed and risk is reduced.
+
+Decide with confidence: immersive visualization and clear review windows accelerate decisions and prevent late changes.
+
+4) Options — Side‑by‑Side (Anchor High)
+
+Intro line (above cards):
+Three fixed‑price pathways to your desired future state. No hourly tables. No hidden surprises. The difference is the depth of integration, risk mitigation, and effortless experience you choose.
+
+Option A — Fully Integrated Vision
+
+Investment: $187,099
+Promise (one‑liner): The pinnacle of bespoke luxury—one team, one vision, zero compromises.
+Top outcomes:
+
+Absolute cohesion across architecture, interiors, landscape, and engineering.
+
+Streamlined decisions with a single point of accountability.
+
+Interior and exterior VR; fewer late changes and maximum peace of mind.
+Mini‑CTA: See Details
+
+Option B — Collaborative Partnership
+
+Investment: $126,636
+Promise: Strategic alliance—our team leads architecture/site, and we orchestrate your chosen interior designer.
+Top outcomes:
+
+Architecture + engineering + landscape by Louis Amy.
+
+Design Integration & Coordination prevents clashes; preserves your interior style.
+
+Exterior VR; interior visuals available as an add‑on.
+Mini‑CTA: See Details
+
+Option C — Architectural Foundation
+
+Investment: $87,898
+Promise: A robust architectural starting point—permit‑ready shell and structure.
+Top outcomes:
+
+Reimagined exteriors and reconfigured layouts; core architectural/structural docs.
+
+Client‑managed interiors/landscape and third‑party coordination.
+
+Visualization limited; no interior VR in this tier.
+Mini‑CTA: See Details
+
+Comparison strip (beneath cards): 6–8 checkmarks showing inclusions by tier (VR interior/exterior, interiors authoring, landscape authoring, engineering coordination, construction oversight). Option A all filled; B partial; C minimal.
+
+5) Option Detail Tabs (per option)
+
+Tabs: Summary · What’s Included · What’s Not · Proof
+
+A) Option A — Fully Integrated Vision
+
+Summary (outcome):
+A truly end‑to‑end transformation: architecture, interior, and landscape delivered as one coherent masterpiece. Every line—from façade to millwork—is designed and coordinated under one roof for speed, precision, and certainty.
+
+What’s Included (bulleted):
+
+Single, integrated delivery: Architecture · Interior Design · Landscape · full Structural/Civil/Plumbing coordination.
+
+Reality Capture & BIM: laser scan + Scan‑to‑BIM, clash‑resolved documents; fewer surprises.
+
+Visualization: interior & exterior VR/renders; optional 3D prints.
+
+Pre‑construction support: bid set, specs, permit guidance.
+
+Construction oversight: site observations, submittals, RFIs, change‑order advice, pay‑app reviews.
+
+What’s Not (clarity):
+
+General contractor labor/material costs, permit fees, specialty consultants not explicitly listed (available as fixed‑fee add‑ons).
+
+Day‑to‑day construction management (available as an add‑on).
+
+Proof (inline):
+
+VR launch button (interior + exterior walkthroughs)
+
+Scan‑to‑BIM screenshots
+
+Clash detection preview (before/after)
+
+B) Option B — Collaborative Partnership
+
+Summary:
+Our expert design conductor model: we author architecture/engineering and landscape, and coordinate your interior designer so the project stays cohesive, constructible, and on‑schedule.
+
+What’s Included:
+
+Authored by Louis Amy: Architecture + Structural/Civil/Plumbing permit deliverables; landscape by Louis Amy.
+
+Design Integration & Coordination: interfaces matrix, BIM federation, clash resolution, review gates & change‑management.
+
+Reality Capture: laser scan baseline + BIM.
+
+Visualization: exterior VR/renders. Interior visualizations available as an add‑on.
+
+What’s Not:
+
+Interior authorship (led by your designer); interior VR/renders unless added.
+
+Specialty consultants beyond scope (available as fixed‑fee add‑ons).
+
+Proof:
+
+Exterior VR launch button
+
+Coordination diagram (interfaces & clash‑free snapshot)
+
+C) Option C — Architectural Foundation
+
+Summary:
+A precision architectural blueprint for the shell and structure. You receive permit‑ready documents and a transformed exterior presence; you orchestrate interiors/landscape and all third‑party coordination.
+
+What’s Included:
+
+Core architecture/structure: new layouts, façade/roof re‑profiling, structural docs for permits.
+
+Reality Capture: laser scan baseline + BIM documents.
+
+Visualization: exterior stills/annotated views; no interior VR.
+
+What’s Not (and trade‑offs):
+
+Interior and detailed landscape authorship (by others).
+
+No integration/coordination service for third parties.
+
+Higher client involvement and increased risk of clashes/inconsistencies vs. our integrated tiers.
+
+Proof:
+
+Exterior transformation preview (render/still sequence)
+
+BIM snapshots
+
+6) Proof of Precision (VR · BIM · Scan)
+
+Headline: Step inside your future—today.
+Body:
+For Option A (and as an add‑on for Option B), explore immersive VR to evaluate spaces at full scale and make confident decisions before construction. Every virtual step is backed by millimeter‑accurate Scan‑to‑BIM and clash‑resolved documentation that protects your investment.
+
+CTAs:
+
+Launch Interior & Exterior VR (Option A only by default)
+
+Add Interior VR to Option B
+
+View Scan‑to‑BIM & Clash Checks
+
+7) Investment & Distribution (Interactive Donuts)
+
+Headline: How your investment secures a transformative outcome
+Body:
+These interactive donut charts reveal the emphasis of each tier—Architecture & Structure, Interiors, Landscape, Reality Capture/BIM, and Coordination—so you can see how the fixed fee drives long‑term value and reduces risk. Hover to view dollars and %.
+
+Notes (small):
+
+Fixed‑fee pricing means you pay for results, not hours.
+
+Allocations illustrate emphasis; your fixed investment is the cap if the scope remains as proposed.
+
+8) Assumptions & Exclusions (Collapsibles)
+
+Intro: We believe in clarity upfront. Expand the sections below for specifics that protect your investment and timeline.
+
+Assumptions (collapsed by default):
+
+Timely and decisive client feedback during review windows keeps the schedule tight.
+
+Standard permitting conditions; unusual agency requirements may require add‑services.
+
+For Options B/C: you’ll engage qualified third parties for scopes outside our authorship.
+
+Exclusions (collapsed):
+
+Construction labor/materials; government permit fees and taxes.
+
+Specialty engineering and systems unless explicitly included (available as fixed‑fee add‑ons with our coordination).
+
+Day‑to‑day construction management (available as an add‑on).
+
+If it’s not explicitly listed as included in your chosen option, it’s out of scope—this preserves predictability and prevents scope‑creep.
+
+9) Accept & Schedule (Conversion Flow)
+
+Headline: Commit to your vision—confidently.
+Body (four steps, crisp):
+
+Select Your Option — Choose the level of integration, risk mitigation, and peace of mind you want.
+
+Digitally Sign — Secure e‑signature converts this proposal into our working agreement and reserves studio time.
+
+Pay Kickoff Deposit — A 20% non‑refundable deposit mobilizes the team and initiates Discovery.
+
+Book Your Kickoff — Pick a time for our kickoff session; align objectives, confirm milestones, and start design.
+
+CTA (primary): Accept & Reserve Studio Window
+CTA (secondary): Ask a Final Question
+
+Microcopy (below CTA): Decisive action amplifies momentum. We’re ready the moment you are.
+
+10) Commitment (Closing Promise)
+
+Headline: We deliver more than designs.
+Body:
+Choose Louis Amy AE Studio and your project is immediately mobilized. We bring an unwavering standard of trust, innovation, and execution—delivering peace of mind, risk‑controlled delivery, and spaces that stand the test of time. Your future home—crafted as a lasting legacy—begins here.
+
+CTA: Begin the Louis Amy Experience
+
+11) Footer (Confidentiality & Validity)
+
+Confidential Proposal—for Dr. De Jesús only.
+
+Acceptance triggers version lock and immutable archive.
+
+Proposal prices are valid for a set window; final terms govern in the signed agreement.
+
+Component‑Level Microcopy (dev ready)
+Option Card (props)
+
+headline: Option {A|B|C} — {Title}
+
+price: ${#,###}
+
+promise: one‑line value promise (above)
+
+bullets: 3 outcome bullets (above)
+
+ctaPrimary: See Details
+
+ctaSecondary: Choose this Option
+
+Tabs
+
+Summary: “Why this tier; the transformation it guarantees”
+
+What’s Included: “Everything we do—no guesswork”
+
+What’s Not: “Clear boundaries protect your investment”
+
+Proof: “VR, Scan‑to‑BIM, and clash checks”
+
+Tooltips
+
+Design Integration & Coordination: “BIM federation, clash resolution, and review gates—our orchestration prevents costly misalignment.”
+
+Reality Capture: “Laser scanning + as‑built BIM for millimeter‑level accuracy.”
+
+Clash‑resolved: “Conflicts identified and resolved digitally, not on your jobsite.”
+
+CTAs (A/B test variants)
+
+A1: Accept & Reserve Studio Window
+
+A2: Secure Your Start Date
+
+B1: Proceed with Option A
+
+B2: Proceed with {Option Code}
+
+Accessibility (alt text)
+
+Hero: “Exterior architectural render of Mansion del Lago residence—tropical modern façade update.”
+
+VR: “Interactive view of redesigned kitchen flowing to terrace.”
+
+Scan‑to‑BIM: “Point cloud overlay of existing structure—millimeter accuracy.”
+
+Final Consistency Notes (so the app never contradicts itself)
+
+VR scope: A = interior + exterior; B = exterior by default, interior as add‑on; C = stills/annotated exterior only, no VR.
+
+Interiors authorship: A = by Louis Amy; B = by client’s designer with our integration; C = by others (no integration).
+
+Coordination: A & B include our orchestration; C does not (client assumes risk/effort).
+
+No hourly tables anywhere in client view. If needed for internal ops, keep in admin‑only.
+
+If you want, I can deliver this as a seed JSON for your CMS and a copy map keyed to components (hero, options[], tabs, proof, donuts, cta) so your team can import it directly into the Next.js app.

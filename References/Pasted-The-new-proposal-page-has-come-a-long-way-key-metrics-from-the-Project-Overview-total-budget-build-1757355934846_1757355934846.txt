@@ -1,0 +1,25 @@
+The new proposal page has come a long way—key metrics from the Project Overview (total budget, building area, site area and cost per sq ft) and investment summary cards are now displayed. However, a few important data points from the dashboard are still absent or condensed:
+
+Discipline‑level budgets are missing. The Project Overview dashboard includes a “Discipline Budgets” section showing how the total construction budget is allocated across Architecture, Interior, Landscape, Structural, Civil, Mechanical, Electrical, Plumbing and Telecommunications
+f81c21a4-700b-403b-828c-860fc5096fac-00-3jz5g0i4ipb6f.riker.replit.dev
+. The proposal page only shows the shell/interior/landscape split and lumps Mechanical, Electrical and Plumbing into a single “MEP Engineering” entry. To fully reflect the dashboard, each discipline’s budget should be presented separately (even if grouped visually) and the telecommunications cost should not be omitted
+f81c21a4-700b-403b-828c-860fc5096fac-00-3jz5g0i4ipb6f.riker.replit.dev
+.
+
+Cost‑range detail is condensed. In the dashboard, the “Cost Range Configuration” section lets you see the minimum, target and maximum cost per square foot for both new construction and remodel scenarios
+f81c21a4-700b-403b-828c-860fc5096fac-00-3jz5g0i4ipb6f.riker.replit.dev
+. The proposal page summarises this as a single “Construction Budget Envelope” ($0.8 M–$0.9 M) without revealing how that range was derived. Clients may appreciate knowing the per‑square‑foot cost assumptions (e.g. $180–$220/sf) or, at least, seeing the minimum and target figures separately so they understand the low‑end vs. high‑end options.
+
+Advanced options aren’t reflected. The dashboard’s “Advanced Settings” toggles indicate whether Visualization/VR, Scan‑to‑BIM or Historic Property services are included
+f81c21a4-700b-403b-828c-860fc5096fac-00-3jz5g0i4ipb6f.riker.replit.dev
+. The proposal page includes cards for Reality Capture and Visualization/VR but doesn’t clarify if these services were optional and selected; it also omits mention of Historic Property.
+
+Project classification details. Basic project info like Building Type, Category and Design Level appear at the top of the dashboard
+f81c21a4-700b-403b-828c-860fc5096fac-00-3jz5g0i4ipb6f.riker.replit.dev
+ but are absent from the proposal. Including these at the beginning of the proposal would reassure clients that the quote is tailored to their project scope.
+
+Sanity‑check cost metrics. The dashboard provides a design‑fee percentage and cost‑per‑sf sanity check
+f81c21a4-700b-403b-828c-860fc5096fac-00-3jz5g0i4ipb6f.riker.replit.dev
+. While it may not be necessary to display internal margin calculations, showing the design‑fee percentage and overall cost per square foot could help clients benchmark their project against industry norms.
+
+In short, to fully mirror the Project Overview while hiding only profit/margin and internal analyses, the proposal should add the missing discipline budgets, expand the cost‑range explanation (min/target/max per‑sq‑ft assumptions), reflect advanced service selections, and optionally include project classification details and high‑level cost‑efficiency metrics.

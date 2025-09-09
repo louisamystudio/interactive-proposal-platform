@@ -1,0 +1,261 @@
+Louis Amy Quote 	Calculation Formulas	//Notes to AI Agent Coder												
+Building Use	Residential	//Drop Drown Selection 												
+Building Type	Residence - Private	//Drop Drown Selection filtered by Building Type												
+Building Tier	Mid-Range Standard Residential	//Drop Drown Selection filtered by Building use selection												
+Category	Category 5	//Map Category by previous selections // Category 1 = 0.9 // Category 2 = 1.0 // Category 3 =1.1 // Category 4 = 1.2 // Category 5 = 1.3												
+Design Level	3	//Map "Design Level" equals to " Tier  (1,2,3)" // 1=Basic Design // 2=Standard Design // 3=Full Design // map this to the databbase "cost_ranges" this afect construction cost and interior exterior and shell shares												
+New Building Area (ft²)	 -   	//New Construction												
+Existing Building Area (ft²)	 4,407.00 	//Reconstruction / Remodel												
+Site Area (m2)	 972.00 	//Use Site Area for Scan to Bim calculation												
+														
+														
+Multipliers	Selection													
+Historic Property Multiplier	1	1	1.2											
+Remodel Multiplier	0.5													
+														
+														
+														
+Key	Mid-Range Standard Residential|3	// Do not display												
+New Construction 	0.00%	//display with a dounugth chart												
+Existing to Remodel	100.00%	//display with a dougnuth chart												
+														
+New Construction Min $/ft²	 $380.00 	// minimum end (bracket)  of slider //Fixed 												
+Existing to Remodel Min $/ft²	 $190.00 	// minimum end (bracket)  of slider //Fixed 												
+														
+New Construction Target $/ft²	 $390.00 	// Average by default // Allow Overwrite by moving a dot on the slider 												
+Existing to Remodel Target $/ft²	 $195.00 	// Average by default // Allow Overwrite by moving a dot on the slider 												
+														
+New Construction  Max $/ft²	 $400.00 	// Max end (bracket)  of slider //Fixed 												
+Existing to Remodel Max $/ft²	 $200.00 	// Max end (bracket)  of slider //Fixed 												
+														
+														
+Total Budget 	 $859,365.00 	//Calculate												
+New Construction Budget 	 $-   													
+Existing to Remodel Budget	 $859,365.00 													
+														
+Project Shell  Share	66.00%	//From database to set the default // Allow Overwrite with a slider												
+Project Interior Share	22.00%	//From database to set the default // Allow Overwrite with a slider												
+Project Landscape Share	12.00%	//From database to set the default // Allow Overwrite with a slider												
+														
+Building Shell Minimum Total Budget	 $567,180.90 	//Card												
+New Construction Shell Minimum Total Budget	 $-   	Hidden inside - display number and graphically 												
+Existing to Remodel Shell Minimum Total Budget	 $567,180.90 	Hidden inside - display number and graphically 												
+														
+Interior Minimum Budget	 $189,060.30 	//Card												
+New Construction Interior Minimum Total Budget	 $-   	Hidden inside - display number and graphically 												
+Existing to Remodel Interior Minimum Total Budget	 $189,060.30 	Hidden inside - display number and graphically 												
+														
+Landscape Minimum Budget	 $103,123.80 	//Card												
+New Construction Landscape Minimum Total Budget	 $-   	Hidden inside - display number and graphically 												
+Existing to Remodel Landscape Minimum Total Budget	 $103,123.80 	Hidden inside - display number and graphically 												
+	New construction Leverage	Existing to Remodel Leverage												
+Architectural Design Share	35%	44%												
+Interior Design Share	22%	22%												
+Landscape Design Share	12%	12%												
+Structural Design Share	17%	9%												
+Civil Design Share	3%	3%												
+Mechanical Design Share	4%	4%												
+Electrical Design Share	3%	3%												
+Plumbing Design Share	2%	2%												
+Telecomunication Design	1%	1%												
+														
+Architecture Budget	 $377,175.30 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $377,175.30 	//Hidden inside - display number and graphically 												
+														
+Interior Budget	 $189,060.30 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $189,060.30 	//Hidden inside - display number and graphically 												
+														
+Landscape Budget	 $103,123.80 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $103,123.80 	//Hidden inside - display number and graphically 												
+														
+Structural Budget	 $73,733.52 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $73,733.52 	//Hidden inside - display number and graphically 												
+														
+Civil Budget	 $28,359.05 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $28,359.05 	//Hidden inside - display number and graphically 												
+														
+Mechanical Budget	 $34,030.85 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $34,030.85 	//Hidden inside - display number and graphically 												
+														
+Electrical Budget	 $25,523.14 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $25,523.14 	//Hidden inside - display number and graphically 												
+														
+Plumbing Budget	 $19,851.33 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $19,851.33 	//Hidden inside - display number and graphically 												
+														
+Telecomunication Budget	 $8,507.71 	// Visualize data graphicaly inside a card // expand when click to reveal hidden info.												
+New Construction	 $-   	//Hidden inside - display number and graphically 												
+Existing to Remodel	 $8,507.71 	//Hidden inside - display number and graphically 												
+														
+Working Minimum Budget	 $859,365.00 													
+New Construction	 $-   	Hidden inside - display number and graphically 												
+Existing to Remodel	 $859,365.00 	Hidden inside - display number and graphically 												
+														
+														
+Category Multiplier	1.3	// Do Not Display  // Base on Building Category 												
+Coordination Fee	15%													
+Markup	100%													
+														
+														
+														
+Top Down Fee Analysis	 $8,507.71 													
+Scope	Percent of Project Cost %	Rate per sq-ft	Market Fee	Louis Amy Market Fee	Aproximate Hours	Cordination Fee	Consultants							
+Scan to Bim - Building		 $1 	 $5,157 	 $5,157 	 31 	 $-   	 $-   							
+Scan to Bim - Site		 $0.2 	 $2,101 	 $2,101 	 13 	 $-   	 $-   							
+Architecture (Design + Consultant Admin.)	18%	 $15 	 $67,147 	 $67,147 	 409 	 $-   	 $-   							
+Interior design	24%	 $10 	 $45,649 	 $45,649 	 278 	 $-   	 $-   							
+Landscape architecture	21%	 $5 	 $21,589 	 $21,589 	 132 	 $-   	 $-   							
+Structural engineer	18%	 $3 	 $13,104 	 $13,104 	 80 	 $-   	 $-   							
+Civil / site engineer	26%	 $2 	 $7,277 	 $7,277 	 44 	 $-   	 $-   							
+Mechanical (HVAC, energy, pools)	24%	 $2 	 $8,062 	 $-   	 -   	 $1,209 	 $8,062 							
+Electrical (power / lighting)	27%	 $2 	 $6,873 	 $-   	 -   	 $1,031 	 $6,873 							
+Plumbing engineer	30%	 $1 	 $6,033 	 $6,033 	 37 	 $-   	 $-   							
+Telecomunication	48%	 $1 	 $4,107 	 $-   	 -   	 $616 	 $4,107 							
+Total			 $187,099 	 $168,057.24 	 1,025 	 $2,856 	 $19,042 							
+														
+I. Buttom Up Fee Analysis														
+Team Member	Designer 1	Designer 2	Architect	Engineer 	Principal	Ave Rates								
+Rate 	 $26 	 $26 	 $26 	 $26 	 $26 									
+Total Labor Cost	 $74,318 	 $74,318 	 $74,318 	 $74,318 	 $74,318 	 $371,591 								
+Total Expenses	 $80,707 	 $80,707 	 $93,357 	 $93,357 	 $175,579 	 $523,707 								
+Total Expenses	 $155,025 	 $155,025 	 $167,675 	 $167,675 	 $249,897 	 $895,298 								
+II. Cost & Pricing-Per Hour														
+Team Member	Designer 1	Designer 2	Architect	Engineer 	Principal	Ave Rates								
+Rate- Labor Cost per hour	 $36 	 $36 	 $36 	 $36 	 $36 	 $36 								
+Rate -Overhead per hour	 $39 	 $39 	 $42 	 $42 	 $67 	 $46 								
+Rate -Total Cost	 $75 	 $75 	 $78 	 $78 	 $103 	 $82 								
+Margin	50%	50%	50%	50%	50%	50%								
+ Rate -Pricing per hour 	 $150 	 $150 	 $156 	 $156 	 $205 	 $164 								
+III. Project Hours & Leverage														
+														
+New CostructionHours Factor	 0.30 	//Hide Do not show												
+Existing to Remodel  Hours Factor	 0.26 	//Hide Do not show												
+New Costruction Total Hours All-In	 -   	//Hide Do not show												
+Existing to Remodel Total Hours All-In	 1,320.51 	//Hide Do not show												
+Scope	 Scope Share Percentage 	 Hours 	 Hours by Louis Amy  	 Hours Out of Scope 										
+Scan to Bim - Building	3%	 36.40 	 36.40 											
+Scan to Bim - Site	1%	 14.83 	 14.83 											
+Architecture (Design + Consultant Admin.)	36%	 473.91 	 473.91 											
+Interior design	24%	 322.18 	 322.18 											
+Landscape architecture	12%	 152.37 	 152.37 											
+Structural engineer	7%	 92.49 	 92.49 											
+Civil / site engineer	4%	 51.36 	 51.36 											
+Mechanical (HVAC, energy, pools)	4%	 56.90 		 56.90 										
+Electrical (power / lighting)	4%	 48.51 		 48.51 										
+Plumbing engineer	3%	 42.58 	 42.58 											
+Telecomunication	2%	 28.98 		 28.98 										
+Total	100%	 1,320.51 	 1,186.11 	 134.39 										
+														
+														
+														
+Project Hours by Phases														
+Discovery	8%	 94.89 												
+Creative - Conceptual	8%	 94.89 												
+Creative - Shematic	34%	 403.28 												
+Creative - Preliminary	8%	 94.89 												
+Technical - Shematic	34%	 403.28 												
+Technical - Preliminary	8%	 94.89 												
+Total 	100%	 1,186.11 												
+														
+														
+														
+Leverage % Per Employees	Designer 1 Leverage	Designer 2 Leverage	Architect Leverage	Engineer Leverage	Principal Leverage	Verification								
+Discovery	37%	37%	10%	2%	14%	100%								
+Creative - Conceptual	0%	0%	95%	0%	5%	100%								
+Creative - Shematic	32%	32%	32%	2%	2%	100%								
+Creative - Preliminary	32%	32%	32%	2%	2%	100%								
+Technical - Shematic	26%	26%	10%	32%	6%	100%								
+Technical - Preliminary	26%	26%	10%	32%	6%	100%								
+Percentage Sum Product	27%	27%	26%	14%	5%	100%								
+Total Hours Per Employees	Designer 1 Hours	Designer 2 Hours	Architect Hours	Engineer Hours	Principal Hours	Total 								
+Discovery	 35 	 35 	 9 	 2 	 13 	 94 								
+Creative - Conceptual	 -   	 -   	 90 	 -   	 5 	 95 								
+Creative - Shematic	 129 	 129 	 129 	 8 	 8 	 403 								
+Creative - Preliminary	 30 	 30 	 30 	 2 	 2 	 94 								
+Technical - Shematic	 105 	 105 	 40 	 129 	 24 	 403 								
+Technical - Preliminary	 25 	 25 	 9 	 30 	 6 	 95 								
+Total	 324.00 	 324.00 	 307.00 	 171.00 	 58.00 	 1,184 								
+Project Fees	Designer 1 Hours	Designer 2 Hours	Architect Hours	Engineer Hours	Principal Hours	Total 								
+Discovery	 $4,200 	 $4,200 	 $1,123 	 $250 	 $2,132 	 $11,905 								
+Creative - Conceptual	 $-   	 $-   	 $11,232 	 $-   	 $820 	 $12,052 								
+Creative - Shematic	 $15,480 	 $15,480 	 $16,099 	 $998 	 $1,312 	 $49,370 								
+Creative - Preliminary	 $3,600 	 $3,600 	 $3,744 	 $250 	 $328 	 $11,522 								
+Technical - Shematic	 $12,600 	 $12,600 	 $4,992 	 $16,099 	 $3,936 	 $50,227 								
+Technical - Preliminary	 $3,000 	 $3,000 	 $1,123 	 $3,744 	 $984 	 $11,851 								
+Total	 $38,880 	 $38,880 	 $38,314 	 $21,341 	 $9,512 	 $146,926 								
+														
+														
+														
+Sanity Check	Market % of Construction	Market Rate Per (ft²)	Market Total Hours	Market Fee	Percent Diference	Diference								
+Top Down Summary	20%	 $38.13 	 1,025 	 $168,057 	-9%	 $(15,600.76)								
+Bottom Up Summary 	21%	 $34.14 	 1,184 	 $183,658 	8%	 $15,600.76 								
+														
+														
+Market Price 				 $183,658 										
+Maximum Discount				 $(7,800)			Fee Breakdown 							
+Discounted Final Price	20%		 1,120 	 $175,858 		Scan to Bim - Building	 $4,049.64 							
+Applied Discount %				4%		Scan to Bim - Site	 $1,650.17 							
+Discount Manual Overwrite				25%		Architecture	 $52,729.53 							
+Discount Selection				-20%		Interior design	 $35,847.56 							
+Market Price 				 $183,658 		Landscape architecture	 $16,953.37 							
+Applied Discount %				 $(36,732)		Structural engineer	 $10,290.68 							
+Contract Price	17%	 $27.31 	 896 	 $146,926 		Civil / site engineer	 $5,714.77 							
+						Mechanical 	 $6,331.17 							
+Hours Rebalance by Phases						Electrical	 $5,397.36 							
+Discovery	8%	 72 				Plumbing engineer	 $4,737.35 							
+Creative - Conceptual	8%	 72 				Telecomunication	 $3,224.80 							
+Creative - Shematic	34%	 305 												
+Creative - Preliminary	8%	 72 												
+Technical - Shematic	34%	 305 												
+Technical - Preliminary	8%	 72 												
+Total 	100%	 896 												
+														
+Rebalanced Hours Per Employees	Designer 1 Hours	Designer 2 Hours	Architect Hours	Engineer Hours	Principal Hours	Total 								
+Discovery	 27 	 27 	 7 	 1 	 10 	 72 								
+Creative - Conceptual	 -   	 -   	 68 	 -   	 4 	 72 								
+Creative - Shematic	 97 	 97 	 97 	 6 	 6 	 303 								
+Creative - Preliminary	 23 	 23 	 23 	 1 	 1 	 71 								
+Technical - Shematic	 79 	 79 	 30 	 97 	 18 	 303 								
+Technical - Preliminary	 19 	 19 	 7 	 23 	 4 	 72 								
+Total	 245.00 	 245.00 	 232.00 	 128.00 	 43.00 	 893 								
+														
+														
+														
+														
+														
+														
+summary														
+Full Design Market		 $187,099 												
+														
+In-house Market Price		 $183,658 												
+Amount Discounted		 $(36,732)												
+In-house Discounted		 $146,926 												
+														
+Sumary of  In-house services Selected														
+Laser Scan 		 $5,699.82 												
+Architecture		 $52,729.53 												
+Interior design		 $35,847.56 												
+Landscape architecture		 $16,953.37 												
+Structural engineer		 $10,290.68 												
+Civil / site engineer		 $5,714.77 												
+Plumbing engineer		 $4,737.35 												
+														
+Design Services Summary														
+Laser Scan 		 $5,699.82 												
+Building Shell		 $73,472.33 												
+Interior		 $35,847.56 												
+Landscape		 $16,953.37 												
+														
+														
+Total Working Hours		 1,184 												
+Labor cost 		 $42,304.18 												
+Overhead Cost		 $54,584.09 												
+Profit		 $50,038.13 												

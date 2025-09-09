@@ -1,0 +1,25 @@
+Subject,Experience,Hands-on modeling LOD 100 hours/square foot,Hands-on modeling LOD 200 hours/square foot,Hands-on modeling LOD 300 hours/square foot,Hands-on modeling LOD 400 hours/square foot,Hands-on modeling LOD 500 hours/square foot
+Architect,entry level,0.012,0.022,0.033,0.045,0.060
+Architect,mid level,0.008,0.015,0.022,0.030,0.040
+Architect,expert level,0.006,0.012,0.018,0.024,0.032
+Interior Designer,entry level,0.003,0.011,0.022,0.038,0.045
+Interior Designer,mid level,0.002,0.007,0.015,0.025,0.030
+Interior Designer,expert level,0.002,0.006,0.012,0.020,0.024
+Landscape Arch.,entry level,0.002,0.003,0.007,0.012,0.015
+Landscape Arch.,mid level,0.001,0.002,0.005,0.008,0.010
+Landscape Arch.,expert level,0.001,0.002,0.004,0.006,0.008
+Structural,entry level,0.005,0.012,0.022,0.045,0.053
+Structural,mid level,0.003,0.008,0.015,0.030,0.035
+Structural,expert level,0.002,0.006,0.012,0.024,0.028
+Civil (Site),entry level,0.002,0.005,0.007,0.012,0.015
+Civil (Site),mid level,0.001,0.003,0.005,0.008,0.010
+Civil (Site),expert level,0.001,0.002,0.004,0.006,0.008
+HVAC/Mechanical,entry level,0.002,0.007,0.030,0.060,0.068
+HVAC/Mechanical,mid level,0.001,0.005,0.020,0.040,0.045
+HVAC/Mechanical,expert level,0.001,0.004,0.016,0.032,0.036
+Electrical,entry level,0.002,0.003,0.015,0.030,0.033
+Electrical,mid level,0.001,0.002,0.010,0.020,0.022
+Electrical,expert level,0.001,0.002,0.008,0.016,0.018
+Plumbing,entry level,0.002,0.005,0.022,0.045,0.053
+Plumbing,mid level,0.001,0.003,0.015,0.030,0.035
+Plumbing,expert level,0.001,0.002,0.012,0.024,0.028

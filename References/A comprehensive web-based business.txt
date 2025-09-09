@@ -1,0 +1,14 @@
+A comprehensive web-based business development platform that automates client project planning through a structured "Diagnosis Gate" process and generates professional deliverables for both clients and development teams.
+
+Core Features:
+- Interactive Diagnosis Gate form capturing desired future state, success criteria, decision-making units, timeline, risks, and budget posture with assumption tracking
+- Automated generation of client-safe copy deck and developer documentation packages (schema, components, API specifications, events, sprint roadmaps)
+- Fixed-fee proposal system with A/B/C pricing tiers and integrated e-signature workflow
+- Client conversion pipeline with deposit collection and project kickoff scheduling
+
+Visual References:
+Inspired by HubSpot's sales pipeline interface and Notion's structured documentation layouts, known for their professional presentation and workflow automation.
+
+Style Guide:
+- Colors: Primary #2B59FF (professional blue), Secondary #00C896 (success green), Accent #FF6B35 (action orange), Background #FAFBFC (light grey), Text #1F2937 (charcoal), Neutral #6B7280 (medium grey)
+- Design: Inter/SF Pro/Roboto fonts, multi-step form layout with progress indicators, professional card-based sections, clean typography hierarchy, mobile-responsive design with clear call-to-action buttons
