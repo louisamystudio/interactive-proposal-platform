@@ -7,6 +7,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Building2, CheckCircle, Eye, ArrowRight, Phone, Mail } from 'lucide-react'
 import { ThreeDModelViewer } from '@/components/ui/3d-model-viewer'
+import { OptionCards } from '@/components/client/OptionCards'
+import { BudgetDonut } from '@/components/client/BudgetDonut'
+import { ProofOfPrecision } from '@/components/client/ProofOfPrecision'
+import { ConversionCTA } from '@/components/client/ConversionCTA'
 
 interface ProposalPageProps {
   params: { token: string }
@@ -193,106 +197,31 @@ export default function ProposalPage({ params }: ProposalPageProps) {
         </div>
       </div>
 
-      {/* Investment Options */}
+      {/* Investment Options - Using New Client Components */}
       <div className="max-w-7xl mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <h3 className="text-4xl font-bold text-gray-900 mb-6">
-            Choose Your Investment Level
-          </h3>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Three carefully crafted options designed to bring your architectural vision to life with uncompromising precision and peace of mind.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {Object.entries(results.options).map(([key, option]) => (
-            <Card
-              key={key}
-              className={`relative transition-all duration-300 hover:shadow-xl ${
-                selectedOption === key
-                  ? 'border-blue-500 shadow-2xl scale-105'
-                  : key === 'A'
-                  ? 'border-blue-300 shadow-lg'
-                  : 'border-gray-200'
-              }`}
-            >
-              {/* Recommended Badge */}
-              {key === 'A' && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
-                    ⭐ Recommended
-                  </div>
-                </div>
-              )}
-
-              <CardContent className="p-8">
-                <div className="text-center mb-6">
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Option {key}</h4>
-                  <div className="text-5xl font-extrabold text-blue-600 mb-2">
-                    ${option.investment.toLocaleString()}
-                  </div>
-                  <p className="text-gray-600">Fixed Investment</p>
-                </div>
-
-              <div className="mb-6">
-                <h5 className="font-semibold text-gray-900 mb-3">What&apos;s Included:</h5>
-                <ul className="space-y-2">
-                  {option.scope.map((item: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {option.excluded.length > 0 && (
-                <div className="mb-6">
-                  <h5 className="font-semibold text-gray-900 mb-3">Not Included:</h5>
-                  <ul className="space-y-2">
-                    {option.excluded.map((item: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-500">
-                        <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-                {/* Value Promise */}
-                <div className="bg-blue-50 p-4 rounded-lg mb-6">
-                  <p className="text-center text-gray-800 font-medium italic">
-                    &ldquo;{option.valuePromise}&rdquo;
-                  </p>
-                </div>
-
-                {/* Select Button */}
-                <Button
-                  onClick={() => handleOptionSelect(key as 'A' | 'B' | 'C')}
-                  className={`w-full py-3 text-lg font-semibold transition-all ${
-                    selectedOption === key
-                      ? 'bg-blue-600 hover:bg-blue-700'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  size="lg"
-                >
-                  {selectedOption === key ? (
-                    <>
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      Selected
-                    </>
-                  ) : (
-                    <>
-                      Select Option {key}
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <OptionCards 
+          options={results.options} 
+          onSelect={handleOptionSelect}
+        />
+      </div>
+      
+      {/* Budget Breakdown */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <BudgetDonut
+          scanToBIM={results.budgets.totalBudget * 0.01}
+          buildingShell={results.budgets.shellBudget}
+          interior={results.budgets.interiorBudget}
+          landscape={results.budgets.landscapeBudget}
+          total={results.fees.contractPrice}
+        />
+      </div>
+      
+      {/* 3D Model Proof */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <ProofOfPrecision
+          modelUrl="https://nira.app/embed/your-model-id"
+        />
+      </div>
 
         {/* Selected Option Next Steps */}
         {selectedOption && (
@@ -352,6 +281,15 @@ export default function ProposalPage({ params }: ProposalPageProps) {
         )}
       </div>
 
+      {/* Final Call to Action */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <ConversionCTA
+          onAccept={() => handleOptionSelect(selectedOption || 'A')}
+          onScheduleCall={() => window.open('https://calendly.com/louisamy', '_blank')}
+          onAskQuestion={() => window.location.href = 'mailto:projects@louisamy.com'}
+        />
+      </div>
+      
       {/* Premium Footer */}
       <div className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-6">
