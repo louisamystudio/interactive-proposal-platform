@@ -18,11 +18,14 @@ export interface Proposal {
   id: string
   token: string
   project_data: Record<string, unknown> // This will be our CalcInput type
+  full_results?: Record<string, unknown> // Complete calculation results (admin only)
+  client_safe_data?: Record<string, unknown> // Pre-filtered data for client view
   client_name?: string
   client_email?: string
-  status: 'draft' | 'sent' | 'viewed' | 'selected'
+  status: 'draft' | 'active' | 'sent' | 'viewed' | 'selected'
   created_at: string
   updated_at: string
+  expires_at?: string
   viewed_at?: string
   selected_option?: 'A' | 'B' | 'C'
   notes?: string
@@ -49,6 +52,18 @@ export interface Project {
 export const proposalService = {
   // Create a new proposal
   async create(data: Omit<Proposal, 'id' | 'created_at' | 'updated_at'>) {
+    if (!supabase) {
+      // Fallback mode - return mock data
+      console.log('Using fallback mode for proposal creation')
+      return {
+        id: `fallback-${Date.now()}`,
+        ...data,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    }
+    
     const { data: proposal, error } = await supabase
       .from('proposals')
       .insert(data)
@@ -61,6 +76,12 @@ export const proposalService = {
 
   // Get proposal by token
   async getByToken(token: string) {
+    if (!supabase) {
+      // Fallback mode - return null
+      console.log('Using fallback mode for proposal retrieval')
+      return null
+    }
+    
     const { data, error } = await supabase
       .from('proposals')
       .select('*')
@@ -73,6 +94,12 @@ export const proposalService = {
 
   // Update proposal
   async update(id: string, updates: Partial<Proposal>) {
+    if (!supabase) {
+      // Fallback mode - return mock data
+      console.log('Using fallback mode for proposal update')
+      return { id, ...updates, updated_at: new Date().toISOString() }
+    }
+    
     const { data, error } = await supabase
       .from('proposals')
       .update(updates)
@@ -86,6 +113,12 @@ export const proposalService = {
 
   // Log a view
   async logView(proposalId: string, metadata?: Partial<ProposalView>) {
+    if (!supabase) {
+      // Fallback mode - just log to console
+      console.log('Proposal view logged (fallback mode):', proposalId, metadata)
+      return
+    }
+    
     const { error } = await supabase
       .from('proposal_views')
       .insert({
@@ -100,6 +133,16 @@ export const proposalService = {
 export const projectService = {
   // Save a project
   async save(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) {
+    if (!supabase) {
+      console.log('Using fallback mode for project save')
+      return {
+        id: `fallback-${Date.now()}`,
+        ...project,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+    }
+    
     const { data, error } = await supabase
       .from('projects')
       .insert(project)
@@ -112,6 +155,11 @@ export const projectService = {
 
   // List all projects
   async list() {
+    if (!supabase) {
+      console.log('Using fallback mode for project list')
+      return []
+    }
+    
     const { data, error } = await supabase
       .from('projects')
       .select('*')
@@ -123,6 +171,11 @@ export const projectService = {
 
   // Get project by id
   async getById(id: string) {
+    if (!supabase) {
+      console.log('Using fallback mode for project getById')
+      return null
+    }
+    
     const { data, error } = await supabase
       .from('projects')
       .select('*')
