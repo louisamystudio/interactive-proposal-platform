@@ -1,0 +1,45 @@
+Admin dashboard: tasks to implement
+Narrative step	Concrete work needed	Evidence from mock‑up
+1. Project definition	Introduce a dedicated “Project Overview” panel with building type, category, design level, building & site area and cost‑per‑ft² (min/target/max) plus a one‑line disclaimer that construction cost ≠ design fee.	The mock‑up displays a black header with project classification and a “Project Overview” card grouping total budget, existing area, site area and remodel cost‑per‑ft²
+louisamyproposalforluisdejesus.replit.app
+.
+2. Construction budget	Add cost‑range sliders for new and remodel PSF (min–target–max anchored to DB defaults), along with a read‑only “Advanced Settings & Overrides” collapsible panel for DB read/override status. Display budget shares as two donuts (New vs Remodel, Shell/Interior/Landscape) and show normalized values (e.g., 66 % shell, 22 % interior, 12 % landscape).	The mock‑up includes dual sliders labeled “New Construction ($/ft²)” and “Remodel ($/ft²)”
+louisamyproposalforluisdejesus.replit.app
+ and shows area and budget share charts within the same section
+louisamyproposalforluisdejesus.replit.app
+.
+3. Construction budget allocation	Replace the current three‑card layout with a grid of discipline cards (Architecture + Structural, Civil, Mechanical, Electrical, Plumbing, Telecom). Each card displays dollars, % share and an expander for New vs Remodel. Compute Architecture as the remainder of the Shell budget after subtracting engineering disciplines.	The mock‑up shows a grid listing Architecture, Interior, Landscape and each engineering discipline separately
+louisamyproposalforluisdejesus.replit.app
+.
+4. Fee analysis	Implement a two‑panel “Fee Analysis” section: Left panel (Top‑Down) is a table of scopes with toggles for In‑House vs Consultant plus market fee and hours; Right panel (Bottom‑Up) is a table of team members with hours and total cost. The agent must ensure the values come directly from the calculation engine (no recomputation in the UI).	The mock‑up’s Top‑Down table lists scopes and allows assignment toggles while showing market fees and hours
+louisamyproposalforluisdejesus.replit.app
+; the Bottom‑Up table shows team member hours and total cost
+louisamyproposalforluisdejesus.replit.app
+.
+5. Hours & phases	Add a “Project Phases & Hours Distribution” section with a stacked bar chart for phases (Discovery, Creative – Conceptual, Creative – Schematic, Creative – Preliminary, Technical – Schematic, Technical – Preliminary) and a donut chart for team leverage (Designer 1, Designer 2, Architect, Engineer, Principal). Use the hours output from the engine.	The example displays a bar chart with six phases and a donut chart labeling hours per role
+louisamyproposalforluisdejesus.replit.app
+.
+6. Sanity check & pricing	Implement the Sanity Check module comparing Top‑Down vs Bottom‑Up totals, calculating variance, and exposing an admin‑only discount slider (max 25 %) that updates the Final Contract Price as max(market×(1 – discount), bottomUp). This panel must show effective rate and margin.	The mock‑up’s “Sanity Check & Pricing” section presents three cards—Sanity Check, Market Pricing (with a discount slider), and Contract Price
+louisamyproposalforluisdejesus.replit.app
+.
+7. Investment summary	Build an “Investment Summary” area summarizing Market Rate, Louis Amy price and Final Contract Price with highlighted savings. Underneath, list in‑house services included with icons and amounts, show a Design Services Distribution chart (Scan‑to‑BIM, Building Shell, Interior, Landscape), and deliver a value‑messaged “Why Choose Louis Amy Engineering?” block with bullet points.	The mock‑up compiles all of these elements into a unified summary section, including the services list and a distribution chart
+louisamyproposalforluisdejesus.replit.app
+, followed by a “Why Choose Louis Amy Engineering?” panel and CTA
+louisamyproposalforluisdejesus.replit.app
+.
+8. Final actions	Add an administrative action bar at the bottom with buttons for “Save Draft,” “Generate Proposal,” and “Export PDF.” This ensures the admin can save or export proposals easily.	The mock‑up’s footer contains Save Draft, Generate Proposal and Export PDF buttons
+louisamyproposalforluisdejesus.replit.app
+.
+💼 Client proposal: what to match
+
+Hero & narrative – Use a project‑specific greeting and value statement, then show Options A/B/C (Option A first) with fixed investment amounts. This part of the mock‑up is already implemented in your new UI.
+
+Client‑safe charts – Display a client‑safe Investment Breakdown donut (Scan‑to‑BIM, Building Shell, Interior, Landscape) and hide all hours, rates, or discount controls.
+
+Investment summary & proof – Adopt the investment summary and in‑house services list from the mock‑up. The “Why choose” panel and final CTA encourage acceptance or scheduling.
+
+Export & share – Provide an “Export PDF” link, but ensure the PDF contains only client‑safe data.
+
+📌 Why these features are essential
+
+The Louis Amy mock‑up tells a coherent story from context (project definition) to construction cost, discipline allocation, fee analysis, sanity checks, and finally to client options. The current admin dashboard only covers budget and disciplines and lacks the entire fee and sanity‑check narrative, phase breakdown, and investment summary. Implementing the components above will unify the user journey, align with the SSOT calculations, and ensure the proposal remains both transparent for admins and client‑safe on the public side.

@@ -1,0 +1,167 @@
+What’s missing vs the mock-up (delta checklist)
+
+Narrative order is incomplete: it should read
+Project Definition → Construction Budget (min cost) → Discipline split → Fee Analysis (Top-Down vs Bottom-Up) → Sanity Check (variance + discount) → Phases/Roles → Options A/B/C → Export.
+
+Fee Analysis (Top-Down vs Bottom-Up) section is either absent or too light—needs two labeled panels, a capped (≤25%) discount slider, and “winner” indicator.
+
+Sanity Check trio (Top-Down, Bottom-Up, Contract) with variance and effective rate is missing.
+
+Phases & Team leverage visuals (admin-only) need the six phase ladder and role donut tied to total hours.
+
+Discipline cards should show “Architecture = remainder of Shell” and expand to reveal New vs Remodel dollars.
+
+Budget Allocation must show $ + % and normalized shares (defaults 66/22/12) with DB tick marks for PSF sliders.
+
+Client proposal needs a clean, client-safe budget donut + Option A/B/C (A first) + proof section + conversion CTA (no hours/rates/discounts).
+
+(Your current admin page renders the budget donut and discipline chart and shows options, so we’re close—just missing the fee, sanity, phases/roles, and client-safe polish to match the mock-up’s story. )
+
+Implementation plan (agent-ready, file-level)
+1) Admin calculator (/admin/calculator) — complete the narrative
+A) Project Definition (inputs left column)
+
+Component: components/admin/ProjectSetupForm.tsx
+Bind: Use/Type/Tier, Category, Design Level, Areas (New/Existing), Site area, Multipliers (Historic/Remodel).
+Note under header: “Construction budget = minimum cost to build from PR cost DB; design fees are separate.”
+
+B) Construction Budget (results right column)
+
+Cost range sliders: components/admin/CostRangeSliders.tsx
+
+Show min/target/max PSF for New and Remodel, with DB default tick markers.
+
+Budget allocation card: components/admin/BudgetAllocationCard.tsx
+
+Render Shell/Interior/Landscape with $ + %, normalized to 100% (defaults 66/22/12).
+
+Keep your donut for New vs Remodel (area split) and label it explicitly.
+
+Data: use engine outputs only (budgets).
+
+C) Discipline split (where Shell goes)
+
+Component: components/admin/DisciplineCards.tsx
+
+Compute engineering disciplines from Shell × shares; set Architecture = Shell − Σ(engineering).
+
+Click to expand → show New vs Remodel dollars (area-proportional split).
+
+Tooltips: $ + % of Shell.
+
+Data: engine disciplines (no math in UI).
+
+D) Fee Analysis (admin-only)
+
+Component: components/admin/FeeComparison.tsx
+
+Left: Top-Down (Market) total (category % × construction). Optional read-only per-scope matrix.
+
+Right: Bottom-Up (Louis Amy) totals from hours × blended internal cost.
+
+Contract tile: contract = max(market × (1 − discount≤0.25), louisAmyFee) + “winner” chip + “client savings”.
+
+Slider: admin-only, capped at 25%.
+
+Data: engine fees, hours (don’t expose to client).
+(Your current UI surfaces a spinner/placeholder for fees; this makes the math visible in admin & remains hidden in client. )
+
+E) Sanity Check strip (admin-only)
+
+Component: components/admin/SanityCheck.tsx
+
+Three tiles: Top-Down, Bottom-Up, Contract, with a small variance badge and effective $/ft².
+
+F) Phases & Team leverage (admin-only)
+
+Component: components/admin/HoursBreakdown.tsx
+
+Phases: Discovery 8%, Creative (8/34/8), Technical (34/8).
+
+Roles: Designer1, Designer2, Architect, Engineer, Principal (donut).
+
+Center label = Total Hours (engine).
+
+Admin-only.
+
+G) Export to proposal
+
+Component: components/admin/ProposalExport.tsx
+
+POST /api/proposals → recompute with SSOT → insert row → return { token } → Copy link /proposal/[token].
+
+2) API & DB
+A) Routes
+
+app/api/health/route.ts → 200 {ok:true} (deploy smoke test).
+
+app/api/proposals/route.ts (POST)
+
+Validate inputs → recompute with engine → insert into proposals
+{ inputs, results: { budgets, disciplines, hours, fees, options }, token, created_at }
+
+Return { token }.
+
+app/api/proposals/[token]/route.ts (GET)
+
+Server trims to client-safe payload (no hours/rates/discounts).
+
+B) Supabase schema (minimal)
+
+building_cost_data, category_multipliers (cost ranges + default shares)
+
+proposals (jsonb for inputs/results, token TEXT, expires_at nullable)
+
+proposal_events (proposal_id, event_type, event_data jsonb, ts)
+
+RLS: allow read by token only; admin uses service key.
+
+3) Client proposal (/proposal/[token]) — client-safe only
+
+Hero: personalized headline + one-line value promise.
+
+OptionComparison: three cards A/B/C with A emphasized; value wording only.
+
+BudgetDonut (client-safe): Scan-to-BIM, Building Shell, Interior, Landscape with $ + %; no hours or fee math.
+
+ProofOfPrecision: Nira/imagery (lazy-load).
+
+ConversionCTA: Accept / Schedule call; track events to proposal_events.
+
+(Your current proposal route has a loading shell; once wired to the token API, render the trimmed payload only—no “hour”, “rate”, or “discount” anywhere in HTML/JSON. )
+
+Acceptance checks (copy/paste into PR)
+
+Math parity (fixture): 4,407 ft² @ $195/ft² → TotalBudget = $859,365; Shell 66%, Interior 22%, Landscape 12%.
+
+Discipline sum: Architecture + Σ(eng) == Shell (±$1).
+
+Fee logic: Contract = max(market×(1 − d≤0.25), louisAmy); “winner” chip correct; “client savings” correct.
+
+Phases/Roles: phase weights sum 100%; role donut hours sum = total hours.
+
+Client safety: /proposal/[token] HTML/JSON does not contain hour, rate, overhead, discount.
+
+A-first: Option A is visually first & emphasized.
+
+Perf: TTI < 3s mobile; charts < 500ms; Nira lazy-loads; /api/health = 200.
+
+Security: RLS token reads OK; admin route uses service key.
+
+“Do-this-now” list (small, sequenced)
+
+Ship DisciplineCards (remainder logic + New/Remodel expanders).
+
+Finish BudgetAllocationCard (normalized 66/22/12, show $ + %).
+
+Add FeeComparison + SanityCheck (discount slider ≤25%).
+
+Add HoursBreakdown (phases & roles, admin-only).
+
+Implement /api/proposals + Supabase RLS; wire ProposalExport.
+
+Build client /proposal/[token] with OptionComparison + BudgetDonut + ProofOfPrecision + ConversionCTA (client-safe payload).
+
+Add proposal_events tracking + quick /api/health.
+
+Run acceptance checks above.

@@ -16,6 +16,8 @@ import { SanityCheck } from '@/components/admin/SanityCheck'
 import { InvestmentSummary } from '@/components/admin/InvestmentSummary'
 import { FeeComparison } from '@/components/admin/FeeComparison'
 import { HoursBreakdown } from '@/components/admin/HoursBreakdown'
+import { DisciplineCards } from '@/components/admin/DisciplineCards'
+import { BudgetAllocationCard } from '@/components/admin/BudgetAllocationCard'
 
 export default function AdminCalculatorPage() {
   const [clientName, setClientName] = useState('Dr. Luis De Jesús')
@@ -458,122 +460,13 @@ export default function AdminCalculatorPage() {
                   </Card>
                 </div>
 
-                {/* Budget Breakdown with Charts */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Budget Breakdown</CardTitle>
-                    <CardDescription>
-                      Live calculations • Database remains unchanged
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">Shell & Structure</span>
-                          <span className="text-lg font-semibold">${project.results.budgets.shellBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-gray-600">
-                          <span>Interior Finishes</span>
-                          <span>${project.results.budgets.interiorBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-gray-600">
-                          <span>Landscape</span>
-                          <span>${project.results.budgets.landscapeBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="border-t pt-3 mt-4">
-                          <div className="flex justify-between items-center font-semibold">
-                            <span>Total Budget</span>
-                            <span className="text-xl">${project.results.budgets.totalBudget.toLocaleString()}</span>
-                          </div>
-                        </div>
-                      </div>
+                {/* 2. BUDGET ALLOCATION - Shell/Interior/Landscape with normalization */}
+                <BudgetAllocationCard results={project.results} />
 
-                      <div className="flex flex-col items-center">
-                        <BudgetDonutChart
-                          shellBudget={project.results.budgets.shellBudget}
-                          interiorBudget={project.results.budgets.interiorBudget}
-                          landscapeBudget={project.results.budgets.landscapeBudget}
-                          totalBudget={project.results.budgets.totalBudget}
-                        />
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                          Interactive • Hover for details
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* 3. ENGINEERING DISCIPLINES - with Architecture as remainder */}
+                <DisciplineCards results={project.results} />
 
-                {/* Engineering Disciplines with Charts */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <CardTitle>Engineering Disciplines</CardTitle>
-                        <CardDescription>Architecture and engineering allocation</CardDescription>
-                      </div>
-                      {Object.keys(project.overrides.engineering || {}).length > 0 && (
-                        <Button variant="ghost" size="sm" onClick={project.resetEngineering}>
-                          <RotateCcw className="h-3 w-3 mr-1" />
-                          Reset to DB
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span>Architecture</span>
-                          <span className="font-semibold">${project.results.disciplines.architectureBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Structural</span>
-                          <span>${project.results.disciplines.structuralBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Civil</span>
-                          <span>${project.results.disciplines.civilBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Mechanical</span>
-                          <span>${project.results.disciplines.mechanicalBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Electrical</span>
-                          <span>${project.results.disciplines.electricalBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Plumbing</span>
-                          <span>${project.results.disciplines.plumbingBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Telecom</span>
-                          <span>${project.results.disciplines.telecomBudget.toLocaleString()}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col items-center">
-                        <DisciplineChart
-                          architectureBudget={project.results.disciplines.architectureBudget}
-                          structuralBudget={project.results.disciplines.structuralBudget}
-                          civilBudget={project.results.disciplines.civilBudget}
-                          mechanicalBudget={project.results.disciplines.mechanicalBudget}
-                          electricalBudget={project.results.disciplines.electricalBudget}
-                          plumbingBudget={project.results.disciplines.plumbingBudget}
-                          telecomBudget={project.results.disciplines.telecomBudget}
-                          totalBudget={project.results.budgets.shellBudget}
-                          className="mt-4"
-                        />
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                          Live calculations • Database safe
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* 3. FEE COMPARISON - Top-Down vs Bottom-Up Analysis */}
+                {/* 4. FEE COMPARISON - Top-Down vs Bottom-Up Analysis */}
                 {project.results && (
                   <FeeComparison 
                     results={project.results}
@@ -582,12 +475,20 @@ export default function AdminCalculatorPage() {
                   />
                 )}
 
-                {/* 4. HOURS BREAKDOWN - Phase and Role Distribution */}
+                {/* 5. SANITY CHECK - Variance Analysis */}
+                {project.results && (
+                  <SanityCheck 
+                    results={project.results}
+                    discount={discount}
+                  />
+                )}
+                
+                {/* 6. HOURS BREAKDOWN - Phase and Role Distribution */}
                 {project.results && (
                   <HoursBreakdown results={project.results} />
                 )}
 
-                {/* Client Options */}
+                {/* 7. INVESTMENT OPTIONS - Client-facing pricing */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Client Options (Chris Do Compliant)</CardTitle>

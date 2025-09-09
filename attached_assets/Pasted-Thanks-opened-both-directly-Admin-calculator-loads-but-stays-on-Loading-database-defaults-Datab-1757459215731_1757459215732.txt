@@ -1,0 +1,77 @@
+Thanks—opened both directly.
+
+Admin calculator loads but stays on: “Loading database defaults… Database read-only • Project overrides in memory.”
+
+Client proposal shows only: “Loading your proposal…”
+
+Here’s a tight visual + UX pass to make the pages feel polished even while data resolves, and to avoid “infinite loading”:
+
+Admin /calculator — visual/UX fixes
+
+Replace the spinner with a proper skeleton
+
+Show 5–7 shimmering cards: Project Overview, Budget donut, Discipline grid, Fees, Hours, Options.
+
+Human microcopy
+
+“Fetching project defaults…” → if error: a yellow banner “Couldn’t reach the database. Working with safe defaults.”
+
+Always render the layout
+
+Even if the DB call fails, render read-only cards with safe constants so you can visually QA the page.
+
+Clear structure (two columns)
+
+Left: Inputs (Project Setup, Areas, Multipliers, PSF sliders).
+
+Right: Results (Budget breakdown donut with $ + %, Discipline cards, FeeComparison, HoursBreakdown, ProposalExport).
+
+Discipline cards
+
+Architecture must be the remainder of Shell; each card expands to show New vs Remodel subtotals.
+
+FeeComparison visual clarity
+
+Two labeled panels “Top-Down (Market)” vs “Bottom-Up (Louis Amy)”, an obvious “Contract (max of two)” tile, slider ≤25%, and a small “winner” chip + “client savings” line.
+
+Client /proposal/[token] — client-safe visuals
+
+Above-the-fold hero + Option cards
+
+Option A emphasized; B and C secondary. Value language only (no hours/rates).
+
+Investment Breakdown donut
+
+Client-safe buckets (Scan-to-BIM, Building Shell, Interior, Landscape) with $ and % in the legend.
+
+Proof section + CTA
+
+Nira/imagery block, then a bold two-button CTA (“Accept & Reserve” / “Ask a question”).
+
+Minimal reliability fixes (so it doesn’t hang)
+
+Add a 10s fetch timeout; on catch, render the full UI in demo mode with a friendly banner (no endless spinners).
+
+Add /api/health so you can verify the deploy quickly.
+
+Guard the proposal route: if token fetch returns empty, show a branded 404 state (“This proposal link may have expired”) instead of a spinner.
+
+If you want, I can draft the skeleton/empty-state components and the tiny healthcheck handler so your agent can paste them in and the pages look premium immediately—even before the data path is green.
+
+Worked for 1 minute
+
+The pages do eventually load after a short delay. When I re‑opened the links in an interactive browser and waited a few seconds, both pages rendered correctly.
+
+Admin calculator: After the spinner disappears, the full interface appears with summary metrics across the top (Total Budget, Contract Price, Option A price, etc.). Below that, there’s a “Budget Breakdown” card with a donut chart showing the share of Shell, Interior and Landscape costs, and sliders to adjust the budget shares
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+. The next section, “Engineering Disciplines,” lists individual disciplines and uses a bar chart to visualise their relative sizes
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+. The overall layout is clean, with cards separated by generous whitespace and typography that emphasises important numbers.
+
+Client proposal: The page opens with a hero section addressed to the client (“Welcome, Dr. Luis De Jesús”), summarising the project scope and budget and offering a CTA to “View 3D Model.” Further down, there’s a section titled “Choose Your Investment Level” with three option cards (A, B and C). Each card clearly states the fixed investment price and bullet‑lists what’s included and not included, with option A highlighted as “Recommended”
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+. At the bottom, the page includes contact information and a note about confidentiality and proposal validity
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+.
+
+Let me know if you’d like a more detailed design critique or help adjusting the UI.
