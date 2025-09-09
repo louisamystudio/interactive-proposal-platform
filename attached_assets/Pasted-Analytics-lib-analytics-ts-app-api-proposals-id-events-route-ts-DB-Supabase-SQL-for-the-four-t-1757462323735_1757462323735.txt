@@ -1,0 +1,85 @@
+Analytics
+
+lib/analytics.ts, app/api/proposals/[id]/events/route.ts
+
+DB
+
+Supabase SQL for the four tables + RLS policy (token read on proposals)
+
+QA
+
+Add Playwright spec: client page must not include hour|rate|discount|overhead|markup (regex)
+
+Fixture: budget = $859,365; Shell 66 % / Interior 22 % / Landscape 12 %
+
+Notes for the agent
+
+The core UI (FeeComparison, HoursBreakdown, Options) is in good shape; the remaining work is wiring persistence, discipline remainder logic, normalized budget display, and the client route.
+
+The SSOT engine is the source for budgets, disciplines, hours and fees; never re-compute in components (keeps parity and avoids drift).
+
+The narrative order and admin/client split must follow the blueprint: Project definition → Construction budget (minimum build cost) → Fee analysis (Top-Down vs Bottom-Up) → Sanity & discount → Phases/Roles (admin-only) → Options → Export client-safe token.
+
+If you want, I can draft the minimal route.ts for /api/proposals (insert + token) and a toClientSafe(dto) helper next, so you can paste-in and test end-to-end immediately.
+
+Worked for 37 seconds
+
+Here is a polished summary that folds the outstanding tasks into the narrative framework described in your blueprint, so you can append it to your prior report:
+
+🚧 What still needs to be done
+1. Fix compile‑blocking type errors
+
+The OptionCards component should not reference a notIncluded property on the Option type. Remove or re‑type this prop so TypeScript passes. Similarly, resolve the type mismatch at ~line 360 of the admin calculator page (likely a number/string mismatch from the slider state). The build should succeed without errors when these are addressed.
+
+2. Configure allowedDevOrigins for CORS
+
+Dev logs show cross‑origin requests being blocked. Update your Next.js config to define allowedDevOrigins (or set appropriate response headers in your API routes) so the dev server accepts calls from your local and Replit origins.
+
+3. Create Supabase schema and security
+
+To move beyond in‑memory mode, you must create and seed the following tables:
+
+building_cost_data and category_multipliers for storing PSF ranges and multipliers,
+
+proposals (with JSON columns for inputs and results),
+
+proposal_events for analytics logs.
+Enforce row‑level security so proposals are readable only by token.
+
+4. Persist proposals
+
+Implement POST /api/proposals to recompute budgets/fees, insert a row into Supabase, and return { token }. Add a GET /api/proposals/[token] route that returns a client‑safe DTO (no hours, rates, or discounts). Wire the admin “Generate Proposal” button to this route so it emits a copy‑to‑clipboard link.
+
+5. Add analytics tracking
+
+Introduce an event logger (e.g. trackEvent()), add a Supabase API route to record events, and log when a proposal is opened, when a customer views options, and when they click call‑to‑action buttons. This feeds your future analytics dashboard.
+
+6. Improve loading and error states
+
+Replace indefinite spinners with skeleton UIs. Introduce a 10‑second timeout on data fetches and surface friendly error banners if Supabase or engine calls fail. These improvements align with the need for progressive disclosure and an informative UI.
+
+7. Ensure mobile responsiveness
+
+Test all cards and charts on mobile. Confirm that touch interactions work smoothly for donuts and sliders, and that long columns collapse into single‑column stacks. Strive for a time‑to‑interactive under 3 seconds and charts that render in under 500 ms.
+
+8. QA and acceptance gates
+
+Before going live, run these checks:
+
+Math parity: ensure a 4,407 ft² remodel at $195/ft² produces $859,365.
+
+Client safety: verify the client‑facing HTML/JSON never includes the words “hour,” “rate,” “discount,” or “overhead.”
+
+Performance: confirm the app meets your TTI and chart-render benchmarks.
+
+Basic e2e tests: cover generating a proposal, visiting the tokenized link, and ensuring no errors show up in the console.
+
+9. Implement missing UX features
+
+The Replit‑source mock‑up includes cost sliders for min/target/max PSF, an “Advanced Settings & Overrides” panel, and PDF export. These features (plus email notifications) are not yet present. Prioritize these enhancements once core persistence and analytics are complete.
+
+10. Prepare for deployment
+
+Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY in your environment. Ensure your production database is provisioned and that admin routes are authenticated. Configure an email service for proposal alerts if you plan to integrate email notifications.
+
+By completing these tasks—while following the narrative order defined in the blueprint and respecting client safety guidelines—you will move from a functional prototype to a production‑ready platform that stores proposals, tracks engagement, and enforces proper security.

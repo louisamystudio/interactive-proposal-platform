@@ -1,0 +1,132 @@
+Pasted-Here-s-a-clean-actionable-version-you-can-send-to-the-agent-It-keeps-your-original-points-but-add-1757461327934_1757461327934.txt
+Here’s a clean, actionable version you can send to the agent. It keeps your original points, but adds file targets, acceptance criteria, and sequencing so they can ship without guesswork.
+
+---
+
+# Admin → Client Proposal Platform: Action Plan
+
+## 🔴 Blockers — fix first
+
+**1) Type errors (compiler must be green)**
+
+* **What:**
+
+  * `OptionCards`: remove or type the `notIncluded` prop (it isn’t in `Option`); either extend the type or delete the reference.
+  * Admin calculator: fix the type mismatch at line \~360 (likely a narrowed union or number/string from slider state).
+* **Where:**
+
+  * `components/client/OptionCard.tsx` (or equivalent), `lib/types.ts`
+  * `app/admin/calculator/page.tsx` (or wherever line 360 falls)
+* **Done when:** `pnpm build` passes with zero TS errors.
+
+**2) CORS in dev**
+
+* **What:** add `allowedDevOrigins` to your Next config and use it in API routes (or set `headers()` in route handlers); confirm local + Replit/Vercel origins allowed.
+* **Where:** `next.config.js` (plus any route handlers calling external origins)
+* **Done when:** dev console/network shows **no** blocked cross-origin requests.
+
+---
+
+## 🗄️ Database & Persistence (must-have)
+
+**3) Supabase schema**
+
+* **Tables:**
+
+  * `building_cost_data` (PSF min/target/max, default shares)
+  * `category_multipliers`
+  * `proposals` (JSONB: inputs, results, options, `token`, timestamps)
+  * `proposal_events` (proposal\_id, event\_type, event\_data, ts)
+* **RLS:** token-based read for `proposals`; unrestricted writes from server routes only.
+* **Done when:** schema created & seeded; `select * from proposals` shows rows after a test POST.
+
+**4) Proposal persistence**
+
+* **What:** implement `POST /api/proposals` to recompute with SSOT, insert a row, and return `{ token }`; add `GET /api/proposals/[token]` (server) that returns a **client-safe** DTO (no hours/rates/discount/margin).
+* **Where:** `app/api/proposals/route.ts` (+ `[token]/route.ts` or server loader in `/proposal/[token]`)
+* **Done when:**
+
+  * Admin “Generate Proposal” returns a URL like `/proposal/<token>`
+  * Visiting the token URL renders the client page with **only** client-safe fields.
+
+&#x20;(SSOT outputs & admin→client narrative) •  (UI/story order & sectioning)
+
+---
+
+## 📈 Analytics (must-have for launch)
+
+**5) Event tracking**
+
+* **What:** log `opened`, `option_viewed`, `cta_clicked` to `proposal_events`; add a tiny `trackEvent()` helper.
+* **Where:**
+
+  * API: `app/api/proposals/[id]/events/route.ts` (or subroute)
+  * Client: `lib/analytics.ts`
+* **Done when:** selecting Option A/B/C and clicking CTA writes rows you can query in Supabase.
+
+---
+
+## 🎨 UX / UI Enhancements (admin first, then client)
+
+**6) Admin loading & errors**
+
+* **What:** replace infinite spinners with skeletons; add 10s fetch timeout and a friendly error banner.
+* **Where:** shared `components/ui/*` (Skeleton), error boundaries on admin route.
+* **Done when:** no indefinite spinners; network failures show a non-blocking banner with “Retry”.
+
+**7) Mobile pass**
+
+* **What:** verify touch interactions on charts, card stacking, and tap targets; reduce heavy work above the fold.
+* **Done when:** Lighthouse Mobile ≥90; charts render <500 ms.
+
+---
+
+## ✅ QA Gates (promote only when green)
+
+**8) Acceptance tests**
+
+* **Math parity:** 4,407 ft² × \$195/ft² = **\$859,365** (fixture)
+* **Client safety:** the **client HTML/JSON** must not contain the strings: `hour`, `rate`, `discount`, `overhead`, `markup`
+* **Perf:** TTI < 3 s on mid-tier mobile; charts < 500 ms
+* **Where:** `tests/e2e/*.spec.ts` + unit tests for calc parity
+
+**9) Missing from mock-up parity**
+
+* **Cost bands:** dual PSF sliders with **min/target/max** and **DB default ticks**
+* **Advanced Settings:** collapsible “Defaults & Overrides” card
+* **Export PDF:** queue as post-MVP (after tokenized proposals)
+* **Email notifications:** queue post-MVP
+
+---
+
+## 🚀 Deployment Readiness
+
+**10) Env & healthcheck**
+
+* **What:** set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`; add `/api/health` returning `{ ok: true }`.
+* **Done when:** deploy smoke check passes; DB reachable from production.
+
+---
+
+# File-level “Do-This-Now” Checklist
+
+**Admin**
+
+* `components/admin/DisciplineCards.tsx`
+
+  * Compute Architecture = Shell − Σ(engineering)
+  * Expander: show New vs Remodel subtotals
+  * Acceptance: remainder math within ±\$1
+* `components/admin/BudgetAllocationCard.tsx`
+
+  * Normalize shares (defaults 66/22/12); show \$ **and** %; update donut + list together
+* `components/admin/ProposalExport.tsx` → `POST /api/proposals`
+
+  * Copy link to clipboard, toast success
+
+**Client**
+
+* `app/proposal/[token]/page.tsx` (server component)
+
+  * Render: `OptionComparison` (A first), `BudgetDonut` (client-safe buckets), `ProofOfPrecision` (Nira/imagery), `ConversionCTA`
+  * Fetch: server-side ...
