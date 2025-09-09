@@ -6,9 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
-import { Calculator, Building2, DollarSign, PieChart, Send, Copy, ExternalLink, AlertCircle, CheckCircle, RotateCcw } from 'lucide-react'
+import { Calculator, Building2, DollarSign, PieChart, Send, Copy, ExternalLink, AlertCircle, CheckCircle, RotateCcw, ChevronDown } from 'lucide-react'
 import { BudgetDonutChart } from '@/components/ui/budget-donut-chart'
 import { DisciplineChart } from '@/components/ui/discipline-chart'
+import { ProjectOverview } from '@/components/admin/ProjectOverview'
+import { FeeAnalysis } from '@/components/admin/FeeAnalysis'
+import { ProjectPhases } from '@/components/admin/ProjectPhases'
+import { SanityCheck } from '@/components/admin/SanityCheck'
+import { InvestmentSummary } from '@/components/admin/InvestmentSummary'
 
 export default function AdminCalculatorPage() {
   const [clientName, setClientName] = useState('Dr. Luis De Jesús')
@@ -340,9 +345,18 @@ export default function AdminCalculatorPage() {
             </Card>
           </div>
 
-          {/* Results Panel */}
+          {/* Results Panel - Following the narrative flow from old version */}
           <div className="lg:col-span-3 space-y-6">
             
+            {/* 1. PROJECT OVERVIEW - Context first, numbers second */}
+            {project.results && (
+              <ProjectOverview
+                projectData={project.projectData}
+                budgets={project.results.budgets}
+                costs={project.projectData.costs}
+              />
+            )}
+
             {/* Status Indicator */}
             <Card className={`border ${project.hasChanges ? 'border-orange-200 bg-orange-50' : 'border-green-200 bg-green-50'}`}>
               <CardHeader className="pb-3">
@@ -384,9 +398,10 @@ export default function AdminCalculatorPage() {
               </CardContent>
             </Card>
 
-            {/* Summary Cards */}
+            {/* 2. BUDGET DISTRIBUTION - Construction costs visualization */}
             {project.results && (
               <>
+                {/* Quick Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

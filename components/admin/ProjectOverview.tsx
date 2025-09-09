@@ -82,7 +82,7 @@ export function ProjectOverview({ projectData, budgets, costs }: ProjectOverview
               <MapPin className="h-4 w-4 text-blue-600" />
               <div>
                 <div className="text-xs text-gray-600">Site Area</div>
-                <div className="font-semibold">{projectData.areas.siteAreaM2.toLocaleString()} m²</div>
+                <div className="font-semibold">{(projectData.areas.siteAreaM2 || 972).toLocaleString()} m²</div>
               </div>
             </div>
           </div>
@@ -129,7 +129,7 @@ export function ProjectOverview({ projectData, budgets, costs }: ProjectOverview
             <CardTitle className="text-sm font-medium text-gray-600">SITE AREA</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{projectData.areas.siteAreaM2.toLocaleString()}</div>
+            <div className="text-3xl font-bold">{(projectData.areas.siteAreaM2 || 972).toLocaleString()}</div>
             <p className="text-xs text-gray-500 mt-1">
               m² total site
             </p>
