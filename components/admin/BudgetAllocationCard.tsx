@@ -14,9 +14,9 @@ export function BudgetAllocationCard({ results }: BudgetAllocationCardProps) {
   
   // Calculate normalized percentages (should sum to 100%)
   const total = budgets.totalBudget
-  const shellPercentage = (budgets.shell / total * 100)
-  const interiorPercentage = (budgets.interior / total * 100)
-  const landscapePercentage = (budgets.landscape / total * 100)
+  const shellPercentage = (budgets.shellBudget / total * 100)
+  const interiorPercentage = (budgets.interiorBudget / total * 100)
+  const landscapePercentage = (budgets.landscapeBudget / total * 100)
   
   // Default expected percentages
   const defaultPercentages = {
@@ -29,21 +29,21 @@ export function BudgetAllocationCard({ results }: BudgetAllocationCardProps) {
   const chartData = [
     { 
       name: 'Shell', 
-      value: budgets.shell, 
+      value: budgets.shellBudget, 
       percentage: shellPercentage,
       color: '#3B82F6',
       icon: Building2
     },
     { 
       name: 'Interior', 
-      value: budgets.interior, 
+      value: budgets.interiorBudget, 
       percentage: interiorPercentage,
       color: '#10B981',
       icon: Home
     },
     { 
       name: 'Landscape', 
-      value: budgets.landscape, 
+      value: budgets.landscapeBudget, 
       percentage: landscapePercentage,
       color: '#F59E0B',
       icon: Trees

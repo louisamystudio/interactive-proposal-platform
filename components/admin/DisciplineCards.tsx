@@ -23,10 +23,10 @@ export function DisciplineCards({ results }: DisciplineCardsProps) {
   const [expandedCards, setExpandedCards] = useState<string[]>([])
   const { budgets, disciplines } = results
   
-  // Calculate area-based split for New vs Remodel
-  const totalArea = budgets.newArea + budgets.existingArea
-  const newAreaRatio = totalArea > 0 ? budgets.newArea / totalArea : 0
-  const remodelAreaRatio = totalArea > 0 ? budgets.existingArea / totalArea : 0
+  // For area split, we'll use budget ratios since areas aren't directly available
+  const totalBudget = budgets.totalBudget
+  const newBudgetRatio = totalBudget > 0 ? budgets.newBudget / totalBudget : 0.5
+  const remodelBudgetRatio = totalBudget > 0 ? budgets.remodelBudget / totalBudget : 0.5
   
   const toggleCard = (discipline: string) => {
     setExpandedCards(prev =>
@@ -43,44 +43,44 @@ export function DisciplineCards({ results }: DisciplineCardsProps) {
   const disciplinesList = [
     {
       name: 'Architecture',
-      amount: disciplines.architecture,
-      percentage: (disciplines.architecture / budgets.shell) * 100,
+      amount: disciplines.architectureBudget,
+      percentage: (disciplines.architectureBudget / budgets.shellBudget) * 100,
       isRemainder: true
     },
     {
       name: 'Structural',
-      amount: disciplines.structural,
-      percentage: (disciplines.structural / budgets.shell) * 100,
+      amount: disciplines.structuralBudget,
+      percentage: (disciplines.structuralBudget / budgets.shellBudget) * 100,
       isRemainder: false
     },
     {
       name: 'Civil',
-      amount: disciplines.civil,
-      percentage: (disciplines.civil / budgets.shell) * 100,
+      amount: disciplines.civilBudget,
+      percentage: (disciplines.civilBudget / budgets.shellBudget) * 100,
       isRemainder: false
     },
     {
       name: 'Mechanical',
-      amount: disciplines.mechanical,
-      percentage: (disciplines.mechanical / budgets.shell) * 100,
+      amount: disciplines.mechanicalBudget,
+      percentage: (disciplines.mechanicalBudget / budgets.shellBudget) * 100,
       isRemainder: false
     },
     {
       name: 'Electrical',
-      amount: disciplines.electrical,
-      percentage: (disciplines.electrical / budgets.shell) * 100,
+      amount: disciplines.electricalBudget,
+      percentage: (disciplines.electricalBudget / budgets.shellBudget) * 100,
       isRemainder: false
     },
     {
       name: 'Plumbing',
-      amount: disciplines.plumbing,
-      percentage: (disciplines.plumbing / budgets.shell) * 100,
+      amount: disciplines.plumbingBudget,
+      percentage: (disciplines.plumbingBudget / budgets.shellBudget) * 100,
       isRemainder: false
     },
     {
       name: 'Telecom',
-      amount: disciplines.telecom,
-      percentage: (disciplines.telecom / budgets.shell) * 100,
+      amount: disciplines.telecomBudget,
+      percentage: (disciplines.telecomBudget / budgets.shellBudget) * 100,
       isRemainder: false
     }
   ]
@@ -90,7 +90,7 @@ export function DisciplineCards({ results }: DisciplineCardsProps) {
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-semibold">Engineering Disciplines</h3>
         <span className="text-sm text-muted-foreground">
-          Total Shell: {formatCurrency(budgets.shell)}
+          Total Shell: {formatCurrency(budgets.shellBudget)}
         </span>
       </div>
       
@@ -98,8 +98,8 @@ export function DisciplineCards({ results }: DisciplineCardsProps) {
         {disciplinesList.map((discipline) => {
           const Icon = disciplineIcons[discipline.name as keyof typeof disciplineIcons] || Building2
           const isExpanded = expandedCards.includes(discipline.name)
-          const newAmount = discipline.amount * newAreaRatio
-          const remodelAmount = discipline.amount * remodelAreaRatio
+          const newAmount = discipline.amount * newBudgetRatio
+          const remodelAmount = discipline.amount * remodelBudgetRatio
           
           return (
             <Card 

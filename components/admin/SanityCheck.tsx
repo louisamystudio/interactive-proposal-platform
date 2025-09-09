@@ -21,7 +21,9 @@ export function SanityCheck({ results, discount }: SanityCheckProps) {
   
   // Calculate variance
   const variance = ((topDownFee - bottomUpFee) / topDownFee * 100)
-  const effectiveRate = budgets.totalArea > 0 ? contractPrice / budgets.totalArea : 0
+  // Use total budget / average PSF as a proxy for area
+  const estimatedArea = budgets.totalBudget / 195 // Using $195/sqft as average
+  const effectiveRate = estimatedArea > 0 ? contractPrice / estimatedArea : 0
   const margin = ((contractPrice - bottomUpFee) / contractPrice * 100)
   
   // Determine which method wins
