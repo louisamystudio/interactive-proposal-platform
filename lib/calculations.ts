@@ -12,11 +12,19 @@ import {
 } from './types'
 
 // Import calibrated constants (MODE can be 'EXCEL' or 'SSOT')
-import { CONFIG, CLIENT_OPTIONS, DR_DE_JESUS_PROJECT as PROJECT_REFERENCE } from './constants'
+import { CONFIG, CLIENT_OPTIONS, DR_DE_JESUS_PROJECT as PROJECT_REFERENCE, MODE } from './constants'
+import { calculateExcelProject } from './excel-aligned-calculations'
+// Database-aware calculation is lazy-loaded to avoid initializing Supabase during tests
 
 // Export active configuration for validation
 export const ACTIVE_CONFIG = CONFIG
 export const VALIDATION_TARGETS = CONFIG.VALIDATION
+
+// Export database-aware calculation function (lazy import)
+export async function calculateProjectWithDatabase(input: CalcInput) {
+  const mod = await import('./db/database-calculations')
+  return mod.calculateProjectWithDatabase(input)
+}
 
 // Utility functions
 export const round2 = (n: number) => Math.round(n * 100) / 100
@@ -79,26 +87,27 @@ export function calculateDisciplineBudgets(
   shellBudget: number, 
   engineering: CalcInput['engineering']
 ): DisciplineBudgets {
-  const structuralBudget = shellBudget * engineering.structuralDesignShare
-  const civilBudget = shellBudget * engineering.civilDesignShare
-  const mechanicalBudget = shellBudget * engineering.mechanicalDesignShare
-  const electricalBudget = shellBudget * engineering.electricalDesignShare
-  const plumbingBudget = shellBudget * engineering.plumbingDesignShare
-  const telecomBudget = shellBudget * engineering.telecomDesignShare
+  // First round each engineering discipline to 2 decimals
+  const structuralBudget = round2(shellBudget * engineering.structuralDesignShare)
+  const civilBudget = round2(shellBudget * engineering.civilDesignShare)
+  const mechanicalBudget = round2(shellBudget * engineering.mechanicalDesignShare)
+  const electricalBudget = round2(shellBudget * engineering.electricalDesignShare)
+  const plumbingBudget = round2(shellBudget * engineering.plumbingDesignShare)
+  const telecomBudget = round2(shellBudget * engineering.telecomDesignShare)
 
-  // Architecture gets remainder after all engineering disciplines
-  const totalEngineering = structuralBudget + civilBudget + mechanicalBudget + 
-                          electricalBudget + plumbingBudget + telecomBudget
-  const architectureBudget = shellBudget - totalEngineering
+  // Architecture gets exact remainder so totals match shellBudget at cent precision
+  const totalEngineeringRounded = structuralBudget + civilBudget + mechanicalBudget +
+    electricalBudget + plumbingBudget + telecomBudget
+  const architectureBudget = round2(shellBudget - totalEngineeringRounded)
 
   return {
-    architectureBudget: round2(architectureBudget),
-    structuralBudget: round2(structuralBudget),
-    civilBudget: round2(civilBudget),
-    mechanicalBudget: round2(mechanicalBudget),
-    electricalBudget: round2(electricalBudget),
-    plumbingBudget: round2(plumbingBudget),
-    telecomBudget: round2(telecomBudget)
+    architectureBudget,
+    structuralBudget,
+    civilBudget,
+    mechanicalBudget,
+    electricalBudget,
+    plumbingBudget,
+    telecomBudget
   }
 }
 
@@ -210,6 +219,23 @@ export function generateThreeOptions(): ThreeOptions {
  * Main calculation orchestrator
  */
 export function calculateProject(input: CalcInput): CalculationResults {
+  // Use Excel-aligned calculations when in EXCEL mode
+  if (MODE === 'EXCEL') {
+    const excelResults = calculateExcelProject(input)
+    
+    // Calculate disciplines using Excel budget
+    const disciplines = calculateDisciplineBudgets(excelResults.budgets.shellBudget, input.engineering)
+    
+    return {
+      budgets: excelResults.budgets,
+      disciplines,
+      hours: excelResults.hours,
+      fees: excelResults.fees,
+      options: generateThreeOptions() // Still use the fixed client options
+    }
+  }
+  
+  // Original SSOT calculations
   const budgets = calculateBudgets(input)
   const disciplines = calculateDisciplineBudgets(budgets.shellBudget, input.engineering)
   const hours = calculateProjectHours(input)

@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["jest", "node"],
+    "moduleResolution": "bundler"
+  },
+  "include": ["tests/**/*.ts", "tests/**/*.tsx", "jest.setup.js"],
+  "exclude": ["node_modules", ".next"]
+}
+
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "noEmit": true
+  },
+  "include": [
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+  ],
+  "exclude": ["node_modules", ".next"]
+}
+

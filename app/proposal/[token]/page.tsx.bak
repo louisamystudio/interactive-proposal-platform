@@ -369,7 +369,9 @@ export default function ProposalPage({ params }: ProposalPageProps) {
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <div className="space-y-2 text-sm text-gray-400">
-                                <p>Phone: (787) 555-0123</p>`r`n                <p>Email: info@louisamy.com</p>`r`n                <p>Location: Ponce, Puerto Rico</p>
+                <p>📞 (787) 555-0123</p>
+                <p>📧 info@louisamy.com</p>
+                <p>📍 Ponce, Puerto Rico</p>
               </div>
             </div>
 
@@ -393,5 +395,4 @@ export default function ProposalPage({ params }: ProposalPageProps) {
     </div>
   )
 }
-
 

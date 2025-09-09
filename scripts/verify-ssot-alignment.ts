@@ -40,7 +40,7 @@ function verifyFullCalculation() {
   console.log(`📊 Calculated vs Expected:`)
   console.log('')
   
-  const checks = [
+  const checks: Array<{ name: string; calculated: number; expected: number }> = [
     { name: 'Total Budget', calculated: result.budgets.totalBudget, expected: targets.totalBudget },
     { name: 'Shell Budget', calculated: result.budgets.shellBudget, expected: targets.shellBudget },
     { name: 'Interior Budget', calculated: result.budgets.interiorBudget, expected: targets.interiorBudget },

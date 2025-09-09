@@ -2,18 +2,92 @@
 
 import { useState, useEffect } from 'react'
 import { calculateProject, DR_DE_JESUS_PROJECT } from '@/lib/calculations'
-import { CalculationResults, CalcInput } from '@/lib/types'
+import { CalculationResults, CalcInput, ProjectClassification } from '@/lib/types'
+import { useBuildingClassification } from '@/lib/hooks/useBuildingClassification'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
-import { Calculator, Building2, DollarSign, Clock, PieChart, BarChart3 } from 'lucide-react'
+import { Calculator, Building2, DollarSign, PieChart, Send, Copy, ExternalLink, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function AdminCalculatorPage() {
-  const [projectData, setProjectData] = useState<CalcInput>(DR_DE_JESUS_PROJECT)
   const [results, setResults] = useState<CalculationResults | null>(null)
   const [loading, setLoading] = useState(false)
+  const [clientName, setClientName] = useState('Dr. Luis De Jesús')
+  const [clientEmail, setClientEmail] = useState('')
+  const [notes, setNotes] = useState('')
+  const [proposalUrl, setProposalUrl] = useState('')
+  const [generating, setGenerating] = useState(false)
+  
+  // Use building classification hook for database integration
+  const buildingClass = useBuildingClassification({
+    buildingUse: 'Residential',
+    buildingType: 'Custom Houses',
+    buildingTier: 'High',
+    category: 5
+  })
+
+  // Add database status indicator
+  const [dbStatus, setDbStatus] = useState<'connecting' | 'connected' | 'error'>('connecting')
+  
+  // Initialize project data with database values
+  const [projectData, setProjectData] = useState<CalcInput>(DR_DE_JESUS_PROJECT)
+
+  // Update project data when database values change
+  useEffect(() => {
+    if (!buildingClass.costData) return
+
+    const costRanges = buildingClass.getCostRanges()
+    const projectShares = buildingClass.getProjectShares()
+    const designShares = buildingClass.getDesignShares()
+
+    setProjectData(prev => ({
+      ...prev,
+      classification: {
+        ...prev.classification,
+        buildingUse: buildingClass.buildingUse as ProjectClassification['buildingUse'],
+        buildingType: buildingClass.buildingType,
+        buildingTier: buildingClass.buildingTier as ProjectClassification['buildingTier'],
+        category: buildingClass.category as ProjectClassification['category']
+      },
+      costs: {
+        ...prev.costs,
+        newTargetPSF: costRanges.newTarget,
+        remodelTargetPSF: costRanges.remodelTarget
+      },
+      shares: projectShares,
+      engineering: designShares
+    }))
+  }, [buildingClass.costData, buildingClass])
+
+  // Check database status
+  useEffect(() => {
+    const checkDatabaseStatus = async () => {
+      try {
+        const response = await fetch('/api/database-status')
+        const data = await response.json()
+
+        if (data.status === 'connected') {
+          setDbStatus('connected')
+        } else {
+          setDbStatus('error')
+        }
+      } catch (error) {
+        console.warn('Database status check failed:', error)
+        // Fallback to hook-based status
+        if (buildingClass.error) {
+          setDbStatus('error')
+        } else if (buildingClass.costData) {
+          setDbStatus('connected')
+        } else {
+          setDbStatus('connecting')
+        }
+      }
+    }
+
+    checkDatabaseStatus()
+  }, [buildingClass.error, buildingClass.costData])
 
   // Real-time calculation effect
   useEffect(() => {
@@ -31,10 +105,6 @@ export default function AdminCalculatorPage() {
     return () => clearTimeout(timer)
   }, [projectData])
 
-  const updateProjectData = (updates: Partial<CalcInput>) => {
-    setProjectData(prev => ({ ...prev, ...updates }))
-    setLoading(true)
-  }
 
   const updateAreas = (updates: Partial<CalcInput['areas']>) => {
     setProjectData(prev => ({
@@ -58,6 +128,48 @@ export default function AdminCalculatorPage() {
       shares: { ...prev.shares, ...updates }
     }))
     setLoading(true)
+  }
+
+  const generateProposal = async () => {
+    if (!clientName || !results) {
+      alert('Please enter client name and ensure calculations are complete')
+      return
+    }
+
+    setGenerating(true)
+    try {
+      const response = await fetch('/api/proposals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectData,
+          clientName,
+          clientEmail,
+          notes
+        })
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setProposalUrl(data.data.url)
+        // Copy to clipboard
+        navigator.clipboard.writeText(data.data.url)
+      } else {
+        alert('Failed to generate proposal: ' + data.error)
+      }
+    } catch (error) {
+      alert('Error generating proposal')
+      console.error(error)
+    } finally {
+      setGenerating(false)
+    }
+  }
+
+  const openProposal = () => {
+    if (proposalUrl) {
+      window.open(proposalUrl, '_blank')
+    }
   }
 
   return (
@@ -95,64 +207,93 @@ export default function AdminCalculatorPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {buildingClass.error && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-md flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <span className="text-sm">{buildingClass.error}</span>
+                  </div>
+                )}
+                
                 <div>
                   <label className="text-sm font-medium mb-2 block">Building Use</label>
                   <Select
-                    value={projectData.classification.buildingUse}
-                    onValueChange={(value: any) =>
-                      updateProjectData({
-                        classification: { ...projectData.classification, buildingUse: value }
-                      })
-                    }
+                    value={buildingClass.buildingUse}
+                    onValueChange={buildingClass.setBuildingUse}
+                    disabled={buildingClass.buildingUses.length === 0}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select building use" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Residential">Residential</SelectItem>
-                      <SelectItem value="Commercial">Commercial</SelectItem>
-                      <SelectItem value="Healthcare">Healthcare</SelectItem>
-                      <SelectItem value="Educational">Educational</SelectItem>
-                      <SelectItem value="Industrial">Industrial</SelectItem>
+                      {buildingClass.buildingUses.map(use => (
+                        <SelectItem key={use} value={use}>{use}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Building Type</label>
-                  <Input
-                    value={projectData.classification.buildingType}
-                    onChange={(e) =>
-                      updateProjectData({
-                        classification: { ...projectData.classification, buildingType: e.target.value }
-                      })
-                    }
-                    placeholder="e.g., Custom Houses"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Category (1-5)</label>
                   <Select
-                    value={projectData.classification.category.toString()}
-                    onValueChange={(value) =>
-                      updateProjectData({
-                        classification: { ...projectData.classification, category: parseInt(value) as 1|2|3|4|5 }
-                      })
-                    }
+                    value={buildingClass.buildingType}
+                    onValueChange={buildingClass.setBuildingType}
+                    disabled={buildingClass.buildingTypes.length === 0}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select building type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1 - Simple</SelectItem>
-                      <SelectItem value="2">2 - Standard</SelectItem>
-                      <SelectItem value="3">3 - Medium</SelectItem>
-                      <SelectItem value="4">4 - High</SelectItem>
-                      <SelectItem value="5">5 - Very High</SelectItem>
+                      {buildingClass.buildingTypes.map(type => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Building Tier</label>
+                  <Select
+                    value={buildingClass.buildingTier}
+                    onValueChange={buildingClass.setBuildingTier}
+                    disabled={buildingClass.buildingTiers.length === 0}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select building tier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {buildingClass.buildingTiers.map(tier => (
+                        <SelectItem key={tier} value={tier}>{tier}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Category (Complexity)</label>
+                  <Select
+                    value={buildingClass.category.toString()}
+                    onValueChange={(value) => buildingClass.setCategory(parseInt(value))}
+                    disabled={buildingClass.categories.length === 0}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {buildingClass.categories.map(cat => (
+                        <SelectItem key={cat} value={cat.toString()}>
+                          {cat} - {cat === 1 ? 'Simple' : cat === 2 ? 'Standard' : cat === 3 ? 'Medium' : cat === 4 ? 'High' : 'Very High'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {buildingClass.loading && (
+                  <div className="text-sm text-gray-500 flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    Loading cost data...
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -206,14 +347,16 @@ export default function AdminCalculatorPage() {
                   <Slider
                     value={[projectData.costs.newTargetPSF]}
                     onValueChange={([value]) => updateCosts({ newTargetPSF: value })}
-                    min={200}
-                    max={600}
-                    step={10}
+                    min={buildingClass.getCostRanges().newMin}
+                    max={buildingClass.getCostRanges().newMax}
+                    step={5}
                     className="w-full"
+                    disabled={!buildingClass.costData}
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>$200</span>
-                    <span>$600</span>
+                    <span>${buildingClass.getCostRanges().newMin}</span>
+                    <span className="font-medium">${buildingClass.getCostRanges().newTarget} (target)</span>
+                    <span>${buildingClass.getCostRanges().newMax}</span>
                   </div>
                 </div>
 
@@ -224,14 +367,16 @@ export default function AdminCalculatorPage() {
                   <Slider
                     value={[projectData.costs.remodelTargetPSF]}
                     onValueChange={([value]) => updateCosts({ remodelTargetPSF: value })}
-                    min={100}
-                    max={300}
+                    min={buildingClass.getCostRanges().remodelMin}
+                    max={buildingClass.getCostRanges().remodelMax}
                     step={5}
                     className="w-full"
+                    disabled={!buildingClass.costData}
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>$100</span>
-                    <span>$300</span>
+                    <span>${buildingClass.getCostRanges().remodelMin}</span>
+                    <span className="font-medium">${buildingClass.getCostRanges().remodelTarget} (target)</span>
+                    <span>${buildingClass.getCostRanges().remodelMax}</span>
                   </div>
                 </div>
               </CardContent>
@@ -296,10 +441,60 @@ export default function AdminCalculatorPage() {
 
           {/* Results Panel */}
           <div className="lg:col-span-8 space-y-6">
-            {/* Summary Cards */}
-            {results && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Database Status Card */}
+                <Card className={`mb-6 border ${
+                  dbStatus === 'connected' ? 'bg-green-50 border-green-200' :
+                  dbStatus === 'error' ? 'bg-red-50 border-red-200' :
+                  'bg-yellow-50 border-yellow-200'
+                }`}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      {dbStatus === 'connected' && <CheckCircle className="h-4 w-4 text-green-600" />}
+                      {dbStatus === 'connecting' && <div className="h-4 w-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />}
+                      {dbStatus === 'error' && <AlertCircle className="h-4 w-4 text-red-600" />}
+                      Database Status: {
+                        dbStatus === 'connected' ? 'Connected' :
+                        dbStatus === 'connecting' ? 'Connecting...' :
+                        'Connection Error'
+                      }
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-xs space-y-1">
+                      {dbStatus === 'connected' && buildingClass.costData && (
+                        <>
+                          <p><span className="font-medium">Selection:</span> {buildingClass.buildingUse} • {buildingClass.buildingType}</p>
+                          <p><span className="font-medium">Tier:</span> {buildingClass.buildingTier} • <span className="font-medium">Category:</span> {buildingClass.category}</p>
+                          <div className="mt-2 space-y-1">
+                            <p className="text-green-600">✅ Cost ranges and shares loaded from database</p>
+                            <p className="text-green-600">✅ Database-aware calculations active</p>
+                            <p className="text-green-600">✅ Real-time validation enabled</p>
+                          </div>
+                        </>
+                      )}
+                      {dbStatus === 'connecting' && (
+                        <>
+                          <p className="text-yellow-600">⏳ Connecting to database...</p>
+                          <p className="text-gray-600 mt-1">Using fallback values until connection established</p>
+                        </>
+                      )}
+                      {dbStatus === 'error' && (
+                        <>
+                          <p className="text-red-600">❌ Database connection failed</p>
+                          <p className="text-gray-600 mt-1">Using default values. Check database configuration.</p>
+                          {buildingClass.error && (
+                            <p className="text-red-500 mt-2 font-mono text-xs">{buildingClass.error}</p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Summary Cards */}
+                {results && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Card>
                     <CardHeader className="pb-2">
                       <CardDescription>Total Budget</CardDescription>
@@ -315,6 +510,9 @@ export default function AdminCalculatorPage() {
                       <CardTitle className="text-2xl text-green-600">
                         ${results.fees.contractPrice.toLocaleString()}
                       </CardTitle>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Market: ${results.fees.marketFee?.toLocaleString() || 'N/A'}
+                      </p>
                     </CardHeader>
                   </Card>
 
@@ -428,13 +626,13 @@ export default function AdminCalculatorPage() {
                           </div>
 
                           <p className="text-sm text-gray-600 mb-3 italic">
-                            "{option.valuePromise}"
+                            &ldquo;{option.valuePromise}&rdquo;
                           </p>
 
                           <div className="text-xs text-gray-500">
-                            <div className="font-medium mb-1">What's Included:</div>
+                            <div className="font-medium mb-1">What&apos;s Included:</div>
                             <ul className="space-y-1">
-                              {option.scope.slice(0, 3).map((item, idx) => (
+                              {option.scope.slice(0, 3).map((item: string, idx: number) => (
                                 <li key={idx}>• {item}</li>
                               ))}
                               {option.scope.length > 3 && (
@@ -456,16 +654,93 @@ export default function AdminCalculatorPage() {
                       Create personalized proposal link for client review
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <Button className="flex-1" size="lg">
-                        <BarChart3 className="h-4 w-4 mr-2" />
-                        Generate Proposal Link
-                      </Button>
-                      <Button variant="outline" size="lg">
-                        Preview Client View
-                      </Button>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Client Name *</label>
+                        <Input
+                          value={clientName}
+                          onChange={(e) => setClientName(e.target.value)}
+                          placeholder="Dr. Luis De Jesús"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Client Email</label>
+                        <Input
+                          type="email"
+                          value={clientEmail}
+                          onChange={(e) => setClientEmail(e.target.value)}
+                          placeholder="client@example.com"
+                        />
+                      </div>
                     </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Internal Notes</label>
+                      <Input
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="Any special considerations..."
+                      />
+                    </div>
+
+                    {proposalUrl ? (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-green-800">Proposal Generated!</span>
+                          <span className="text-xs text-green-600">Link copied to clipboard</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Input
+                            value={proposalUrl}
+                            readOnly
+                            className="bg-white"
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => navigator.clipboard.writeText(proposalUrl)}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={openProposal}
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <Button 
+                          className="flex-1" 
+                          size="lg"
+                          onClick={generateProposal}
+                          disabled={generating || !clientName}
+                        >
+                          {generating ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <Send className="h-4 w-4 mr-2" />
+                              Generate Proposal Link
+                            </>
+                          )}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="lg"
+                          onClick={() => window.open('/proposal/preview', '_blank')}
+                        >
+                          Preview Client View
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </>
