@@ -96,13 +96,13 @@ export function OptionCards({ options, onSelect }: OptionCardsProps) {
                 </div>
                 
                 {/* Not Included (if available) */}
-                {option.data.notIncluded && option.data.notIncluded.length > 0 && (
+                {option.data.excluded && option.data.excluded.length > 0 && (
                   <div className="space-y-2 pt-3 border-t">
                     <p className="font-semibold text-sm uppercase tracking-wide text-gray-500">
                       Not Included
                     </p>
                     <ul className="space-y-1">
-                      {option.data.notIncluded.slice(0, 3).map((item, idx) => (
+                      {option.data.excluded.slice(0, 3).map((item: string, idx: number) => (
                         <li key={idx} className="text-sm text-muted-foreground">
                           • {item}
                         </li>

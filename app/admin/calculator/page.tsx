@@ -357,7 +357,14 @@ export default function AdminCalculatorPage() {
             {/* 1. PROJECT OVERVIEW - Context first, numbers second */}
             {project.results && (
               <ProjectOverview
-                projectData={project.projectData}
+                projectData={{
+                  buildingUse: project.projectData.buildingUse,
+                  buildingType: project.projectData.buildingType,
+                  buildingTier: project.projectData.buildingTier,
+                  category: project.projectData.category,
+                  designLevel: project.projectData.designLevel,
+                  areas: project.projectData.areas
+                }}
                 budgets={project.results.budgets}
                 costs={project.projectData.costs}
               />
