@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useProjectCalculation } from '@/lib/hooks/useProjectCalculation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,14 +10,14 @@ import { Calculator, Building2, DollarSign, PieChart, Send, Copy, ExternalLink, 
 import { BudgetDonutChart } from '@/components/ui/budget-donut-chart'
 import { DisciplineChart } from '@/components/ui/discipline-chart'
 
-export default function AdminCalculatorPage() {
+export default function AdminCalculatorPageNew() {
   const [clientName, setClientName] = useState('Dr. Luis De Jesús')
   const [clientEmail, setClientEmail] = useState('')
   const [notes, setNotes] = useState('')
   const [proposalUrl, setProposalUrl] = useState('')
   const [generating, setGenerating] = useState(false)
 
-  // Use project calculation hook - NO infinite loops, database-safe
+  // Use new project calculation hook (eliminates infinite loops)
   const project = useProjectCalculation({
     buildingUse: 'Residential',
     buildingType: 'Custom Houses',
@@ -26,7 +26,7 @@ export default function AdminCalculatorPage() {
     designLevel: 3
   })
 
-  // Generate proposal (saves to separate proposals table)
+  // Generate proposal
   const generateProposal = async () => {
     if (!project.results) return
 
@@ -71,8 +71,7 @@ export default function AdminCalculatorPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Loading database defaults...</p>
-          <p className="text-sm text-gray-500 mt-2">Database read-only • Project overrides in memory</p>
+          <p>Loading project configuration...</p>
         </div>
       </div>
     )
@@ -108,7 +107,7 @@ export default function AdminCalculatorPage() {
               )}
               
               <div className="text-sm text-gray-500">
-                Database: {project.databaseDefaults ? 'Connected (Read-Only)' : 'Fallback Mode'}
+                Database: {project.databaseDefaults ? 'Connected' : 'Fallback'}
               </div>
             </div>
           </div>
@@ -117,7 +116,7 @@ export default function AdminCalculatorPage() {
 
       <div className="max-w-7xl mx-auto p-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Input Controls - NON-DESTRUCTIVE OVERRIDES */}
+          {/* Input Controls */}
           <div className="lg:col-span-1 space-y-6">
             
             {/* Project Information */}
@@ -127,7 +126,6 @@ export default function AdminCalculatorPage() {
                   <Building2 className="h-5 w-5 mr-2" />
                   Project Information
                 </CardTitle>
-                <CardDescription>Database defaults + Live overrides</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -151,29 +149,26 @@ export default function AdminCalculatorPage() {
               </CardContent>
             </Card>
 
-            {/* Project Areas - LIVE OVERRIDES */}
+            {/* Project Areas */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Project Areas</CardTitle>
-                    <CardDescription>Building square footage</CardDescription>
-                  </div>
-                  {(project.overrides.areas?.newAreaFt2 !== undefined || project.overrides.areas?.existingAreaFt2 !== undefined) && (
-                    <Button variant="ghost" size="sm" onClick={() => 
-                      project.updateAreas({ newAreaFt2: undefined, existingAreaFt2: undefined })
-                    }>
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      Reset
-                    </Button>
-                  )}
-                </div>
+                <CardTitle>Project Areas</CardTitle>
+                <CardDescription>Building square footage</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    New Construction: {project.projectData.areas.newAreaFt2.toLocaleString()} ft²
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-medium">
+                      New Construction: {project.projectData.areas.newAreaFt2.toLocaleString()} ft²
+                    </label>
+                    {project.overrides.areas?.newAreaFt2 !== undefined && (
+                      <Button variant="ghost" size="sm" onClick={() => 
+                        project.updateAreas({ newAreaFt2: undefined })
+                      }>
+                        <RotateCcw className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
                   <Slider
                     value={[project.projectData.areas.newAreaFt2]}
                     onValueChange={([value]) => project.updateAreas({ newAreaFt2: value })}
@@ -185,9 +180,18 @@ export default function AdminCalculatorPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Remodel Area: {project.projectData.areas.existingAreaFt2.toLocaleString()} ft²
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-medium">
+                      Remodel Area: {project.projectData.areas.existingAreaFt2.toLocaleString()} ft²
+                    </label>
+                    {project.overrides.areas?.existingAreaFt2 !== undefined && (
+                      <Button variant="ghost" size="sm" onClick={() => 
+                        project.updateAreas({ existingAreaFt2: undefined })
+                      }>
+                        <RotateCcw className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
                   <Slider
                     value={[project.projectData.areas.existingAreaFt2]}
                     onValueChange={([value]) => project.updateAreas({ existingAreaFt2: value })}
@@ -200,31 +204,25 @@ export default function AdminCalculatorPage() {
               </CardContent>
             </Card>
 
-            {/* Cost Targets - LIVE OVERRIDES within database ranges */}
+            {/* Cost Targets - Only allow within database ranges */}
             {project.availableRanges && (
               <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <CardTitle>Cost Targets</CardTitle>
-                      <CardDescription>Live overrides • Database read-only</CardDescription>
-                    </div>
-                    {(project.overrides.costs?.newTargetPSF !== undefined || project.overrides.costs?.remodelTargetPSF !== undefined) && (
-                      <Button variant="ghost" size="sm" onClick={project.resetCosts}>
-                        <RotateCcw className="h-3 w-3 mr-1" />
-                        Reset to DB
-                      </Button>
-                    )}
-                  </div>
+                  <CardTitle>Cost Targets</CardTitle>
+                  <CardDescription>Adjust within database ranges</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      New Construction: ${project.projectData.costs.newTargetPSF}/ft²
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-sm font-medium">
+                        New Construction: ${project.projectData.costs.newTargetPSF}/ft²
+                      </label>
                       {project.overrides.costs?.newTargetPSF !== undefined && (
-                        <span className="text-xs text-orange-600 ml-2">(modified)</span>
+                        <Button variant="ghost" size="sm" onClick={project.resetCosts}>
+                          <RotateCcw className="h-3 w-3" />
+                        </Button>
                       )}
-                    </label>
+                    </div>
                     <Slider
                       value={[project.projectData.costs.newTargetPSF]}
                       onValueChange={([value]) => project.updateCosts({ newTargetPSF: value })}
@@ -235,18 +233,22 @@ export default function AdminCalculatorPage() {
                     />
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
                       <span>${project.availableRanges.newCost.min}</span>
-                      <span className="font-medium">${project.availableRanges.newCost.default} (DB default)</span>
+                      <span className="font-medium">${project.availableRanges.newCost.default} (default)</span>
                       <span>${project.availableRanges.newCost.max}</span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Remodel: ${project.projectData.costs.remodelTargetPSF}/ft²
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-sm font-medium">
+                        Remodel: ${project.projectData.costs.remodelTargetPSF}/ft²
+                      </label>
                       {project.overrides.costs?.remodelTargetPSF !== undefined && (
-                        <span className="text-xs text-orange-600 ml-2">(modified)</span>
+                        <Button variant="ghost" size="sm" onClick={project.resetCosts}>
+                          <RotateCcw className="h-3 w-3" />
+                        </Button>
                       )}
-                    </label>
+                    </div>
                     <Slider
                       value={[project.projectData.costs.remodelTargetPSF]}
                       onValueChange={([value]) => project.updateCosts({ remodelTargetPSF: value })}
@@ -257,7 +259,7 @@ export default function AdminCalculatorPage() {
                     />
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
                       <span>${project.availableRanges.remodelCost.min}</span>
-                      <span className="font-medium">${project.availableRanges.remodelCost.default} (DB default)</span>
+                      <span className="font-medium">${project.availableRanges.remodelCost.default} (default)</span>
                       <span>${project.availableRanges.remodelCost.max}</span>
                     </div>
                   </div>
@@ -265,34 +267,26 @@ export default function AdminCalculatorPage() {
               </Card>
             )}
 
-            {/* Budget Shares - LIVE OVERRIDES */}
+            {/* Budget Shares */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Budget Shares</CardTitle>
-                    <CardDescription>
-                      {project.hasChanges ? 'Modified from database defaults' : 'Using database defaults'}
-                    </CardDescription>
-                  </div>
-                  {(project.overrides.shares?.projectShellShare !== undefined || 
-                    project.overrides.shares?.projectInteriorShare !== undefined ||
-                    project.overrides.shares?.projectLandscapeShare !== undefined) && (
-                    <Button variant="ghost" size="sm" onClick={project.resetShares}>
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      Reset to DB
-                    </Button>
-                  )}
-                </div>
+                <CardTitle>Budget Shares</CardTitle>
+                <CardDescription>
+                  {project.hasChanges ? 'Modified from database defaults' : 'Using database defaults'}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Shell: {Math.round(project.projectData.shares.projectShellShare * 100)}%
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-medium">
+                      Shell: {Math.round(project.projectData.shares.projectShellShare * 100)}%
+                    </label>
                     {project.overrides.shares?.projectShellShare !== undefined && (
-                      <span className="text-xs text-orange-600 ml-2">(modified)</span>
+                      <Button variant="ghost" size="sm" onClick={project.resetShares}>
+                        <RotateCcw className="h-3 w-3" />
+                      </Button>
                     )}
-                  </label>
+                  </div>
                   <Slider
                     value={[project.projectData.shares.projectShellShare]}
                     onValueChange={([value]) => project.updateShares({ projectShellShare: value })}
@@ -306,9 +300,6 @@ export default function AdminCalculatorPage() {
                 <div>
                   <label className="text-sm font-medium mb-2 block">
                     Interior: {Math.round(project.projectData.shares.projectInteriorShare * 100)}%
-                    {project.overrides.shares?.projectInteriorShare !== undefined && (
-                      <span className="text-xs text-orange-600 ml-2">(modified)</span>
-                    )}
                   </label>
                   <Slider
                     value={[project.projectData.shares.projectInteriorShare]}
@@ -323,9 +314,6 @@ export default function AdminCalculatorPage() {
                 <div>
                   <label className="text-sm font-medium mb-2 block">
                     Landscape: {Math.round(project.projectData.shares.projectLandscapeShare * 100)}%
-                    {project.overrides.shares?.projectLandscapeShare !== undefined && (
-                      <span className="text-xs text-orange-600 ml-2">(modified)</span>
-                    )}
                   </label>
                   <Slider
                     value={[project.projectData.shares.projectLandscapeShare]}
@@ -342,7 +330,6 @@ export default function AdminCalculatorPage() {
 
           {/* Results Panel */}
           <div className="lg:col-span-3 space-y-6">
-            
             {/* Status Indicator */}
             <Card className={`border ${project.hasChanges ? 'border-orange-200 bg-orange-50' : 'border-green-200 bg-green-50'}`}>
               <CardHeader className="pb-3">
@@ -350,34 +337,27 @@ export default function AdminCalculatorPage() {
                   {project.hasChanges ? (
                     <>
                       <AlertCircle className="h-4 w-4 text-orange-600" />
-                      Modified Project (Live Overrides Active)
+                      Modified Project (Overrides Active)
                     </>
                   ) : (
                     <>
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      Using Database Defaults (No Overrides)
+                      Using Database Defaults
                     </>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-xs space-y-1">
-                  <p><span className="font-medium">Database Status:</span> {project.databaseDefaults ? 'Connected (Read-Only)' : 'Using CSV fallback'}</p>
-                  <p><span className="font-medium">Active Overrides:</span> {project.hasChanges ? 'YES - Live calculations with modified values' : 'NO - Pure database defaults'}</p>
-                  <p><span className="font-medium">Main Cost DB:</span> Never modified during editing • Remains pristine</p>
+                  <p><span className="font-medium">Database Defaults:</span> {project.databaseDefaults ? 'Loaded' : 'Using fallback'}</p>
+                  <p><span className="font-medium">Active Overrides:</span> {project.hasChanges ? 'YES' : 'NO'}</p>
+                  <p><span className="font-medium">Project Classification:</span> {project.projectData.classification.buildingUse} • {project.projectData.classification.buildingType}</p>
                   {project.hasChanges && (
                     <div className="mt-2 pt-2 border-t">
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" onClick={project.resetCosts}>
-                          Reset Costs
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={project.resetShares}>
-                          Reset Shares  
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={project.resetEngineering}>
-                          Reset Engineering
-                        </Button>
-                      </div>
+                      <Button variant="outline" size="sm" onClick={project.resetToDefaults}>
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        Reset All to Defaults
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -427,14 +407,14 @@ export default function AdminCalculatorPage() {
 
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Changes Status</CardTitle>
+                      <CardTitle className="text-sm font-medium">Savings</CardTitle>
                       <CheckCircle className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {project.hasChanges ? 'Modified' : 'Defaults'}
+                        ${(project.results.options.A.investment - project.results.fees.contractPrice).toLocaleString()}
                       </div>
-                      <p className="text-xs text-muted-foreground">Database: Read-only</p>
+                      <p className="text-xs text-muted-foreground">vs Option A</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -444,11 +424,12 @@ export default function AdminCalculatorPage() {
                   <CardHeader>
                     <CardTitle>Budget Breakdown</CardTitle>
                     <CardDescription>
-                      Live calculations • Database remains unchanged
+                      Construction costs distributed by discipline
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Budget Numbers */}
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <span className="font-medium">Shell & Structure</span>
@@ -470,6 +451,7 @@ export default function AdminCalculatorPage() {
                         </div>
                       </div>
 
+                      {/* Interactive Budget Donut Chart */}
                       <div className="flex flex-col items-center">
                         <BudgetDonutChart
                           shellBudget={project.results.budgets.shellBudget}
@@ -488,21 +470,14 @@ export default function AdminCalculatorPage() {
                 {/* Engineering Disciplines with Charts */}
                 <Card>
                   <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <CardTitle>Engineering Disciplines</CardTitle>
-                        <CardDescription>Architecture and engineering allocation</CardDescription>
-                      </div>
-                      {Object.keys(project.overrides.engineering || {}).length > 0 && (
-                        <Button variant="ghost" size="sm" onClick={project.resetEngineering}>
-                          <RotateCcw className="h-3 w-3 mr-1" />
-                          Reset to DB
-                        </Button>
-                      )}
-                    </div>
+                    <CardTitle>Engineering Disciplines</CardTitle>
+                    <CardDescription>
+                      Architecture and engineering allocation within shell budget
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Discipline Numbers */}
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <span>Architecture</span>
@@ -534,6 +509,7 @@ export default function AdminCalculatorPage() {
                         </div>
                       </div>
 
+                      {/* Interactive Discipline Chart */}
                       <div className="flex flex-col items-center">
                         <DisciplineChart
                           architectureBudget={project.results.disciplines.architectureBudget}
@@ -547,7 +523,7 @@ export default function AdminCalculatorPage() {
                           className="mt-4"
                         />
                         <p className="text-xs text-gray-500 mt-2 text-center">
-                          Live calculations • Database safe
+                          Engineering Discipline Distribution • Hover for budget details
                         </p>
                       </div>
                     </div>
@@ -557,7 +533,7 @@ export default function AdminCalculatorPage() {
                 {/* Client Options */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Client Options (Chris Do Compliant)</CardTitle>
+                    <CardTitle>Client Options (Value-Messaged)</CardTitle>
                     <CardDescription>
                       Strategic pricing options for client presentation
                     </CardDescription>
@@ -575,26 +551,18 @@ export default function AdminCalculatorPage() {
                             Option {key}: ${option.investment.toLocaleString()}
                           </div>
                           <p className="text-sm text-gray-600 mb-3">
-                            &ldquo;{option.valuePromise}&rdquo;
+                            {option.valuePromise}
                           </p>
-                          <div className="text-xs text-gray-500">
-                            <p className="font-medium mb-1">Includes:</p>
-                            <ul className="space-y-1">
-                              {option.scope.slice(0, 3).map((item: string, idx: number) => (
-                                <li key={idx} className="truncate">• {item}</li>
-                              ))}
-                              {option.scope.length > 3 && (
-                                <li className="text-gray-400">• +{option.scope.length - 3} more</li>
-                              )}
-                            </ul>
-                          </div>
+                          <p className="text-xs text-gray-500">
+                            {option.idealWhen}
+                          </p>
                         </div>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Action Buttons - SAVE TO SEPARATE TABLE */}
+                {/* Action Buttons */}
                 <div className="flex justify-between items-center">
                   <div className="flex space-x-4">
                     <Button 
@@ -603,7 +571,7 @@ export default function AdminCalculatorPage() {
                       variant="outline"
                     >
                       <Copy className="h-4 w-4 mr-2" />
-                      Save Project Snapshot
+                      Save Project
                     </Button>
                     
                     <Button
@@ -633,46 +601,7 @@ export default function AdminCalculatorPage() {
                     </div>
                   )}
                 </div>
-
-                {/* Architecture Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-sm">Database Architecture</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-xs space-y-2 text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Main Cost DB (pr_construction_cost_index_2025):</span>
-                        <span className="text-green-600 font-medium">READ-ONLY ✅</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Project Overrides:</span>
-                        <span className="text-blue-600 font-medium">LIVE STATE 🔄</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Final Proposals:</span>
-                        <span className="text-purple-600 font-medium">SEPARATE TABLE 💾</span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-3 p-2 bg-gray-50 rounded">
-                        <span className="font-medium">Architecture:</span> Database defaults → Live overrides → Proposal snapshots
-                        <br />
-                        <span className="font-medium">Result:</span> No infinite loops • No database corruption • Professional workflow
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
               </>
-            )}
-
-            {project.error && (
-              <Card className="border-red-200 bg-red-50">
-                <CardContent className="pt-6">
-                  <div className="flex items-center text-red-700">
-                    <AlertCircle className="h-4 w-4 mr-2" />
-                    Error: {project.error}
-                  </div>
-                </CardContent>
-              </Card>
             )}
           </div>
         </div>

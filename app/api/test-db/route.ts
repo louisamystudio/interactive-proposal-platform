@@ -11,7 +11,7 @@ export async function GET() {
     })
 
     // Test direct query
-    const { data, error, count } = await supabase
+    const { error, count } = await supabase
       .from('pr_construction_cost_index_2025')
       .select('*', { count: 'exact', head: true })
 

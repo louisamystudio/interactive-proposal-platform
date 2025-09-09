@@ -342,14 +342,14 @@ export function useBuildingClassification(defaultValues?: Partial<BuildingClassi
       mechanical: Number(ds.mechanical ?? 0.10),
       electrical: Number(ds.electrical ?? 0.08),
       plumbing: Number(ds.plumbing ?? 0.05),
-      telecommunications: Number((ds as any).telecommunication ?? 0.02),
+      telecommunications: Number((ds as {telecommunication?: number}).telecommunication ?? 0.02),
       // Include the specific property names expected by the admin page
       structuralDesignShare: Number(ds.structural ?? 0.0858),
       civilDesignShare: Number(ds.civil ?? 0.033),
       mechanicalDesignShare: Number(ds.mechanical ?? 0.0396),
       electricalDesignShare: Number(ds.electrical ?? 0.0297),
       plumbingDesignShare: Number(ds.plumbing ?? 0.0231),
-      telecomDesignShare: Number((ds as any).telecommunication ?? 0.0099)
+      telecomDesignShare: Number((ds as {telecommunication?: number}).telecommunication ?? 0.0099)
     };
   }, [state.costData]);
 

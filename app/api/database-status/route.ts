@@ -17,7 +17,6 @@ export async function GET() {
     const usingFallback = !hasCredentials || buildingUses.length === 0 || buildingTypes.length === 0
     
     const actualStatus = hasCredentials ? (usingFallback ? 'database-error-using-fallback' : 'connected') : 'fallback-only'
-    const actualMode = usingFallback ? 'comprehensive-fallback' : 'database'
 
     return NextResponse.json({
       status: actualStatus,
