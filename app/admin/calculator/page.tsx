@@ -14,6 +14,8 @@ import { FeeAnalysis } from '@/components/admin/FeeAnalysis'
 import { ProjectPhases } from '@/components/admin/ProjectPhases'
 import { SanityCheck } from '@/components/admin/SanityCheck'
 import { InvestmentSummary } from '@/components/admin/InvestmentSummary'
+import { FeeComparison } from '@/components/admin/FeeComparison'
+import { HoursBreakdown } from '@/components/admin/HoursBreakdown'
 
 export default function AdminCalculatorPage() {
   const [clientName, setClientName] = useState('Dr. Luis De Jesús')
@@ -21,6 +23,7 @@ export default function AdminCalculatorPage() {
   const [notes, setNotes] = useState('')
   const [proposalUrl, setProposalUrl] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [discount, setDiscount] = useState(15) // Admin discount percentage
 
   // Use project calculation hook - NO infinite loops, database-safe
   const project = useProjectCalculation({
@@ -569,6 +572,16 @@ export default function AdminCalculatorPage() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* 3. FEE COMPARISON - Top-Down vs Bottom-Up Analysis */}
+                <FeeComparison 
+                  results={project.results}
+                  discount={discount}
+                  onDiscountChange={setDiscount}
+                />
+
+                {/* 4. HOURS BREAKDOWN - Phase and Role Distribution */}
+                <HoursBreakdown results={project.results} />
 
                 {/* Client Options */}
                 <Card>
