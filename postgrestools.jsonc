@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/postgrestools/postgrestools/main/config.schema.json",
+  "db": {
+    "connections": [
+      {
+        "name": "supabase-remote",
+        "connectionString": "postgresql://postgres:[YOUR-PASSWORD]@db.vnulyprvoextbbrqldgp.supabase.co:5432/postgres",
+        "searchPath": ["public"]
+      },
+      {
+        "name": "supabase-pooler-writer",
+        "connectionString": "postgresql://postgres.vnulyprvoextbbrqldgp:[YOUR-PASSWORD]@aws-1-us-east-2.pooler.supabase.com:6543/postgres",
+        "searchPath": ["public"]
+      },
+      {
+        "name": "supabase-pooler-reader",
+        "connectionString": "postgresql://postgres.vnulyprvoextbbrqldgp:[YOUR-PASSWORD]@aws-1-us-east-2.pooler.supabase.com:5432/postgres",
+        "searchPath": ["public"]
+      }
+    ],
+    "defaultConnection": "supabase-remote"
+  },
+  "lint": { "enabled": true },
+  "suggest": { "enabled": true }
+}
+
+
+
