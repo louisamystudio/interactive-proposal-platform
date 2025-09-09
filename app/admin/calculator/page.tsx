@@ -358,12 +358,16 @@ export default function AdminCalculatorPage() {
             {project.results && (
               <ProjectOverview
                 projectData={{
-                  buildingUse: project.projectData.buildingUse,
-                  buildingType: project.projectData.buildingType,
-                  buildingTier: project.projectData.buildingTier,
-                  category: project.projectData.category,
-                  designLevel: project.projectData.designLevel,
-                  areas: project.projectData.areas
+                  buildingUse: project.projectData.classification.buildingUse,
+                  buildingType: project.projectData.classification.buildingType,
+                  buildingTier: project.projectData.classification.buildingTier,
+                  category: project.projectData.classification.category,
+                  designLevel: project.projectData.classification.designLevel,
+                  areas: {
+                    newAreaFt2: project.projectData.areas.newAreaFt2,
+                    existingAreaFt2: project.projectData.areas.existingAreaFt2,
+                    siteAreaM2: 972 // Default site area for Dr. De Jesus project
+                  }
                 }}
                 budgets={project.results.budgets}
                 costs={project.projectData.costs}
