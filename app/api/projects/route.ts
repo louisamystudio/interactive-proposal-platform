@@ -54,14 +54,19 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      data: projects.map(p => ({
-        id: p.id,
-        name: p.name,
-        created_at: p.created_at,
-        updated_at: p.updated_at,
-        hasClientData: !!(p.project_data as any)?.clientData,
-        hasOverrides: !!(p.project_data as any)?.overrides
-      }))
+      data: projects.map(p => {
+        const pd = (p.project_data ?? {}) as Record<string, unknown>
+        const hasClientData = Object.prototype.hasOwnProperty.call(pd, 'clientData')
+        const hasOverrides = Object.prototype.hasOwnProperty.call(pd, 'overrides')
+        return {
+          id: p.id,
+          name: p.name,
+          created_at: p.created_at,
+          updated_at: p.updated_at,
+          hasClientData,
+          hasOverrides,
+        }
+      })
     })
   } catch (error) {
     console.error('Error listing projects:', error)

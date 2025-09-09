@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useProjectCalculation } from '@/lib/hooks/useProjectCalculation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,7 +13,6 @@ import { DisciplineChart } from '@/components/ui/discipline-chart'
 export default function AdminCalculatorPageNew() {
   const [clientName, setClientName] = useState('Dr. Luis De Jesús')
   const [clientEmail, setClientEmail] = useState('')
-  const [notes, setNotes] = useState('')
   const [proposalUrl, setProposalUrl] = useState('')
   const [generating, setGenerating] = useState(false)
 

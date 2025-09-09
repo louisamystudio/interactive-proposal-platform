@@ -27,7 +27,7 @@ export async function GET() {
     }
 
     // Try to get one row
-    const { data: sampleRow, error: sampleError } = await supabase
+    const { data: sampleRow } = await supabase
       .from('pr_construction_cost_index_2025')
       .select('building_use, building_type, category, building_tier')
       .limit(1)

@@ -6,14 +6,20 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
-import { Calculator, Building2, DollarSign, PieChart, Send, Copy, ExternalLink, AlertCircle, CheckCircle, RotateCcw } from 'lucide-react'
+import { Calculator, Building2, DollarSign, PieChart, Send, Copy, ExternalLink, AlertCircle, CheckCircle, RotateCcw, Info } from 'lucide-react'
 import { BudgetDonutChart } from '@/components/ui/budget-donut-chart'
 import { DisciplineChart } from '@/components/ui/discipline-chart'
+
+// Import new narrative components
+import { BudgetOverviewCard } from '@/components/admin/BudgetOverviewCard'
+import { DisciplineAllocationCard } from '@/components/admin/DisciplineAllocationCard'
+import { FeeComparison } from '@/components/admin/FeeComparison'
+import { HoursBreakdown } from '@/components/admin/HoursBreakdown'
+import { SanityCheckSection } from '@/components/admin/SanityCheckSection'
 
 export default function AdminCalculatorPage() {
   const [clientName, setClientName] = useState('Dr. Luis De Jesús')
   const [clientEmail, setClientEmail] = useState('')
-  const [notes, setNotes] = useState('')
   const [proposalUrl, setProposalUrl] = useState('')
   const [generating, setGenerating] = useState(false)
 
@@ -32,11 +38,22 @@ export default function AdminCalculatorPage() {
 
     setGenerating(true)
     try {
+      // Create client-safe data (no hours, rates, internal calculations)
+      const clientSafeData = {
+        classification: project.projectData.classification,
+        areas: project.projectData.areas,
+        multipliers: project.projectData.multipliers,
+        budgets: project.results.budgets,
+        disciplines: project.results.disciplines,
+        options: project.results.options
+        // Explicitly exclude: hours, fees (internal calculations)
+      }
+
       const response = await fetch('/api/proposals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          projectData: project.projectData,
+          projectData: clientSafeData,
           clientName,
           clientEmail,
           notes: `Generated from admin calculator. Overrides: ${project.hasChanges ? 'YES' : 'NO'}`
@@ -384,175 +401,95 @@ export default function AdminCalculatorPage() {
               </CardContent>
             </Card>
 
-            {/* Summary Cards */}
-            {project.results && (
+            {/* NARRATIVE FLOW: Results Section */}
+            {project.results && (() => {
+              const totalArea = project.projectData.areas.newAreaFt2 + project.projectData.areas.existingAreaFt2;
+              
+              return (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">${project.results.budgets.totalBudget.toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {project.projectData.areas.newAreaFt2 + project.projectData.areas.existingAreaFt2} ft² total
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Contract Price</CardTitle>
-                      <PieChart className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">${project.results.fees.contractPrice.toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {project.results.hours.totalHours.toLocaleString()} hours
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Option A</CardTitle>
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">${project.results.options.A.investment.toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground">Premium anchor</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Changes Status</CardTitle>
-                      <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">
-                        {project.hasChanges ? 'Modified' : 'Defaults'}
-                      </div>
-                      <p className="text-xs text-muted-foreground">Database: Read-only</p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Budget Breakdown with Charts */}
-                <Card>
+                {/* 1. PROJECT DEFINITION - Context First */}
+                <Card className="col-span-2 mb-6">
                   <CardHeader>
-                    <CardTitle>Budget Breakdown</CardTitle>
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      <Building2 className="h-6 w-6" />
+                      Project Definition
+                    </CardTitle>
                     <CardDescription>
-                      Live calculations • Database remains unchanged
+                      Building context and parameters that drive all calculations
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">Shell & Structure</span>
-                          <span className="text-lg font-semibold">${project.results.budgets.shellBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-gray-600">
-                          <span>Interior Finishes</span>
-                          <span>${project.results.budgets.interiorBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-gray-600">
-                          <span>Landscape</span>
-                          <span>${project.results.budgets.landscapeBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="border-t pt-3 mt-4">
-                          <div className="flex justify-between items-center font-semibold">
-                            <span>Total Budget</span>
-                            <span className="text-xl">${project.results.budgets.totalBudget.toLocaleString()}</span>
-                          </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="p-3 bg-gray-50 rounded">
+                        <div className="text-sm text-gray-600">Building Use/Type</div>
+                        <div className="font-semibold">{project.projectData.classification.buildingUse} - {project.projectData.classification.buildingType}</div>
+                      </div>
+                      <div className="p-3 bg-gray-50 rounded">
+                        <div className="text-sm text-gray-600">Category & Tier</div>
+                        <div className="font-semibold">Cat {project.projectData.classification.category} - {project.projectData.classification.buildingTier}</div>
+                      </div>
+                      <div className="p-3 bg-gray-50 rounded">
+                        <div className="text-sm text-gray-600">Total Area</div>
+                        <div className="font-semibold">
+                          {(project.projectData.areas.newAreaFt2 + project.projectData.areas.existingAreaFt2).toLocaleString()} ft²
                         </div>
                       </div>
-
-                      <div className="flex flex-col items-center">
-                        <BudgetDonutChart
-                          shellBudget={project.results.budgets.shellBudget}
-                          interiorBudget={project.results.budgets.interiorBudget}
-                          landscapeBudget={project.results.budgets.landscapeBudget}
-                          totalBudget={project.results.budgets.totalBudget}
-                        />
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                          Interactive • Hover for details
+                      <div className="p-3 bg-gray-50 rounded">
+                        <div className="text-sm text-gray-600">Design Level</div>
+                        <div className="font-semibold">Level {project.projectData.classification.designLevel}</div>
+                      </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-blue-600" />
+                        <p className="text-sm text-blue-800">
+                          This budget represents the <strong>minimum construction cost</strong> estimate from the PR building-cost database. 
+                          Professional design fees are calculated separately.
                         </p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Engineering Disciplines with Charts */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <CardTitle>Engineering Disciplines</CardTitle>
-                        <CardDescription>Architecture and engineering allocation</CardDescription>
-                      </div>
-                      {Object.keys(project.overrides.engineering || {}).length > 0 && (
-                        <Button variant="ghost" size="sm" onClick={project.resetEngineering}>
-                          <RotateCcw className="h-3 w-3 mr-1" />
-                          Reset to DB
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span>Architecture</span>
-                          <span className="font-semibold">${project.results.disciplines.architectureBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Structural</span>
-                          <span>${project.results.disciplines.structuralBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Civil</span>
-                          <span>${project.results.disciplines.civilBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Mechanical</span>
-                          <span>${project.results.disciplines.mechanicalBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Electrical</span>
-                          <span>${project.results.disciplines.electricalBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Plumbing</span>
-                          <span>${project.results.disciplines.plumbingBudget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Telecom</span>
-                          <span>${project.results.disciplines.telecomBudget.toLocaleString()}</span>
-                        </div>
-                      </div>
+                {/* 2. CONSTRUCTION BUDGET - Minimum Cost to Build */}
+                <BudgetOverviewCard 
+                  budgets={project.results.budgets}
+                  newAreaFt2={project.projectData.areas.newAreaFt2}
+                  existingAreaFt2={project.projectData.areas.existingAreaFt2}
+                />
 
-                      <div className="flex flex-col items-center">
-                        <DisciplineChart
-                          architectureBudget={project.results.disciplines.architectureBudget}
-                          structuralBudget={project.results.disciplines.structuralBudget}
-                          civilBudget={project.results.disciplines.civilBudget}
-                          mechanicalBudget={project.results.disciplines.mechanicalBudget}
-                          electricalBudget={project.results.disciplines.electricalBudget}
-                          plumbingBudget={project.results.disciplines.plumbingBudget}
-                          telecomBudget={project.results.disciplines.telecomBudget}
-                          totalBudget={project.results.budgets.shellBudget}
-                          className="mt-4"
-                        />
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                          Live calculations • Database safe
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* 3. DISCIPLINE ALLOCATION - How Shell Splits */}
+                <DisciplineAllocationCard 
+                  disciplines={project.results.disciplines}
+                  budgets={project.results.budgets}
+                  newPercent={totalArea > 0 ? (project.projectData.areas.newAreaFt2 / totalArea) * 100 : 0}
+                  remodelPercent={totalArea > 0 ? (project.projectData.areas.existingAreaFt2 / totalArea) * 100 : 0}
+                />
+
+                {/* 4. DESIGN FEE ANALYSIS - Two Non-Linear Views */}
+                <FeeComparison 
+                  fees={project.results.fees}
+                  totalBudget={project.results.budgets.totalBudget}
+                  totalHours={project.results.hours.totalHours}
+                  category={project.projectData.classification.category}
+                  onDiscountChange={(discount) => {
+                    // Handle discount changes if needed
+                  }}
+                />
+
+                {/* 5. HOURS DISTRIBUTION - Admin Only Diagnostics */}
+                <HoursBreakdown 
+                  hours={project.results.hours}
+                />
+
+                {/* 6. SANITY CHECK & PRICING */}
+                <SanityCheckSection 
+                  fees={project.results.fees}
+                  totalBudget={project.results.budgets.totalBudget}
+                  onDiscountChange={(discount) => {
+                    // Could update project state with discount if needed
+                  }}
+                />
 
                 {/* Client Options */}
                 <Card>
@@ -662,7 +599,8 @@ export default function AdminCalculatorPage() {
                   </CardContent>
                 </Card>
               </>
-            )}
+              )
+            })()}
 
             {project.error && (
               <Card className="border-red-200 bg-red-50">

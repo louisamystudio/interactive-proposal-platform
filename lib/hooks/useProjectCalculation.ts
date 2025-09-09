@@ -125,7 +125,7 @@ export function useProjectCalculation(
         )
         
         if (!costData) {
-          console.log('📋 Using fallback defaults for project calculation')
+          console.log('Using fallback defaults for project calculation')
           // Use fallback defaults from DR_DE_JESUS_PROJECT
           setDatabaseDefaults({
             costRanges: {
@@ -162,7 +162,7 @@ export function useProjectCalculation(
               mechanicalDesignShare: costData.designShares.mechanical,
               electricalDesignShare: costData.designShares.electrical,
               plumbingDesignShare: costData.designShares.plumbing,
-              telecomDesignShare: (costData.designShares as any).telecommunication || 0.0099
+              telecomDesignShare: costData.designShares.telecommunication ?? 0.0099
             }
           })
         }
@@ -197,6 +197,7 @@ export function useProjectCalculation(
     }
     
     loadDefaults()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only load ONCE - never reload database defaults
 
   // Merge database defaults with project overrides to create effective project data
