@@ -1,0 +1,54 @@
+Awesome—yes, let’s lock this in as a two-app story: a full-fidelity Admin calculator (internal math + all parameters) that can mint a client-safe proposal link showing only what a client should see (Chris-Do compliant: option A first, value language, absolutely no hours/rates). Below is a concrete, file-level plan tied to your repo docs so any agent can implement it without guessing.
+
+Admin → Client architecture (single source of truth)
+
+Contract: Admin enters parameters → engine computes → Admin presses “Generate proposal” → server writes a proposals row (inputs + results + options) → returns a secure token URL /proposal/[token] that renders a client-safe subset of the stored results. This mirrors the project’s 2-part architecture and 24-hour plan.
+
+Key references:
+
+Package summary & two-app intent
+
+SSOT formulas & outputs (budgets, hours, fees, options)
+
+Directory & page map (admin vs client)
+
+What is visible where
+Layer	What we show	What we never show (client)
+Admin (/admin/calculator)	All inputs, all calculations, fee tables, hours by phase/role, sliders, debug notices	—
+Client (/proposal/[token])	Option A/B/C cards (A first), budget donuts (client-safe buckets), value copy, 3D/Nira, CTA	Hours, rates, internal fee tables, discount slider, discipline rates/splits, markup/profit
+
+This is explicitly required across docs (Chris Do rules + client-safe narrative).
+
+Data model & API contracts
+Tables (Supabase)
+
+Use the schema already specified (add if missing):
+
+building_cost_data (cost ranges, default shares)
+
+category_multipliers
+
+proposals (stores admin inputs + full SSOT results + client options)
+
+proposal_events (analytics)
+
+Tokenized client links
+
+Token: 32 bytes base64url (server-generated) stored on proposals.token.
+
+Client page loads by token; API serves client-safe JSON only (see “client payload” below).
+
+Add RLS policy or server gating so reads happen only by token (or via server route).
+
+File-level implementation plan
+1) Admin calculator (complete view)
+
+Route: app/admin/calculator/page.tsx (already present, expand it)
+
+Components to wire (names align with your structure):
+
+components/admin/ProjectSetupForm.tsx – Use/type inputs from /lib/types.ts; debounce 300 ms.
+
+components/admin/CostRangeSliders.tsx – Anchor min/target/max to building_cost_data.
+
+components/admin/BudgetAllocationCard.tsx – Render Shell/Interior/Landscape with $+% and normalized shares (defaults 66/22/12).

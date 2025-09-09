@@ -32,9 +32,24 @@ export async function GET(request: NextRequest, { params }: ProposalParams) {
     // Log the view (but don't mark as viewed yet - that happens when they actually view it)
     // This is just for the API access
     
+    // Return only client-safe data
+    // NEVER expose: hours, rates, internal costs, markup, discounts, bottom-up analysis
+    const clientSafeData = proposal.client_safe_data || {
+      token: proposal.token,
+      clientName: proposal.client_name,
+      clientEmail: proposal.client_email,
+      projectInfo: proposal.project_data,
+      options: proposal.project_data?.options,
+      distribution: proposal.project_data?.distribution,
+      totalBudget: proposal.project_data?.totalBudget,
+      contractPrice: proposal.project_data?.contractPrice,
+      createdAt: proposal.created_at,
+      validUntil: proposal.expires_at
+    }
+    
     return NextResponse.json({
       success: true,
-      data: proposal
+      data: clientSafeData
     })
   } catch (error) {
     console.error('Error retrieving proposal:', error)

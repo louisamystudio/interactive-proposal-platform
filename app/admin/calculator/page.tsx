@@ -42,6 +42,7 @@ export default function AdminCalculatorPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectData: project.projectData,
+          results: project.results, // Include full calculation results
           clientName,
           clientEmail,
           notes: `Generated from admin calculator. Overrides: ${project.hasChanges ? 'YES' : 'NO'}`
