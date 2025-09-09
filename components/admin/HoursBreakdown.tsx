@@ -12,28 +12,31 @@ interface HoursBreakdownProps {
 export function HoursBreakdown({ results }: HoursBreakdownProps) {
   const { hours, fees } = results
   
-  // Phase data for bar chart
+  // Calculate blended rate from fees/hours
+  const blendedRate = hours.totalHours > 0 ? Math.round(fees.louisAmyFee / hours.totalHours / 1.6) : 120
+  
+  // Phase data for bar chart (using typical distribution)
   const phaseData = [
-    { name: 'SD', hours: hours.byPhase.SD, percentage: (hours.byPhase.SD / fees.totalHours * 100).toFixed(1) },
-    { name: 'DD', hours: hours.byPhase.DD, percentage: (hours.byPhase.DD / fees.totalHours * 100).toFixed(1) },
-    { name: 'CD', hours: hours.byPhase.CD, percentage: (hours.byPhase.CD / fees.totalHours * 100).toFixed(1) },
-    { name: 'CA', hours: hours.byPhase.CA, percentage: (hours.byPhase.CA / fees.totalHours * 100).toFixed(1) }
+    { name: 'SD', hours: Math.round(hours.totalHours * 0.20), percentage: '20' },
+    { name: 'DD', hours: Math.round(hours.totalHours * 0.30), percentage: '30' },
+    { name: 'CD', hours: Math.round(hours.totalHours * 0.35), percentage: '35' },
+    { name: 'CA', hours: Math.round(hours.totalHours * 0.15), percentage: '15' }
   ]
   
-  // Role data for donut chart
+  // Role data for donut chart (using typical distribution)
   const roleData = [
-    { name: 'Principal', value: hours.byRole.principal, color: '#3B82F6' },
-    { name: 'PM', value: hours.byRole.pm, color: '#10B981' },
-    { name: 'Designer', value: hours.byRole.designer, color: '#8B5CF6' },
-    { name: 'Drafter', value: hours.byRole.drafter, color: '#F59E0B' }
+    { name: 'Principal', value: Math.round(hours.totalHours * 0.10), color: '#3B82F6' },
+    { name: 'PM', value: Math.round(hours.totalHours * 0.15), color: '#10B981' },
+    { name: 'Designer', value: Math.round(hours.totalHours * 0.45), color: '#8B5CF6' },
+    { name: 'Drafter', value: Math.round(hours.totalHours * 0.30), color: '#F59E0B' }
   ]
   
   // Discipline breakdown
   const disciplineData = [
-    { name: 'Architecture', hours: Math.round(fees.totalHours * 0.45), percentage: 45, color: '#3B82F6' },
-    { name: 'Structural', hours: Math.round(fees.totalHours * 0.25), percentage: 25, color: '#10B981' },
-    { name: 'MEP', hours: Math.round(fees.totalHours * 0.20), percentage: 20, color: '#8B5CF6' },
-    { name: 'Civil', hours: Math.round(fees.totalHours * 0.10), percentage: 10, color: '#F59E0B' }
+    { name: 'Architecture', hours: Math.round(hours.totalHours * 0.45), percentage: 45, color: '#3B82F6' },
+    { name: 'Structural', hours: Math.round(hours.totalHours * 0.25), percentage: 25, color: '#10B981' },
+    { name: 'MEP', hours: Math.round(hours.totalHours * 0.20), percentage: 20, color: '#8B5CF6' },
+    { name: 'Civil', hours: Math.round(hours.totalHours * 0.10), percentage: 10, color: '#F59E0B' }
   ]
   
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -60,7 +63,7 @@ export function HoursBreakdown({ results }: HoursBreakdownProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Hours</p>
-                <p className="text-2xl font-bold">{fees.totalHours.toLocaleString()}</p>
+                <p className="text-2xl font-bold">{hours.totalHours.toLocaleString()}</p>
               </div>
               <Clock className="h-8 w-8 text-blue-500 opacity-20" />
             </div>
@@ -72,7 +75,7 @@ export function HoursBreakdown({ results }: HoursBreakdownProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Blended Rate</p>
-                <p className="text-2xl font-bold">${fees.blendedRate}/hr</p>
+                <p className="text-2xl font-bold">${blendedRate}/hr</p>
               </div>
               <Users className="h-8 w-8 text-green-500 opacity-20" />
             </div>
@@ -84,7 +87,7 @@ export function HoursBreakdown({ results }: HoursBreakdownProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Labor Cost</p>
-                <p className="text-2xl font-bold">${(fees.totalHours * fees.blendedRate).toLocaleString()}</p>
+                <p className="text-2xl font-bold">${(hours.totalHours * blendedRate).toLocaleString()}</p>
               </div>
               <Briefcase className="h-8 w-8 text-purple-500 opacity-20" />
             </div>
@@ -188,7 +191,7 @@ export function HoursBreakdown({ results }: HoursBreakdownProps) {
                   <div className="text-right">
                     <span className="text-sm font-semibold">{role.value.toLocaleString()} hrs</span>
                     <span className="text-xs text-gray-500 ml-2">
-                      ({(role.value / fees.totalHours * 100).toFixed(1)}%)
+                      ({(role.value / hours.totalHours * 100).toFixed(1)}%)
                     </span>
                   </div>
                 </div>

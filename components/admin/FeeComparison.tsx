@@ -13,7 +13,10 @@ interface FeeComparisonProps {
 }
 
 export function FeeComparison({ results, discount, onDiscountChange }: FeeComparisonProps) {
-  const { fees } = results
+  const { fees, hours } = results
+  
+  // Calculate blended rate from fees/hours
+  const blendedRate = hours.totalHours > 0 ? Math.round(fees.louisAmyFee / hours.totalHours / 1.6) : 120
   
   // Calculate discounted market fee
   const discountedMarketFee = fees.marketFee * (1 - discount / 100)
@@ -97,17 +100,17 @@ export function FeeComparison({ results, discount, onDiscountChange }: FeeCompar
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Total Hours</span>
-                <span className="font-semibold">{fees.totalHours.toLocaleString()} hrs</span>
+                <span className="font-semibold">{hours.totalHours.toLocaleString()} hrs</span>
               </div>
               
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Blended Rate</span>
-                <span className="font-semibold">${fees.blendedRate}/hr</span>
+                <span className="font-semibold">${blendedRate}/hr</span>
               </div>
               
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Overhead (1.6x)</span>
-                <span className="text-gray-600">${(fees.totalHours * fees.blendedRate * 0.6).toLocaleString()}</span>
+                <span className="text-gray-600">${(hours.totalHours * blendedRate * 0.6).toLocaleString()}</span>
               </div>
               
               <div className="border-t pt-2">
@@ -123,15 +126,15 @@ export function FeeComparison({ results, discount, onDiscountChange }: FeeCompar
               <div className="text-xs font-medium text-gray-600 mb-2">Hours by Discipline</div>
               <div className="flex justify-between text-sm">
                 <span>Architecture</span>
-                <span>{Math.round(fees.totalHours * 0.45).toLocaleString()} hrs</span>
+                <span>{Math.round(hours.totalHours * 0.45).toLocaleString()} hrs</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Structural</span>
-                <span>{Math.round(fees.totalHours * 0.25).toLocaleString()} hrs</span>
+                <span>{Math.round(hours.totalHours * 0.25).toLocaleString()} hrs</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>MEP/Civil</span>
-                <span>{Math.round(fees.totalHours * 0.30).toLocaleString()} hrs</span>
+                <span>{Math.round(hours.totalHours * 0.30).toLocaleString()} hrs</span>
               </div>
             </div>
           </CardContent>

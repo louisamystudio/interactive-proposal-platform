@@ -574,14 +574,18 @@ export default function AdminCalculatorPage() {
                 </Card>
 
                 {/* 3. FEE COMPARISON - Top-Down vs Bottom-Up Analysis */}
-                <FeeComparison 
-                  results={project.results}
-                  discount={discount}
-                  onDiscountChange={setDiscount}
-                />
+                {project.results && (
+                  <FeeComparison 
+                    results={project.results}
+                    discount={discount}
+                    onDiscountChange={setDiscount}
+                  />
+                )}
 
                 {/* 4. HOURS BREAKDOWN - Phase and Role Distribution */}
-                <HoursBreakdown results={project.results} />
+                {project.results && (
+                  <HoursBreakdown results={project.results} />
+                )}
 
                 {/* Client Options */}
                 <Card>
