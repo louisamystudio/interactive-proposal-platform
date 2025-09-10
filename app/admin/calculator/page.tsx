@@ -245,10 +245,20 @@ export default function AdminCalculatorPage() {
 
             {costConfig && (
               <CostRangeSliders
-                costs={project.projectData.costs}
-                ranges={costConfig.psf}
-                onUpdate={project.updateCosts}
-                overrides={project.overrides.costs}
+                newConstruction={{
+                  min: costConfig.psf.new.min,
+                  target: costConfig.psf.new.target,
+                  max: costConfig.psf.new.max,
+                  current: project.projectData.costs.newTargetPSF
+                }}
+                remodel={{
+                  min: costConfig.psf.remodel.min,
+                  target: costConfig.psf.remodel.target,
+                  max: costConfig.psf.remodel.max,
+                  current: project.projectData.costs.remodelTargetPSF
+                }}
+                onNewChange={(value) => project.updateCosts({ newTargetPSF: value })}
+                onRemodelChange={(value) => project.updateCosts({ remodelTargetPSF: value })}
               />
             )}
 
