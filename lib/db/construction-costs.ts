@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { query, querySingle } from '../db'
 import { getFallbackData, COMPREHENSIVE_FALLBACK_DATA } from '../comprehensive-fallback-data'
 
 // Types for construction cost data
@@ -73,72 +73,22 @@ export interface ConstructionCostData {
   designShares: DesignShares
 }
 
-// Row type matching Supabase table schema (used internally by queries)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type PrConstructionCostIndex2025Row = {
-  id: string
-  building_use: string
-  building_type: string
-  category: number
-  building_tier: string
-  shell_new_min: number | null
-  shell_existing_min: number | null
-  shell_new_target: number | null
-  shell_existing_target: number | null
-  shell_new_max: number | null
-  shell_existing_max: number | null
-  interior_new_min: number | null
-  interior_existing_min: number | null
-  interior_new_target: number | null
-  interior_existing_target: number | null
-  interior_new_max: number | null
-  interior_existing_max: number | null
-  landscape_new_min: number | null
-  landscape_existing_min: number | null
-  landscape_new_target: number | null
-  landscape_existing_target: number | null
-  landscape_new_max: number | null
-  landscape_existing_max: number | null
-  pool_new_min: number | null
-  pool_existing_min: number | null
-  pool_new_target: number | null
-  pool_existing_target: number | null
-  pool_new_max: number | null
-  pool_existing_max: number | null
-  project_shell_share_pct: number | null
-  project_interior_share_pct: number | null
-  project_landscape_share_pct: number | null
-  architectural_design_share_pct: number | null
-  interior_design_share_pct: number | null
-  landscape_design_share_pct: number | null
-  structural_design_share_pct: number | null
-  civil_design_share_pct: number | null
-  mechanical_design_share_pct: number | null
-  electrical_design_share_pct: number | null
-  plumbing_design_share_pct: number | null
-  telecommunication_design_share_pct: number | null
-}
-
 // Service functions for construction cost data
 export const constructionCostService = {
   // Get all unique building uses
   async getBuildingUses(): Promise<string[]> {
     try {
-      if (!supabase) {
-        console.log('🔄 Supabase not available, using fallback building uses...')
-        return Object.keys(COMPREHENSIVE_FALLBACK_DATA)
+      const data = await query<{ building_use: string }>(`
+        SELECT DISTINCT building_use 
+        FROM pr_construction_cost_index_2025 
+        ORDER BY building_use
+      `)
+      
+      if (!data || data.length === 0) {
+        throw new Error('No data found')
       }
-
-      const { data, error } = await supabase
-        .from('pr_construction_cost_index_2025')
-        .select('building_use')
-        .order('building_use')
       
-      if (error) throw error
-      
-      // Get unique values
-      const uniqueUses = Array.from(new Set((data || []).map((item) => item.building_use)))
-      return uniqueUses
+      return data.map(item => item.building_use)
     } catch (error) {
       console.error('Error fetching building uses:', error)
       console.log('🔄 Using comprehensive fallback building uses...')
@@ -151,23 +101,18 @@ export const constructionCostService = {
   // Get building types for a specific building use
   async getBuildingTypes(buildingUse: string): Promise<string[]> {
     try {
-      if (!supabase) {
-        console.log('🔄 Supabase not available, using fallback building types...')
-        const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
-        return useData ? Object.keys(useData) : []
+      const data = await query<{ building_type: string }>(`
+        SELECT DISTINCT building_type 
+        FROM pr_construction_cost_index_2025 
+        WHERE building_use = $1
+        ORDER BY building_type
+      `, [buildingUse])
+      
+      if (!data || data.length === 0) {
+        throw new Error('No data found')
       }
-
-      const { data, error } = await supabase
-        .from('pr_construction_cost_index_2025')
-        .select('building_type')
-        .eq('building_use', buildingUse)
-        .order('building_type')
       
-      if (error) throw error
-      
-      // Get unique values
-      const uniqueTypes = Array.from(new Set((data || []).map((item) => item.building_type)))
-      return uniqueTypes
+      return data.map(item => item.building_type)
     } catch (error) {
       console.error('Error fetching building types:', error)
       console.log('🔄 Using comprehensive fallback building types...')
@@ -185,18 +130,18 @@ export const constructionCostService = {
   // Get building tiers for a specific building type
   async getBuildingTiers(buildingUse: string, buildingType: string): Promise<string[]> {
     try {
-      const { data, error } = await supabase
-        .from('pr_construction_cost_index_2025')
-        .select('building_tier')
-        .eq('building_use', buildingUse)
-        .eq('building_type', buildingType)
-        .order('building_tier')
+      const data = await query<{ building_tier: string }>(`
+        SELECT DISTINCT building_tier 
+        FROM pr_construction_cost_index_2025 
+        WHERE building_use = $1 AND building_type = $2
+        ORDER BY building_tier
+      `, [buildingUse, buildingType])
       
-      if (error) throw error
+      if (!data || data.length === 0) {
+        throw new Error('No data found')
+      }
       
-      // Get unique values
-      const uniqueTiers = Array.from(new Set((data || []).map((item) => item.building_tier)))
-      return uniqueTiers
+      return data.map(item => item.building_tier)
     } catch (error) {
       console.error('Error fetching building tiers:', error)
       console.log('🔄 Using comprehensive fallback building tiers...')
@@ -222,18 +167,18 @@ export const constructionCostService = {
   // Get categories for a building type
   async getCategories(buildingUse: string, buildingType: string): Promise<number[]> {
     try {
-      const { data, error } = await supabase
-        .from('pr_construction_cost_index_2025')
-        .select('category')
-        .eq('building_use', buildingUse)
-        .eq('building_type', buildingType)
-        .order('category')
+      const data = await query<{ category: number }>(`
+        SELECT DISTINCT category 
+        FROM pr_construction_cost_index_2025 
+        WHERE building_use = $1 AND building_type = $2
+        ORDER BY category
+      `, [buildingUse, buildingType])
       
-      if (error) throw error
+      if (!data || data.length === 0) {
+        throw new Error('No data found')
+      }
       
-      // Get unique values
-      const uniqueCategories = Array.from(new Set((data || []).map((item) => item.category)))
-      return uniqueCategories
+      return data.map(item => item.category)
     } catch (error) {
       console.error('Error fetching categories:', error)
       console.log('🔄 Using comprehensive fallback categories...')
@@ -259,75 +204,75 @@ export const constructionCostService = {
     buildingTier: string
   ): Promise<ConstructionCostData | null> {
     try {
-      const { data, error } = await supabase
-        .from('pr_construction_cost_index_2025')
-        .select('*')
-        .eq('building_use', buildingUse)
-        .eq('building_type', buildingType)
-        .eq('category', category)
-        .eq('building_tier', buildingTier)
-        .single()
+      const data = await querySingle<any>(`
+        SELECT * FROM pr_construction_cost_index_2025 
+        WHERE building_use = $1 
+        AND building_type = $2 
+        AND category = $3 
+        AND building_tier = $4
+        LIMIT 1
+      `, [buildingUse, buildingType, category, buildingTier])
       
-      if (error) throw error
-      
-      if (!data) return null
+      if (!data) {
+        throw new Error('No data found')
+      }
       
       // Transform database data to our interface
       return {
-        id: data.id as unknown as number, // Not used outside; preserve shape
+        id: 0, // Not used; preserve shape
         buildingUse: data.building_use,
         buildingType: data.building_type,
         category: data.category,
         buildingTier: data.building_tier,
         costRanges: {
           shell: {
-            newMin: Number(data.shell_new_min),
-            newTarget: Number(data.shell_new_target),
-            newMax: Number(data.shell_new_max),
-            remodelMin: Number(data.shell_existing_min),
-            remodelTarget: Number(data.shell_existing_target),
-            remodelMax: Number(data.shell_existing_max)
+            newMin: Number(data.shell_new_min || 0),
+            newTarget: Number(data.shell_new_target || 0),
+            newMax: Number(data.shell_new_max || 0),
+            remodelMin: Number(data.shell_existing_min || 0),
+            remodelTarget: Number(data.shell_existing_target || 0),
+            remodelMax: Number(data.shell_existing_max || 0)
           },
           interior: {
-            newMin: Number(data.interior_new_min),
-            newTarget: Number(data.interior_new_target),
-            newMax: Number(data.interior_new_max),
-            remodelMin: Number(data.interior_existing_min),
-            remodelTarget: Number(data.interior_existing_target),
-            remodelMax: Number(data.interior_existing_max)
+            newMin: Number(data.interior_new_min || 0),
+            newTarget: Number(data.interior_new_target || 0),
+            newMax: Number(data.interior_new_max || 0),
+            remodelMin: Number(data.interior_existing_min || 0),
+            remodelTarget: Number(data.interior_existing_target || 0),
+            remodelMax: Number(data.interior_existing_max || 0)
           },
           landscape: {
-            newMin: Number(data.landscape_new_min),
-            newTarget: Number(data.landscape_new_target),
-            newMax: Number(data.landscape_new_max),
-            remodelMin: Number(data.landscape_existing_min),
-            remodelTarget: Number(data.landscape_existing_target),
-            remodelMax: Number(data.landscape_existing_max)
+            newMin: Number(data.landscape_new_min || 0),
+            newTarget: Number(data.landscape_new_target || 0),
+            newMax: Number(data.landscape_new_max || 0),
+            remodelMin: Number(data.landscape_existing_min || 0),
+            remodelTarget: Number(data.landscape_existing_target || 0),
+            remodelMax: Number(data.landscape_existing_max || 0)
           },
           pool: {
-            newMin: Number(data.pool_new_min),
-            newTarget: Number(data.pool_new_target),
-            newMax: Number(data.pool_new_max),
-            remodelMin: Number(data.pool_existing_min),
-            remodelTarget: Number(data.pool_existing_target),
-            remodelMax: Number(data.pool_existing_max)
+            newMin: Number(data.pool_new_min || 0),
+            newTarget: Number(data.pool_new_target || 0),
+            newMax: Number(data.pool_new_max || 0),
+            remodelMin: Number(data.pool_existing_min || 0),
+            remodelTarget: Number(data.pool_existing_target || 0),
+            remodelMax: Number(data.pool_existing_max || 0)
           }
         },
         projectShares: {
-          shellShare: Number(data.project_shell_share_pct) / 100, // Use percentage column
-          interiorShare: Number(data.project_interior_share_pct) / 100,
-          landscapeShare: Number(data.project_landscape_share_pct) / 100
+          shellShare: Number(data.project_shell_share_pct || 0) / 100, // Use percentage column
+          interiorShare: Number(data.project_interior_share_pct || 0) / 100,
+          landscapeShare: Number(data.project_landscape_share_pct || 0) / 100
         },
         designShares: {
-          architectural: Number(data.architectural_design_share_pct) / 100,
-          interior: Number(data.interior_design_share_pct) / 100,
-          landscape: Number(data.landscape_design_share_pct) / 100,
-          structural: Number(data.structural_design_share_pct) / 100,
-          civil: Number(data.civil_design_share_pct) / 100,
-          mechanical: Number(data.mechanical_design_share_pct) / 100,
-          electrical: Number(data.electrical_design_share_pct) / 100,
-          plumbing: Number(data.plumbing_design_share_pct) / 100,
-          telecommunication: Number(data.telecommunication_design_share_pct) / 100
+          architectural: Number(data.architectural_design_share_pct || 0) / 100,
+          interior: Number(data.interior_design_share_pct || 0) / 100,
+          landscape: Number(data.landscape_design_share_pct || 0) / 100,
+          structural: Number(data.structural_design_share_pct || 0) / 100,
+          civil: Number(data.civil_design_share_pct || 0) / 100,
+          mechanical: Number(data.mechanical_design_share_pct || 0) / 100,
+          electrical: Number(data.electrical_design_share_pct || 0) / 100,
+          plumbing: Number(data.plumbing_design_share_pct || 0) / 100,
+          telecommunication: Number(data.telecommunication_design_share_pct || 0) / 100
         }
       }
     } catch (error) {
@@ -366,15 +311,17 @@ export const constructionCostService = {
   // Get calculation constants from database
   async getCalculationConstants(): Promise<Record<string, number>> {
     try {
-      const { data, error } = await supabase
-        .from('calculation_constants')
-        .select('key, value')
+      const data = await query<{ key: string; value: number }>(`
+        SELECT key, value FROM calculation_constants
+      `)
       
-      if (error) throw error
+      if (!data || data.length === 0) {
+        throw new Error('No constants found')
+      }
       
       // Convert to key-value object
       const constants: Record<string, number> = {}
-      data?.forEach(item => {
+      data.forEach(item => {
         constants[item.key] = Number(item.value)
       })
       
@@ -401,15 +348,17 @@ export const constructionCostService = {
   // Get category multiplier
   async getCategoryMultiplier(category: number): Promise<number> {
     try {
-      const { data, error } = await supabase
-        .from('category_multipliers')
-        .select('multiplier')
-        .eq('category', category)
-        .single()
+      const data = await querySingle<{ multiplier: number }>(`
+        SELECT multiplier FROM category_multipliers 
+        WHERE category = $1
+        LIMIT 1
+      `, [category])
       
-      if (error) throw error
+      if (!data) {
+        throw new Error('No multiplier found')
+      }
       
-      return Number(data?.multiplier || 1.0)
+      return Number(data.multiplier)
     } catch (error) {
       console.error('Error fetching category multiplier:', error)
       // Fallback to default multipliers
@@ -424,4 +373,3 @@ export const constructionCostService = {
     }
   }
 }
-

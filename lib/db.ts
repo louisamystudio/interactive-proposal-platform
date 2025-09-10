@@ -5,12 +5,11 @@ const connectionString = process.env.DATABASE_URL
 
 export const pool = new Pool({
   connectionString,
-  ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: false
-  } : false,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  ssl: false, // Replit PostgreSQL doesn't require SSL
+  max: 10, // Reduce pool size for better management
+  idleTimeoutMillis: 10000, // Reduce idle timeout
+  connectionTimeoutMillis: 5000, // Increase connection timeout
+  query_timeout: 10000, // Add query timeout
 })
 
 // Database query helper
