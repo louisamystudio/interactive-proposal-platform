@@ -1,0 +1,70 @@
+UI structure (files)
+
+Admin: ProjectSetupForm, CostRangeSliders, BudgetAllocationCard, DisciplineCards, FeeComparison, HoursBreakdown, ProposalExport
+
+Client: OptionComparison, BudgetDonut (client-safe), ProofOfPrecision, ConversionCTA
+
+Charts: donuts/bars follow your design tokens; components only render engine outputs (no math in React).
+
+QA gates
+
+Math parity: Dr. De Jesús fixture → Total Budget = $859,365; default shares 66/22/12 (or DB defaults clearly labeled).
+
+Client safety: No internal strings leak (see test above).
+
+Perf: TTI < 3 s mobile, charts < 500 ms, lazy-load 3D.
+
+Action list for the agent (do this now)
+
+BudgetAllocationCard
+Normalize to 100 % and show $ + %; show “DB default” ticks on the sliders; add “Reset to Studio defaults (66/22/12)”.
+
+DisciplineCards
+Compute Architecture = Shell − Σ(engineering); add expander rows for New vs Remodel per card. Acceptance: Architecture + Σ(engineering) = Shell (±$1).
+
+FeeComparison + Sanity strip
+Keep both lenses visible for admins; slider ≤ 25 %; Contract = max(discounted Market, LA); add a tiny “winner” chip and “client savings”.
+
+HoursBreakdown
+Phase bars (8/8/34/8/34/8) + Role donut; center label “Total Hours”. Admin-only.
+
+ProposalExport + API/DB
+Implement POST /api/proposals and persist the full admin blob; return 32-byte base64url token; add RLS read-by-token policy; expose /api/health.
+
+Client route
+Build /proposal/[token] with Option A/B/C (A first), Investment donut, Proof, CTA. Fetch a trimmed DTO (no hours/rates/discounts). Add Playwright test asserting forbidden strings are absent.
+
+Analytics
+Add proposal_events and a tiny trackEvent() to log opened / option_viewed / cta_clicked for proposals.
+
+If you want, I can draft the minimal app/api/proposals/route.ts (create + token) and a client-safe DTO mapper your agent can paste in—then we re-test the live link end-to-end and tick off the QA gates.
+
+Worked for 8 minutes
+
+The admin calculator now loads completely and follows the storytelling structure laid out in the “NewDashboard” blueprint: Project Information, Project Overview with a clear disclaimer that construction cost estimates come from the Puerto Rico building‑cost database and that design fees are separate
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+. It then walks through Cost Targets and Budget Shares, showing a donut chart for Shell/Interior/Landscape and dynamic sliders tied to DB defaults
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+. Below that, Engineering Disciplines calculate Architecture as the remainder of the Shell budget and present each engineering discipline with dollars and percentages
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+. A detailed Fee Analysis compares the Top‑Down market rate to the Bottom‑Up Louis Amy hours‑based fee and computes the Contract Price with an admin‑only discount slider, client savings and a winner indicator
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+. The page also includes Investment Options (A/B/C), a Sanity Check with variance and effective rate, and diagnostic charts for Hours by Phase, Hours by Role, and Hours by Discipline
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+.
+
+When measured against the Replit branch instructions, however, several enhancements remain unimplemented. The “NewDashboard” file calls for an interactive, narrative‑driven flow that mirrors a storyboard: project definition → construction budget → design fee (Top‑Down vs Bottom‑Up) → adjustments → phase/role allocation → client options. While the current UI now follows this order, the more recent Replit instructions propose additional interactive elements that are missing:
+
+Discipline donut chart: The instructions recommend replacing static discipline cards with an interactive donut chart using react-chartjs-2 to show the proportion of each discipline. The current implementation still uses individual cards and mini-bars rather than a single interactive donut visualization.
+
+Cost comparison timeline & market comparison chart: The agent was instructed to visualize min/target/max cost bands and compare cost per square foot to local market ranges, but no such timeline or comparison chart appears in the live admin page.
+
+Progressive disclosure: The Replit guidelines ask for collapsible sections for assumptions/exclusions and expandable service cards for deliverables. The live admin page does not provide collapsible or expandable details.
+
+Tabbed cost views: The instructions suggest a tabbed interface (Summary vs Detailed Breakdown) to switch between high‑level totals and deeper breakdowns; the current page presents all data in one continuous scroll.
+
+Interactive engagement features: Tooltips on technical terms, toggle switches for optional services (visual only, not affecting price) and a small portfolio image slider are recommended. These elements are absent from the current UI.
+
+Strict client‑safe presentation: Both the NewDashboard blueprint and the Replit instructions stress that clients should never see hours, rates or margins. The current admin page still surfaces hours and blended rate; these must remain hidden in the client‑facing proposal.
+
+In summary, the admin calculator now delivers a coherent flow and implements the key narrative steps from the NewDashboard blueprint, including project setup, budget breakdowns, discipline allocation, fee analysis, sanity check, hours diagnostics and client options. To fully match the Replit branch instructions, the development team should add the interactive donut for disciplines, cost/timeline visualizations, collapsible assumption sections, tabbed summary/detail views, optional service toggles and a small portfolio carousel. These additions will deepen user engagement without revealing sensitive data and will align the UI with the proposed Replit enhancements.

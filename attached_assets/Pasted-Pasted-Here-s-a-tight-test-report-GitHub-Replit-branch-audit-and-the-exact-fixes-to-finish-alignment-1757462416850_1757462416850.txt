@@ -1,0 +1,99 @@
+Pasted-Here-s-a-tight-test-report-GitHub-Replit-branch-audit-and-the-exact-fixes-to-finish-alignment--1757461111082_1757461111083.txt
+Here’s a tight test report + GitHub (Replit branch) audit and the exact fixes to finish alignment.
+
+What I can see live right now
+
+Admin calculator loads and renders the dashboard UI (overview cards, budget donut, discipline section, options).
+
+Client proposal route renders and is reachable; it currently shows the loading/hero/option structure.
+
+Ground truth you want the UI to follow (why the current UI feels “out of order”)
+
+Your spec requires a storyboarded flow:
+Project definition → Construction budget (minimum cost to build from PR DB) → Fee analysis (Top-Down vs Bottom-Up) → Sanity Check (variance + discount) → Phases/Roles → Client Options → Export. That narrative is spelled out in your “new UI” blueprint and the NewDashboard brief.
+
+Admin app — test results (and how to fix gaps)
+1) Project Definition (inputs, context)
+
+Expected: Use/Type/Tier, Category, Design Level, Areas (new/existing), Site area, Multipliers; a one-liner: “Construction budget is the minimum build cost from the PR cost DB; design fees are separate.”
+Test: Verify inputs debounce (~300 ms), and that changing Design Level updates the PSF bands.
+If missing: Add ProjectSetupForm header + disclaimer under the title; ensure category/design-level tooltips explain their effect.
+
+2) Construction Budget (minimum build cost)
+
+Expected: Two PSF sliders (New, Remodel) anchored to DB min/target/max with a tick for “DB default”. Two visuals:
+
+New vs Remodel (donut by area, not dollars)
+
+Budget shares (Shell/Interior/Landscape) with $ + %, normalized (defaults 66/22/12)
+Test: Move target PSF; confirm Total Budget and shares update instantly.
+If shares show 62/24/14 by default, add a caption: “DB default shares” and a toggle to “Reset to Studio defaults (66/22/12)”.
+
+3) Engineering Disciplines (where Shell goes)
+
+Expected: Grid of cards: Structural, Civil, Mechanical, Electrical, Plumbing, Telecom; Architecture = Shell remainder. Click to expand shows New vs Remodel subtotals.
+Test: Sum(engineering) + Architecture ≈ Shell (±$1).
+If missing: Implement DisciplineCards to compute Architecture as remainder; add mini expanders for new/remodel splits.
+
+4) Fee Analysis (admin-only)
+
+Expected: Two-pane FeeComparison
+
+Top-Down (Market): % of construction × category multiplier (per-scope table optional)
+
+Bottom-Up (Louis Amy): non-linear hours × blended cost
+
+Contract = max( market × (1 − discount≤25%), louisAmy ) with a small “winner” chip & “client savings” line
+Test: Move discount; confirm Contract updates and never exceeds 25 % cut to market.
+If the pane is thin or absent: Keep totals only (admin), no granular rates in UI; wire the slider to the Contract tile.
+
+5) Phases & Roles (admin diagnostics)
+
+Expected: Phase ladder (Discovery 8 %, Creative 8/34/8, Technical 34/8) and Role donut (Designer1/Designer2/Architect/Engineer/Principal). Center label: Total Hours. Admin-only.
+Test: Sum of phase % = 100 %; donut sums to total hours from engine.
+
+6) Sanity Check strip (admin-only)
+
+Expected: Three tiles: Top-Down, Bottom-Up, Contract + a small variance chip (Top-Down – Bottom-Up). Discount slider can live here or on Contract tile.
+Test: Confirm discount ≤ 25 % and Contract ≥ discounted Market, Contract ≥ LA.
+
+7) Options (admin preview of client-safe story)
+
+Expected: Option A/B/C (A emphasized), value copy, no hours/rates; ProposalExport persists a full admin blob and returns a token URL for the client route.
+Test: Generate → tokenized /proposal/[token] link works and renders (see next section).
+
+Client proposal — test results (and any fixes)
+
+What to show (only):
+
+Hero + premium, value-based copy
+
+Option A/B/C, A first (anchor)
+
+Investment Breakdown donut (Scan-to-BIM, Building Shell, Interior, Landscape) with $ + %
+
+Proof of Precision (Nira/renders)
+
+Conversion CTA (Accept / Schedule Call)
+
+What never to show: hours, rates, discount sliders, internal shares/discipline math. The client route must load a trimmed payload only.
+
+Test: Open /proposal/[token]; search the HTML/JSON for the strings hour, rate, overhead, discount, contract — must not exist.
+
+Replit branch on GitHub — what to audit (fast checklist)
+
+Branch parity & envs
+
+.env / Vercel env: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY all set; add /api/health (200 {ok:true}) to smoke deployments.
+
+DB schema & RLS
+
+Tables: building_cost_data, category_multipliers, proposals, proposal_events
+
+RLS: proposals readable only by token (or server route gating). Seed PR cost bands + default shares so sliders display anchors.
+
+Server routes
+
+POST /api/proposals recomputes with the engine, inserts { inputs, results: { budgets, disciplines, hours, fees, options }, token } and returns { token }.
+
+Client route /proposal/[token] fetches a client-safe ...
