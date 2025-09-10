@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { query, querySingle } from '@/lib/db'
+import { query, querySingle } from '@/lib/db-server'
 
 interface CostConfig {
   classification: {
