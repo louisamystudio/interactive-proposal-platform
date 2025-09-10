@@ -1,15 +1,18 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Building2, Home, Trees } from 'lucide-react'
+import { Building2, Home, Trees, RotateCcw } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { CalculationResults } from '@/lib/types'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 
 interface BudgetAllocationCardProps {
   results: CalculationResults
+  onResetToDefaults?: () => void
+  hasOverrides?: boolean
 }
 
-export function BudgetAllocationCard({ results }: BudgetAllocationCardProps) {
+export function BudgetAllocationCard({ results, onResetToDefaults, hasOverrides = false }: BudgetAllocationCardProps) {
   const { budgets } = results
   
   // Calculate normalized percentages (should sum to 100%)
@@ -63,9 +66,22 @@ export function BudgetAllocationCard({ results }: BudgetAllocationCardProps) {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Budget Allocation</span>
-          <span className="text-sm font-normal text-muted-foreground">
-            Total: {formatCurrency(budgets.totalBudget)}
-          </span>
+          <div className="flex items-center gap-2">
+            {hasOverrides && onResetToDefaults && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onResetToDefaults}
+                className="text-xs"
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Reset to 66/22/12
+              </Button>
+            )}
+            <span className="text-sm font-normal text-muted-foreground">
+              Total: {formatCurrency(budgets.totalBudget)}
+            </span>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
