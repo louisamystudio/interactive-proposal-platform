@@ -1,0 +1,168 @@
+4) Component touch-points (what to change/add)
+
+ProjectSetupForm.tsx
+
+Load Use list from distinct building_cost_data.building_use.
+
+When Use chosen, load Type list filtered by use.
+
+When Type chosen, show Design Tier (1–3).
+
+Fetch Cost Config on any change.
+
+CostRangeSliders.tsx
+
+Initialize bands from psf in Cost Config; show “DB default” ticks/min/max labels.
+
+BudgetAllocationCard.tsx
+
+Use shares_default for initial values; show $ + % and normalize to 100%.
+
+When sliders change, keep results in local state but do not mutate server defaults.
+
+DisciplineCards.tsx
+
+Compute engineering = Shell × share; Architecture = Shell − Σ(engineering); on expand, split by area ratio (New vs Remodel).
+
+FeeComparison.tsx / HoursBreakdown.tsx
+
+Already patterned per SSOT; keep admin-only.
+
+ProposalExport.tsx
+
+POST /api/proposals with {inputs, results, options}; returns {token}; copy /proposal/[token].
+
+5) Validation & UX details
+
+Debounce: 300 ms on select changes; optimistic UI on sliders.
+
+Caching: SWR/React Query for GET /api/cost-config by (use,type,tier).
+
+Fallback: If DB unreachable, show yellow banner “Using safe defaults” and proceed (SSOT constants).
+
+Tooltips:
+
+Category: “Category 1=0.9 … Category 5=1.3 (applied to market % fees).”
+
+Tier/Design Level: “1=Basic, 2=Standard, 3=Full; affects PSF ranges and default S/I/L shares.”
+
+Guardrails: Client route never receives hours/rates/discounts—admin-only narrative stays server-side.
+
+6) Acceptance criteria (slice complete)
+
+Selecting Use→Type→Tier auto-loads PSF bands, default shares, multipliers, and category; PSF sliders show DB ticks; shares render as $ + % and sum to 100%.
+
+Dr. De Jesús fixture: 4,407 ft² @ $195/ft² → $859,365 total; default shares 66/22/12; Architecture = Shell remainder (±$1).
+
+Narrative completeness: the page visually answers, in order: what we’re building → what it costs to build (min cost from DB) → what we charge to design (top-down vs bottom-up) → how time is phased & who does it → investment options.
+
+7) Small PR checklist (agent can start now)
+
+ DB: create building_cost_data, category_multipliers; seed PR rows.
+
+ API: GET /api/cost-config (query by use,type,tier).
+
+ Admin UI: wire ProjectSetupForm → fetch Cost Config → update SSOT engine input.
+
+ Sliders: show DB min/target/max ticks; target is adjustable.
+
+ BudgetAllocationCard: normalize & show $ + %.
+
+ DisciplineCards: remainder logic + New/Remodel expanders.
+
+ Copy: add the one-line “min build cost vs design fee” disclaimer in Overview.
+
+ Tests: snapshot Cost Config payload; parity test for Dr. De Jesús; client safety test (no hour|rate|discount on client JSON).
+
+This plan gives you the database-driven Project Overview you asked for and plugs straight into the existing SSOT and two-app architecture you’ve already documented—so the rest of the dashboard updates flow naturally and stay on-narrative.
+
+Worked for 32 seconds
+
+To implement a Project Overview that lets users select Building Use → Building Type → Design Tier/Level of Detail and then automatically fetches the rest of the data used in calculations, follow this structured plan:
+
+1. Build the database model
+
+Create or update a building_cost_data table (Supabase, Postgres) with fields for every classification and cost input. Each row represents a unique combination of building use, building type and design tier, e.g.:
+
+id (pk)
+building_use TEXT
+building_type TEXT
+design_tier INT
+category INT
+psf_new_min, psf_new_target, psf_new_max DECIMAL
+psf_remodel_min, psf_remodel_target, psf_remodel_max DECIMAL
+share_shell_default, share_interior_default, share_landscape_default DECIMAL
+historic_multiplier_default, remodel_multiplier_default DECIMAL
+
+
+Seed: Add one row per valid combination of use/type/tier with the correct PSF bands and default shares.
+
+Category multipliers: Keep a separate category_multipliers table keyed by category for fee calculations.
+
+Access control: Apply Supabase row‑level security (RLS) to allow read-only queries of cost tables; proposal tables remain token‑gated.
+
+2. Server API endpoint
+
+Add a route such as /api/cost-config (GET) that accepts use, type and tier as query parameters. On each request, the server:
+
+Looks up the matching row in building_cost_data.
+
+Joins to category_multipliers to get the multiplier (if your fee calculations require it).
+
+Returns a JSON payload containing all defaults needed by the SSOT calculator: classification, PSF bands, default shares and multipliers.
+
+This API should remain internal and require no authentication to read cost tables.
+
+3. UI: Project Overview form
+
+In your ProjectSetupForm.tsx component, add three drop‑down selects:
+
+Building Use: Lists all distinct building_use values from building_cost_data (load once or on demand).
+
+Building Type: Populates after Building Use selection, filtering by the selected use.
+
+Design Tier / Level of Detail: Presents tier values (e.g. 1, 2, 3) or user-friendly labels (Basic, Standard, Premium).
+
+Under these fields, include a clear disclaimer that the construction budget is a minimum cost estimate from the PR building-cost database and does not include design fees.
+
+4. Fetch and apply cost configuration
+
+Debounce user selections (e.g. 300 ms) to avoid unnecessary calls.
+
+When any of the three selections changes, call /api/cost-config?use=…&type=…&tier=….
+
+Store the returned configuration in a local state object. This forms the input for your SSOT calculation engine.
+
+Recompute budgets, disciplines, hours, fees and options by calling the existing engine function with this updated input.
+
+Update the UI components (PSF sliders, budget shares, discipline cards, fee comparison, etc.) with the new outputs. Do not recalculate PSF bands or shares in the UI; rely on what the API returns.
+
+5. Controls & microcopy
+
+PSF sliders: Initialize their min/target/max positions from the API. Indicate the database default with a tick or label.
+
+Budget shares: Default Shell/Interior/Landscape shares should come from share_…_default and be normalized to 100 %. Display both dollars and percentages, as specified in the narrative.
+
+Discipline cards: Compute engineering disciplines from the Shell budget and set Architecture as the remainder. Expand each card to show New vs Remodel subtotals.
+
+Fee analysis: Use the category multiplier from the lookup to compute the top‑down (market) fee; combine with bottom‑up (hours) fee and discount slider to determine the contract price.
+
+Narrative flow: Ensure the page reads “Project definition → Construction budget → Fee analysis → Phases/Roles → Options”.
+
+6. Caching, validation and fallback
+
+Cache cost-config responses by (use, type, tier) to avoid duplicate requests.
+
+Validate that all three selections are present before calling the API; show an inline error if not.
+
+If the API fails or returns no data, fall back to safe constants and display a yellow banner (“Using safe defaults”).
+
+7. Tests and acceptance criteria
+
+Classification flow: Selecting a combination of Use, Type and Tier should update PSF bands, default shares and multipliers correctly.
+
+Fixture check: For the Dr. De Jesús example (4,407 ft² remodel at $195/ft²) the total should be $859,365 with shares 66 %/22 %/12 % and Architecture equal to Shell minus the sum of engineering disciplines.
+
+Narrative completeness: Confirm that the page clearly separates construction costs from design fees, per the blueprint, and that all downstream cards/charts update automatically when the project classification changes.
+
+By following this plan, the Project Overview will let users define the project context with three intuitive selections and will automatically pull the correct cost configuration from your database to drive all calculations, consistent with the narrative and SSOT described earlier.
