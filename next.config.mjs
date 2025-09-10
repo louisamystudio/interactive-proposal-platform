@@ -10,14 +10,24 @@ const nextConfig = {
   },
   // Configure for Replit environment
   experimental: {
-    serverComponentsExternalPackages: []
+    appDir: true,
   },
   // Allow all hosts for Replit proxy development
-  webpack: (config, { dev }) => {
+  webpack: (config, { dev, isServer }) => {
     if (dev) {
       config.devServer = {
         ...config.devServer,
         allowedHosts: 'all'
+      }
+    }
+    if (!isServer) {
+      // Don't try to bundle Node.js modules for the browser
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
       }
     }
     return config

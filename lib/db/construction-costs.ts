@@ -1,5 +1,6 @@
 import { query, querySingle } from '../db'
 import { getFallbackData, COMPREHENSIVE_FALLBACK_DATA } from '../comprehensive-fallback-data'
+import { createClient } from '@supabase/supabase-js'
 
 // Types for construction cost data
 export interface BuildingClassification {
@@ -83,16 +84,16 @@ export const constructionCostService = {
         FROM pr_construction_cost_index_2025 
         ORDER BY building_use
       `)
-      
+
       if (!data || data.length === 0) {
         throw new Error('No data found')
       }
-      
+
       return data.map(item => item.building_use)
     } catch (error) {
       console.error('Error fetching building uses:', error)
       console.log('🔄 Using comprehensive fallback building uses...')
-      
+
       // Extract all building uses from comprehensive fallback data
       return Object.keys(COMPREHENSIVE_FALLBACK_DATA)
     }
@@ -107,22 +108,22 @@ export const constructionCostService = {
         WHERE building_use = $1
         ORDER BY building_type
       `, [buildingUse])
-      
+
       if (!data || data.length === 0) {
         throw new Error('No data found')
       }
-      
+
       return data.map(item => item.building_type)
     } catch (error) {
       console.error('Error fetching building types:', error)
       console.log('🔄 Using comprehensive fallback building types...')
-      
+
       // Extract building types for the specific use from comprehensive fallback
       const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
       if (useData) {
         return Object.keys(useData)
       }
-      
+
       return []
     }
   },
@@ -136,20 +137,20 @@ export const constructionCostService = {
         WHERE building_use = $1 AND building_type = $2
         ORDER BY building_tier
       `, [buildingUse, buildingType])
-      
+
       if (!data || data.length === 0) {
         throw new Error('No data found')
       }
-      
+
       return data.map(item => item.building_tier)
     } catch (error) {
       console.error('Error fetching building tiers:', error)
       console.log('🔄 Using comprehensive fallback building tiers...')
-      
+
       // Extract tiers for the specific use/type from comprehensive fallback
       const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
       const typeData = useData?.[buildingType as keyof typeof useData]
-      
+
       if (typeData) {
         // Get all tiers across all categories
         const allTiers = new Set<string>()
@@ -159,7 +160,7 @@ export const constructionCostService = {
         })
         return Array.from(allTiers).sort()
       }
-      
+
       return ['Low', 'Mid', 'High']
     }
   },
@@ -173,25 +174,25 @@ export const constructionCostService = {
         WHERE building_use = $1 AND building_type = $2
         ORDER BY category
       `, [buildingUse, buildingType])
-      
+
       if (!data || data.length === 0) {
         throw new Error('No data found')
       }
-      
+
       return data.map(item => item.category)
     } catch (error) {
       console.error('Error fetching categories:', error)
       console.log('🔄 Using comprehensive fallback categories...')
-      
+
       // Extract categories for the specific use/type from comprehensive fallback
       const useData = COMPREHENSIVE_FALLBACK_DATA[buildingUse as keyof typeof COMPREHENSIVE_FALLBACK_DATA]
       const typeData = useData?.[buildingType as keyof typeof useData]
-      
+
       if (typeData) {
         const categories = Object.keys(typeData).map(Number).filter(n => !isNaN(n))
         return categories.sort((a, b) => a - b)
       }
-      
+
       return [1, 2, 3, 4, 5]
     }
   },
@@ -212,11 +213,11 @@ export const constructionCostService = {
         AND building_tier = $4
         LIMIT 1
       `, [buildingUse, buildingType, category, buildingTier])
-      
+
       if (!data) {
         throw new Error('No data found')
       }
-      
+
       // Transform database data to our interface
       return {
         id: 0, // Not used; preserve shape
@@ -278,15 +279,15 @@ export const constructionCostService = {
     } catch (error) {
       console.error('Error fetching cost data:', error)
       console.log('🔄 Using comprehensive fallback data...')
-      
+
       // Use comprehensive fallback data generated from CSV
       const fallbackData = getFallbackData(buildingUse, buildingType, category, buildingTier)
-      
+
       if (!fallbackData) {
         console.error(`No fallback data available for: ${buildingUse}/${buildingType}/${category}/${buildingTier}`)
         return null
       }
-      
+
       return {
         id: 0, // Fallback ID
         buildingUse,
@@ -314,17 +315,17 @@ export const constructionCostService = {
       const data = await query<{ key: string; value: number }>(`
         SELECT key, value FROM calculation_constants
       `)
-      
+
       if (!data || data.length === 0) {
         throw new Error('No constants found')
       }
-      
+
       // Convert to key-value object
       const constants: Record<string, number> = {}
       data.forEach(item => {
         constants[item.key] = Number(item.value)
       })
-      
+
       return constants
     } catch (error) {
       console.error('Error fetching calculation constants:', error)
@@ -353,11 +354,11 @@ export const constructionCostService = {
         WHERE category = $1
         LIMIT 1
       `, [category])
-      
+
       if (!data) {
         throw new Error('No multiplier found')
       }
-      
+
       return Number(data.multiplier)
     } catch (error) {
       console.error('Error fetching category multiplier:', error)

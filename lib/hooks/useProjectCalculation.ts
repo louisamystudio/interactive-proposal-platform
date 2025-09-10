@@ -12,7 +12,7 @@ interface DatabaseDefaults {
   }
   projectShares: {
     projectShellShare: number
-    projectInteriorShare: number 
+    projectInteriorShare: number
     projectLandscapeShare: number
   }
   designShares: {
@@ -56,39 +56,39 @@ interface ProjectOverrides {
 export interface UseProjectCalculationReturn {
   // Current calculation inputs (defaults + overrides)
   projectData: CalcInput
-  
+
   // Calculation results
   results: CalculationResults | null
-  
+
   // Database defaults (read-only)
   databaseDefaults: DatabaseDefaults | null
-  
+
   // Current overrides (live editable)
   overrides: ProjectOverrides
-  
+
   // Update functions (only affect overrides, not database)
   updateCosts: (costs: Partial<CalcInput['costs']>) => void
-  updateShares: (shares: Partial<CalcInput['shares']>) => void  
+  updateShares: (shares: Partial<CalcInput['shares']>) => void
   updateEngineering: (eng: Partial<CalcInput['engineering']>) => void
   updateMultipliers: (mult: Partial<CalcInput['multipliers']>) => void
   updateAreas: (areas: Partial<CalcInput['areas']>) => void
-  
+
   // Reset functions
   resetToDefaults: () => void
   resetCosts: () => void
   resetShares: () => void
   resetEngineering: () => void
-  
+
   // Project management
   saveProject: (name: string, clientData?: { name: string; email: string }) => Promise<string>
   loadProject: (id: string) => Promise<void>
-  
+
   // Available ranges for sliders
   availableRanges: {
     newCost: { min: number; max: number; default: number }
     remodelCost: { min: number; max: number; default: number }
   } | null
-  
+
   // Status
   loading: boolean
   error: string | null
@@ -98,13 +98,13 @@ export interface UseProjectCalculationReturn {
 export function useProjectCalculation(
   initialClassification: CalcInput['classification'] = {
     buildingUse: 'Residential',
-    buildingType: 'Custom Houses', 
+    buildingType: 'Custom Houses',
     buildingTier: 'High',
     category: 5,
     designLevel: 3
   }
 ): UseProjectCalculationReturn {
-  
+
   const [databaseDefaults, setDatabaseDefaults] = useState<DatabaseDefaults | null>(null)
   const [overrides, setOverrides] = useState<ProjectOverrides>({})
   const [loading, setLoading] = useState(true)
@@ -115,15 +115,15 @@ export function useProjectCalculation(
     async function loadDefaults() {
       setLoading(true)
       setError(null)
-      
+
       try {
-        const costData = await constructionCostService.getCostData(
+        const costData = await constructionCostService.getCostDataClient(
           initialClassification.buildingUse,
           initialClassification.buildingType,
           initialClassification.category,
           initialClassification.buildingTier
         )
-        
+
         if (!costData) {
           console.log('📋 Using fallback defaults for project calculation')
           // Use fallback defaults from DR_DE_JESUS_PROJECT
@@ -166,7 +166,7 @@ export function useProjectCalculation(
             }
           })
         }
-        
+
       } catch (err) {
         console.error('Error loading database defaults:', err)
         setError('Failed to load database defaults')
@@ -195,7 +195,7 @@ export function useProjectCalculation(
         setLoading(false)
       }
     }
-    
+
     loadDefaults()
   }, []) // Only load ONCE - never reload database defaults
 
@@ -324,9 +324,9 @@ export function useProjectCalculation(
           databaseDefaults
         })
       })
-      
+
       if (!response.ok) throw new Error('Failed to save project')
-      
+
       const result = await response.json()
       return result.data.id
     } catch (err) {
@@ -338,12 +338,12 @@ export function useProjectCalculation(
   const loadProject = useCallback(async (id: string) => {
     try {
       const response = await fetch(`/api/projects/${id}`)
-      
+
       if (!response.ok) throw new Error('Failed to load project')
-      
+
       const result = await response.json()
       const { overrides: savedOverrides } = result.data
-      
+
       setOverrides(savedOverrides || {})
     } catch (err) {
       console.error('Error loading project:', err)
@@ -353,9 +353,9 @@ export function useProjectCalculation(
 
   // Check if user has made changes from database defaults
   const hasChanges = useMemo(() => {
-    return Object.keys(overrides).length > 0 && 
-           Object.values(overrides).some(value => 
-             value !== undefined && 
+    return Object.keys(overrides).length > 0 &&
+           Object.values(overrides).some(value =>
+             value !== undefined &&
              (typeof value === 'object' ? Object.keys(value).length > 0 : true)
            )
   }, [overrides])
@@ -363,7 +363,7 @@ export function useProjectCalculation(
   // Available cost ranges for sliders (from database defaults)
   const availableRanges = useMemo(() => {
     if (!databaseDefaults) return null
-    
+
     return {
       newCost: {
         min: databaseDefaults.costRanges.shell.newMin,

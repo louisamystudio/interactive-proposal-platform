@@ -1,11 +1,11 @@
 // lib/calculations.ts - Calibrated calculation engine using constants
-import { 
-  BudgetShares, 
-  CalcInput, 
-  CalculationResults, 
-  DisciplineBudgets, 
-  FeeStructure, 
-  ProjectBudgets, 
+import {
+  BudgetShares,
+  CalcInput,
+  CalculationResults,
+  DisciplineBudgets,
+  FeeStructure,
+  ProjectBudgets,
   ProjectHours,
   ThreeOptions,
   Category
@@ -50,7 +50,7 @@ export function calculateBudgets(input: CalcInput): ProjectBudgets {
 
   // Normalize shares to ensure they sum to 100%
   const shares = normalizeShares(input.shares)
-  
+
   // Distribute total budget
   const shellBudget = totalBudget * shares.projectShellShare
   const interiorBudget = totalBudget * shares.projectInteriorShare
@@ -71,9 +71,9 @@ export function calculateBudgets(input: CalcInput): ProjectBudgets {
  */
 function normalizeShares(shares: BudgetShares): BudgetShares {
   const sum = shares.projectShellShare + shares.projectInteriorShare + shares.projectLandscapeShare
-  
+
   if (Math.abs(sum - 1.0) < 0.001) return shares // Already normalized
-  
+
   return {
     projectShellShare: shares.projectShellShare / sum,
     projectInteriorShare: shares.projectInteriorShare / sum,
@@ -85,7 +85,7 @@ function normalizeShares(shares: BudgetShares): BudgetShares {
  * Calculate engineering discipline budgets (applied to shell budget only)
  */
 export function calculateDisciplineBudgets(
-  shellBudget: number, 
+  shellBudget: number,
   engineering: CalcInput['engineering']
 ): DisciplineBudgets {
   // First round each engineering discipline to 2 decimals
@@ -144,8 +144,8 @@ export function calculateProjectHours(input: CalcInput): ProjectHours {
  * Calculate fee structures using calibrated constants
  */
 export function calculateFees(
-  totalBudget: number, 
-  totalHours: number, 
+  totalBudget: number,
+  totalHours: number,
   category: Category
 ): FeeStructure {
   const categoryMultiplier = CONFIG.CATEGORY_MULTIPLIERS[category]
@@ -158,7 +158,7 @@ export function calculateFees(
 
   // Contract price (strategic pricing) with calibrated discount
   const contractPrice = Math.max(
-    marketFee * (1 - CONFIG.MAX_DISCOUNT), 
+    marketFee * (1 - CONFIG.MAX_DISCOUNT),
     louisAmyFee
   )
 
@@ -223,10 +223,10 @@ export function calculateProject(input: CalcInput): CalculationResults {
   // Use Excel-aligned calculations when in EXCEL mode
   if (MODE === 'EXCEL') {
     const excelResults = calculateExcelProject(input)
-    
+
     // Calculate disciplines using Excel budget
     const disciplines = calculateDisciplineBudgets(excelResults.budgets.shellBudget, input.engineering)
-    
+
     return {
       budgets: excelResults.budgets,
       disciplines,
@@ -235,7 +235,7 @@ export function calculateProject(input: CalcInput): CalculationResults {
       options: generateThreeOptions() // Still use the fixed client options
     }
   }
-  
+
   // Original SSOT calculations
   const budgets = calculateBudgets(input)
   const disciplines = calculateDisciplineBudgets(budgets.shellBudget, input.engineering)
@@ -245,7 +245,7 @@ export function calculateProject(input: CalcInput): CalculationResults {
 
   return {
     budgets,
-    disciplines, 
+    disciplines,
     hours,
     fees,
     options
