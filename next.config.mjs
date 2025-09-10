@@ -12,12 +12,17 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: []
   },
-  // Allow cross-origin requests for Replit
-  allowedDevOrigins: [
-    '*.replit.dev',
-    '*.replit.app'
-  ],
-  // Allow all hosts for Replit proxy
+  // Allow all hosts for Replit proxy development
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.devServer = {
+        ...config.devServer,
+        allowedHosts: 'all'
+      }
+    }
+    return config
+  },
+  // Headers for CORS and security
   async headers() {
     return [
       {
@@ -27,6 +32,10 @@ const nextConfig = {
           {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
           },
         ],
       },
@@ -50,6 +59,14 @@ const nextConfig = {
       },
     ]
   },
+  // Replit-specific configuration
+  webpackDevMiddleware: config => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+    }
+    return config
+  },
 }
 
-module.exports = nextConfig
+export default nextConfig

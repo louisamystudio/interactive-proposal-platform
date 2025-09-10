@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useProjectCalculation } from '@/lib/hooks/useProjectCalculation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,16 +36,9 @@ export default function AdminCalculatorPage() {
       buildingUse: costConfig.classification.building_use,
       buildingType: costConfig.classification.building_type,
       buildingTier: costConfig.classification.design_tier === 3 ? 'High' : 
-                    costConfig.classification.design_tier === 2 ? 'Medium' : 'Low',
+                    costConfig.classification.design_tier === 2 ? 'Mid' : 'Low',
       category: costConfig.classification.category,
-      designLevel: costConfig.classification.design_tier,
-      // PSF values from database
-      newConstructionPSF: costConfig.psf.new.target,
-      remodelPSF: costConfig.psf.remodel.target,
-      // Budget shares from database
-      shellPercentage: costConfig.shares_default.shell * 100,
-      interiorPercentage: costConfig.shares_default.interior * 100,
-      landscapePercentage: costConfig.shares_default.landscape * 100
+      designLevel: costConfig.classification.design_tier
     } : {
       // Fallback defaults (Dr. De Jesús case)
       buildingUse: 'Residential',
@@ -55,6 +48,23 @@ export default function AdminCalculatorPage() {
       designLevel: 3
     }
   )
+  
+  // Apply cost config overrides when available
+  useEffect(() => {
+    if (costConfig && project.updateCosts) {
+      project.updateCosts({
+        newTargetPSF: costConfig.psf.new.target,
+        remodelTargetPSF: costConfig.psf.remodel.target
+      })
+    }
+    if (costConfig && project.updateShares) {
+      project.updateShares({
+        projectShellShare: costConfig.shares_default.shell,
+        projectInteriorShare: costConfig.shares_default.interior,
+        projectLandscapeShare: costConfig.shares_default.landscape
+      })
+    }
+  }, [costConfig])
 
   // Generate proposal (saves to separate proposals table)
   const generateProposal = async () => {
