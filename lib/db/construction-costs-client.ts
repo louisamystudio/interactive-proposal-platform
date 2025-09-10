@@ -145,7 +145,11 @@ export const constructionCostService = {
       const tierNumber = tierMap[buildingTier] || 2
 
       const response = await fetch(`/api/cost-config?use=${encodeURIComponent(buildingUse)}&type=${encodeURIComponent(buildingType)}&tier=${tierNumber}`)
-      if (!response.ok) throw new Error('Failed to fetch cost config')
+      if (!response.ok) {
+        // Don't throw error, just use fallback gracefully
+        console.warn('Using fallback data - API returned non-OK status')
+        return this.getFallbackCostData(buildingUse, buildingType, category, buildingTier)
+      }
       
       const config = await response.json()
       
@@ -153,7 +157,7 @@ export const constructionCostService = {
       const targetNewPSF = config.psf?.new?.target || 200
       const targetRemodelPSF = config.psf?.remodel?.target || 150
       
-      // Calculate component costs based on shares
+      // Use actual shares from database (already normalized to 100%)
       const shellShare = config.shares_default?.shell || 0.70
       const interiorShare = config.shares_default?.interior || 0.22
       const landscapeShare = config.shares_default?.landscape || 0.08
@@ -212,34 +216,45 @@ export const constructionCostService = {
         }
       }
     } catch (error) {
-      console.error('Error fetching cost data:', error)
-      console.log('🔄 Using comprehensive fallback data...')
-      
-      const fallbackData = getFallbackData(buildingUse, buildingType, category, buildingTier)
-      
-      if (!fallbackData) {
-        console.error(`No fallback data available for: ${buildingUse}/${buildingType}/${category}/${buildingTier}`)
-        return null
-      }
-      
-      return {
-        id: 0,
-        buildingUse,
-        buildingType,
-        category,
-        buildingTier,
-        costRanges: {
-          shell: fallbackData.costRanges.shell,
-          interior: fallbackData.costRanges.interior,
-          landscape: fallbackData.costRanges.landscape,
-          pool: {
-            newMin: 0, newTarget: 0, newMax: 0,
-            remodelMin: 0, remodelTarget: 0, remodelMax: 0
-          }
-        },
-        projectShares: fallbackData.projectShares,
-        designShares: fallbackData.designShares
-      }
+      // Handle network errors gracefully without throwing
+      console.warn('Network error, using fallback data:', error)
+      return this.getFallbackCostData(buildingUse, buildingType, category, buildingTier)
+    }
+  },
+
+  // Helper method to get fallback data
+  getFallbackCostData(
+    buildingUse: string,
+    buildingType: string,
+    category: number,
+    buildingTier: string
+  ): ConstructionCostData | null {
+    console.log('🔄 Using comprehensive fallback data...')
+    
+    const fallbackData = getFallbackData(buildingUse, buildingType, category, buildingTier)
+    
+    if (!fallbackData) {
+      console.error(`No fallback data available for: ${buildingUse}/${buildingType}/${category}/${buildingTier}`)
+      return null
+    }
+    
+    return {
+      id: 0,
+      buildingUse,
+      buildingType,
+      category,
+      buildingTier,
+      costRanges: {
+        shell: fallbackData.costRanges.shell,
+        interior: fallbackData.costRanges.interior,
+        landscape: fallbackData.costRanges.landscape,
+        pool: {
+          newMin: 0, newTarget: 0, newMax: 0,
+          remodelMin: 0, remodelTarget: 0, remodelMax: 0
+        }
+      },
+      projectShares: fallbackData.projectShares,
+      designShares: fallbackData.designShares
     }
   },
 

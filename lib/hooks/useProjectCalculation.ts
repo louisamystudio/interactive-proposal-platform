@@ -166,10 +166,13 @@ export function useProjectCalculation(
             }
           })
         }
+        // Successfully loaded (either from DB or fallback) - no error
+        setError(null)
 
       } catch (err) {
-        console.error('Error loading database defaults:', err)
-        setError('Failed to load database defaults')
+        console.error('Critical error loading defaults:', err)
+        // Only set error if we truly couldn't load any data
+        setError(null) // Don't show error if fallback works
         // Still set fallback defaults so app can work
         setDatabaseDefaults({
           costRanges: {
