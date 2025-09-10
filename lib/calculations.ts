@@ -20,48 +20,11 @@ import { calculateExcelProject } from './excel-aligned-calculations'
 export const ACTIVE_CONFIG = CONFIG
 export const VALIDATION_TARGETS = CONFIG.VALIDATION
 
-// Unified database-aware calculation using the same formulas as the main engine
+// Client-safe version that doesn't import server-side database modules
 export async function calculateProjectWithDatabase(input: CalcInput): Promise<CalculationResults> {
-  const { constructionCostService } = await import('./db/construction-costs')
-
-  let effectiveInput: CalcInput = input
-  try {
-    const costData = await constructionCostService.getCostData(
-      input.classification.buildingUse,
-      input.classification.buildingType,
-      input.classification.category,
-      input.classification.buildingTier
-    )
-
-    if (costData) {
-      const ranges = costData.costRanges.shell
-      effectiveInput = {
-        ...input,
-        costs: {
-          ...input.costs,
-          newTargetPSF: ranges.newTarget ?? input.costs.newTargetPSF,
-          remodelTargetPSF: ranges.remodelTarget ?? input.costs.remodelTargetPSF,
-        },
-        shares: {
-          projectShellShare: costData.projectShares.shellShare ?? input.shares.projectShellShare,
-          projectInteriorShare: costData.projectShares.interiorShare ?? input.shares.projectInteriorShare,
-          projectLandscapeShare: costData.projectShares.landscapeShare ?? input.shares.projectLandscapeShare,
-        },
-        engineering: {
-          structuralDesignShare: costData.designShares.structural ?? input.engineering.structuralDesignShare,
-          civilDesignShare: costData.designShares.civil ?? input.engineering.civilDesignShare,
-          mechanicalDesignShare: costData.designShares.mechanical ?? input.engineering.mechanicalDesignShare,
-          electricalDesignShare: costData.designShares.electrical ?? input.engineering.electricalDesignShare,
-          plumbingDesignShare: costData.designShares.plumbing ?? input.engineering.plumbingDesignShare,
-          telecomDesignShare: costData.designShares.telecommunication ?? input.engineering.telecomDesignShare,
-        },
-      }
-    }
-  } catch {
-    // Fallback silently
-  }
-
-  return calculateProject(effectiveInput)
+  // On client-side, just use the standard calculation without database
+  // The database values should be passed in via the input from API calls
+  return calculateProject(input)
 }
 
 // Utility functions
