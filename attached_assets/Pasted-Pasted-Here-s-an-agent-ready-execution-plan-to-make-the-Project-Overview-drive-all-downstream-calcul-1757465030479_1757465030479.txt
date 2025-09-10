@@ -1,0 +1,123 @@
+Pasted-Here-s-an-agent-ready-execution-plan-to-make-the-Project-Overview-drive-all-downstream-calculati-1757462926194_1757462926194.txt
+Here’s an **agent-ready execution plan** to make the Project Overview drive all downstream calculations from the database: user picks **Building Use → Building Type → Design Tier/Level of Detail**, and the app fetches everything else (PSF bands, shares, multipliers, category) automatically. This keeps the UI aligned to the narrative and SSOT you already defined (project definition → construction budget → fees → phases/roles → options).&#x20;
+
+---
+
+## 0) Data model (Supabase)
+
+**Tables (minimum viable):**
+
+* `building_cost_data`
+
+  * `id` (pk), `building_use`, `building_type`, `design_tier` (1|2|3), `category` (1–5),
+    `psf_new_min`, `psf_new_target`, `psf_new_max`,
+    `psf_remodel_min`, `psf_remodel_target`, `psf_remodel_max`,
+    `share_shell_default`, `share_interior_default`, `share_landscape_default`,
+    `historic_multiplier_default`, `remodel_multiplier_default`
+* `category_multipliers`
+
+  * `category` (1–5), `multiplier` (e.g., 0.9…1.3)
+* (Later) `proposals`, `proposal_events` (persistence + analytics as already planned)
+
+**RLS (read-only public):** allow `select` on `building_cost_data` & `category_multipliers`. Proposal tables remain token-gated.
+
+**Seed:** one row per (use,type,tier) combination; ensure indexes on `(building_use, building_type, design_tier)`.
+
+---
+
+## 1) UI/UX wiring (Admin → Project Overview)
+
+**Component:** `components/admin/ProjectSetupForm.tsx`
+
+**Controls (left column):**
+
+* Select 1: **Building Use** (e.g., Residential, Commercial, Hospitality…)
+* Select 2: **Building Type** (filtered by Use)
+* Select 3: **Design Tier / Level of Detail** (1=Basic, 2=Standard, 3=Full)
+
+**On change (debounced 300 ms):**
+
+1. Call `GET /api/cost-config?use=…&type=…&tier=…`
+2. Receive a **Cost Config** payload (see §2) and update local calculator state.
+3. Recompute UI via SSOT engine with the returned config (no UI math).
+
+**Microcopy (under the selects):**
+“**Construction budget** is the **minimum cost to build** from the PR cost DB; **design fees** are separate.”&#x20;
+
+---
+
+## 2) Server API contract
+
+**Route:** `app/api/cost-config/route.ts`
+
+**Query:** `?use=Residential&type=Residence - Private&tier=3`
+
+**Response (example):**
+
+```json
+{
+  "classification": {
+    "building_use": "Residential",
+    "building_type": "Residence - Private",
+    "design_tier": 3,
+    "category": 5,
+    "category_multiplier": 1.3
+  },
+  "psf": {
+    "new":    {"min": 240, "target": 267, "max": 307},
+    "remodel":{"min": 181, "target": 202, "max": 232}
+  },
+  "shares_default": {"shell": 0.66, "interior": 0.22, "landscape": 0.12},
+  "multipliers_default": {"historic": 1.00, "remodel": 1.00}
+}
+```
+
+**How it’s built:** simple `select … from building_cost_data where building_use=$1 and building_type=$2 and design_tier=$3` + join to `category_multipliers`.
+
+**Why this shape:** it’s exactly what the SSOT engine needs to produce budgets, discipline splits, hours, fees, and options without recomputing in the UI (bind UI to SSOT only).&#x20;
+
+---
+
+## 3) Calculator state & recompute flow
+
+**Where:** `app/admin/calculator/page.tsx`
+
+1. User changes Use/Type/Tier → fetch **Cost Config** (above).
+2. **Commit config** into a single “calculator input” object:
+
+   * `classification` (use/type/tier/category)
+   * `psf_bands` (new/remodel min/target/max)
+   * `shares_default` (S/I/L)
+   * `multipliers_default` (historic/remodel)
+   * `areas` (existing inputs: new ft², remodel ft², site m²)
+3. Call **SSOT engine** (`lib/calculations.ts`) with that input:
+
+   * Outputs: `budgets`, `disciplines`, `hours`, `fees`, `options`
+4. Render all cards/charts from outputs (no UI math):
+
+   * **Budget Overview** + **PSF sliders** (target band only adjustable; show DB tick marks)
+   * **Budget shares** donut/list (Shell/Interior/Landscape, \$ + %)
+   * **Engineering disciplines** (Architecture = Shell remainder; expanders for New vs Remodel)
+   * **FeeComparison** (Top-Down vs Bottom-Up + 25% admin discount; Contract = max)
+   * **HoursBreakdown** (phase + role; admin-only)
+   * **Options A/B/C** (client-safe)
+
+This preserves the storyboard: **Project definition → Construction budget (min build cost) → Fees (two lenses) → Phases/Roles → Options.**&#x20;
+
+---
+
+## 4) Component touch-points (what to change/add)
+
+* `ProjectSetupForm.tsx`
+
+  * Load **Use** list from distinct `building_cost_data.building_use`.
+  * When Use chosen, load **Type** list filtered by use.
+  * When Type chosen, show **Design Tier** (1–3).
+  * Fetch **Cost Config** on any change.
+* `CostRangeSliders.tsx`
+
+  * Initialize bands from `psf` in Cost Config; show “DB default” ticks/min/max labels.
+* `BudgetAllocationCard.tsx`
+
+  * Use `shares_default` for initial values; show **\$ + %** and normalize to 100%.
+  * When sliders ...
