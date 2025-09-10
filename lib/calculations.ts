@@ -83,18 +83,32 @@ function normalizeShares(shares: BudgetShares): BudgetShares {
 
 /**
  * Calculate engineering discipline budgets (applied to shell budget only)
+ * 
+ * IMPORTANT: The engineering shares passed in are expressed as percentages of the total project,
+ * but we need to convert them to percentages of shell before applying to the shell budget.
  */
 export function calculateDisciplineBudgets(
   shellBudget: number,
-  engineering: CalcInput['engineering']
+  engineering: CalcInput['engineering'],
+  shellShareOfProject: number // Shell percentage of total project (e.g., 0.66 for 66%)
 ): DisciplineBudgets {
-  // First round each engineering discipline to 2 decimals
-  const structuralBudget = round2(shellBudget * engineering.structuralDesignShare)
-  const civilBudget = round2(shellBudget * engineering.civilDesignShare)
-  const mechanicalBudget = round2(shellBudget * engineering.mechanicalDesignShare)
-  const electricalBudget = round2(shellBudget * engineering.electricalDesignShare)
-  const plumbingBudget = round2(shellBudget * engineering.plumbingDesignShare)
-  const telecomBudget = round2(shellBudget * engineering.telecomDesignShare)
+  // Convert project-level shares to shell-level shares
+  // If structural is 2% of project and shell is 66% of project,
+  // then structural is 2/66 = 3.03% of shell
+  const structuralShareOfShell = engineering.structuralDesignShare / shellShareOfProject
+  const civilShareOfShell = engineering.civilDesignShare / shellShareOfProject
+  const mechanicalShareOfShell = engineering.mechanicalDesignShare / shellShareOfProject
+  const electricalShareOfShell = engineering.electricalDesignShare / shellShareOfProject
+  const plumbingShareOfShell = engineering.plumbingDesignShare / shellShareOfProject
+  const telecomShareOfShell = engineering.telecomDesignShare / shellShareOfProject
+
+  // Calculate budgets using shell-level shares
+  const structuralBudget = round2(shellBudget * structuralShareOfShell)
+  const civilBudget = round2(shellBudget * civilShareOfShell)
+  const mechanicalBudget = round2(shellBudget * mechanicalShareOfShell)
+  const electricalBudget = round2(shellBudget * electricalShareOfShell)
+  const plumbingBudget = round2(shellBudget * plumbingShareOfShell)
+  const telecomBudget = round2(shellBudget * telecomShareOfShell)
 
   // Architecture gets exact remainder so totals match shellBudget at cent precision
   const totalEngineeringRounded = structuralBudget + civilBudget + mechanicalBudget +
@@ -225,7 +239,11 @@ export function calculateProject(input: CalcInput): CalculationResults {
     const excelResults = calculateExcelProject(input)
 
     // Calculate disciplines using Excel budget
-    const disciplines = calculateDisciplineBudgets(excelResults.budgets.shellBudget, input.engineering)
+    const disciplines = calculateDisciplineBudgets(
+      excelResults.budgets.shellBudget, 
+      input.engineering,
+      input.shares.projectShellShare
+    )
 
     return {
       budgets: excelResults.budgets,
@@ -238,7 +256,11 @@ export function calculateProject(input: CalcInput): CalculationResults {
 
   // Original SSOT calculations
   const budgets = calculateBudgets(input)
-  const disciplines = calculateDisciplineBudgets(budgets.shellBudget, input.engineering)
+  const disciplines = calculateDisciplineBudgets(
+    budgets.shellBudget, 
+    input.engineering,
+    input.shares.projectShellShare
+  )
   const hours = calculateProjectHours(input)
   const fees = calculateFees(budgets.totalBudget, hours.totalHours, input.classification.category)
   const options = generateThreeOptions()
