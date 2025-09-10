@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 interface CostConfig {
   classification: {
@@ -47,7 +47,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const supabase = createClient()
+    // Check if Supabase is configured
+    if (!supabase) {
+      console.warn('Supabase not configured, using fallback values')
+      return NextResponse.json(getFallbackConfig(buildingUse, buildingType, tierNumber))
+    }
 
     // Fetch building cost data
     const { data: costData, error: costError } = await supabase
@@ -182,7 +186,12 @@ function getCategoryMultiplier(category: number): number {
 
 // GET endpoint to fetch distinct building uses
 export async function OPTIONS() {
-  const supabase = createClient()
+  if (!supabase) {
+    // Return fallback options
+    return NextResponse.json({
+      uses: ['Residential', 'Commercial', 'Hospitality', 'Healthcare', 'Education', 'Industrial', 'Mixed Use']
+    })
+  }
   
   try {
     const { data, error } = await supabase
