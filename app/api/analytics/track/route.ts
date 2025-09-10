@@ -30,6 +30,13 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createClient()
+    
+    if (!supabase) {
+      // Fallback mode - just log and return success
+      console.log('Analytics event (fallback):', { event_type, event_data })
+      return NextResponse.json({ success: true })
+    }
+    
     const { error } = await supabase
       .from('proposal_events')
       .insert({
