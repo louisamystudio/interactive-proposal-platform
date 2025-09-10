@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { calculateProject, DR_DE_JESUS_PROJECT } from '../calculations'
 import { CalcInput, CalculationResults } from '../types'
-import { constructionCostService } from '../db/construction-costs'
+import { constructionCostService } from '../db/construction-costs-client'
 
 interface DatabaseDefaults {
   costRanges: {
