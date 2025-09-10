@@ -117,7 +117,7 @@ export function useProjectCalculation(
       setError(null)
 
       try {
-        const costData = await constructionCostService.getCostDataClient(
+        const costData = await constructionCostService.getCostData(
           initialClassification.buildingUse,
           initialClassification.buildingType,
           initialClassification.category,
