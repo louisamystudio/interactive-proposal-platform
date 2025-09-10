@@ -1,0 +1,61 @@
+Pasted-We-must-keep-two-different-pipelines-straight-Construction-cost-the-minimum-cost-to-build-budg-1757470914414_1757470914414.txt
+We must keep two different pipelines straight:
+
+Construction cost (the minimum cost to build) → budget math and Shell / Interior / Landscape shares, then Shell → discipline components (Architecture, Structural, MEP, etc.).
+
+Design fees (what Louis Amy is quoting) → Top-Down (market %) vs Bottom-Up (hours × blended cost), then Contract = max(discounted market, LA).
+
+Below I point to the exact places where each pipeline is calculated in the current code, show how they map to your spreadsheet formulas, and call out what must not be mixed. I also include the DB sources for ranges, shares, and constants so the agent can trace every number end-to-end.
+
+A) Construction cost (minimum cost to build)
+1) Total budget and high-level shares (Shell / Interior / Landscape)
+
+Where it’s computed: calculateBudgets
+
+Computes newBudget, remodelBudget from area × (target PSF × multipliers)
+github.com
+.
+
+Normalizes project shares and splits the totalBudget into shellBudget / interiorBudget / landscapeBudget
+github.com
+github.com
+.
+
+DB sources you expect in code/UI:
+
+Cost bands (min/target/max) for New & Remodel come from the PR cost index (per Use/Type/Tier) and drive the PSF sliders in UI. Those ranges live in pr_construction_cost_index_2025 (shell/interior/landscape bands)
+github.com
+github.com
+ and in the seed CSV/SQL you provided previously .
+
+Category multipliers (1→0.9 … 5→1.3) are in category_multipliers .
+
+How this matches your spreadsheet:
+Your lines:
+
+New Construction Budget = NewArea × NewTargetPSF / Existing = ExistingArea × RemodelTargetPSF.
+
+Then TotalBudget = New + Existing and split into Project Shell/Interior/Landscape Share.
+
+That’s exactly the calculateBudgets pipeline—no fee math is applied here (that comes later).
+
+2) Break the Shell budget into discipline components
+
+Where it’s computed: calculateDisciplineBudgets
+
+Each engineering discipline = shellBudget × disciplineDesignShare;
+
+Architecture = remainder of Shell after all engineering sums
+github.com
+.
+
+Where discipline shares come from:
+
+The service layer reads row fields like structural_design_share_pct, mechanical_design_share_pct, etc., dividing by 100 to produce decimal shares that the engine consumes
+github.com
+.
+
+How this matches your spreadsheet:
+Your “Engineering_Costs VLOOKUP × Shell Share” logic (e.g., Structural Design Share = VLOOKUP(...)*ShellShare) is implemented by reading the row, converting % to decimals, and multiplying by shellBudget. Architecture card is the remainder card (Shell − Σ engineering), just like your =1−SUM(engineeringShares).
+
+✅ Key separation: everything above is construction cost. No hours, no discount, no fee multipliers appear in this path.
