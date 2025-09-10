@@ -1,0 +1,54 @@
+E) Guardrails for the UI (what to show where)
+
+Admin: full fidelity—PSF sliders, budget donuts, discipline remainder cards, Top-Down vs Bottom-Up tables, discount slider, phase/role charts.
+
+Client: never show hours/rates/discounts. Show Option A/B/C (A first), scope bullets, and a client-safe budget donut (e.g., Scan-to-BIM, Building Shell, Interior, Landscape). Keep fee mechanics internal.
+
+F) Quick visual acceptance tests for the agent
+
+Construction only: Architecture + Structural + Civil + Mechanical + Electrical + Plumbing + Telecom == Shell (±$1).
+
+Fee only: contractPrice == max(marketFee × (1−MAX_DISCOUNT), louisAmyFee).
+
+Separation: No fee numbers (hours, rates, discount, contract) appear in Construction Budget section or discipline cards.
+
+DB parity: category multipliers = {0.9, 1.0, 1.1, 1.2, 1.3} for categories 1–5 ; cost bands & discipline shares match PR row for selected Use/Type/Tier ; constants match seeds (labor/overhead/markup/HFA/fee rate/discount cap) .
+
+Bottom line
+
+Shell breakdown into construction components lives in calculateBudgets (budgets & shares) and calculateDisciplineBudgets (Shell→disciplines; Architecture = remainder)
+github.com
+github.com
+.
+
+Fees into components (Top-Down scopes vs Bottom-Up team/phase) live in calculateProjectHours and calculateFees—a separate pipeline that never touches the construction cards
+github.com
+github.com
+.
+Keeping those two pipelines visually and semantically separated is the key to preventing any confusion between minimum construction cost and Louis Amy’s design fee.
+
+Worked for 2 minutes
+
+In the workbook you provided, there are two distinct pipelines that should never be conflated:
+
+Construction cost breakdown – this calculates the minimum budget required to build the project. It pulls PSF bands and default shares from your “Cost_Ranges” and “Engineering_Costs” tables, then splits the total construction budget into New vs. Existing, and into Shell / Interior / Landscape. From the Shell budget it further allocates dollars to each discipline (Structural, Civil, MEP, Telecom), with Architecture defined as the remainder. In code, this corresponds to the calculateBudgets and calculateDisciplineBudgets functions: they multiply areas by target PSF values and normalize shares
+github.com
+github.com
+. These functions never use hours, rates, or discounts.
+
+Design fee calculation – this determines how much Louis Amy will charge for professional services. It uses a totally separate set of formulas: non‑linear hours curves, average labour rates, overhead and markup, and a market‑percentage fee. In code, this is handled by calculateProjectHours and calculateFees, which compute hours and fees based on constants and category multipliers
+github.com
+github.com
+. The result is the Top‑Down market fee, Bottom‑Up Louis Amy fee, and the final Contract Price (max of the two after applying a discount cap).
+
+Looking at your spreadsheet:
+
+Rows up to “Working Minimum Budget” (B29 through B74) are the construction‑cost pipeline. They use lookups from Cost_Ranges to set PSF bands, default Shell/Interior/Landscape shares, then multiply those shares by the construction budget to compute Shell, Interior, Landscape, and discipline budgets. For example, Structural Design Share = VLOOKUP(…, "Structural") * Shell share – these are dollars for the building, not design fees.
+
+Rows starting with “Category Multiplier” and the 8‑column fee table shift to the fee pipeline. Here formulas such as 0.6 + 0.006 * ((1000+B8)/1000000)^(-0.7495) and ((0.07498+0.007824*(…))*B79*B77*0.95) are computing market rates per sq‑ft, approximate hours, and labor cost plus overhead. Later, the “Project Hours & Leverage” section computes hours by phase and role, and the “Market Price / Bottom‑Up Summary / Discounted Final Price” section determines the final design fee. None of these formulas feed back into the Shell/Interior/Landscape budgets.
+
+So the error you’ve been seeing arises when the app treats the discipline shares (which are percentages of the total project) as if they were already percentages of the Shell budget, which makes the Architecture remainder too large. The fix is to convert those shares to “percent of Shell” (divide each discipline share by the Shell share before multiplying) when computing construction budgets
+github.com
+—and to keep the fee calculations completely separate
+github.com
+.

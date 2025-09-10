@@ -1,0 +1,95 @@
+B) Design fees (what Louis Amy is quoting)
+3) Hours (for Bottom-Up)
+
+Where it’s computed: calculateProjectHours
+
+Non-linear hours curve with calibrated offset and category factor
+github.com
+:
+
+base = 0.21767 + 11.21274 × (totalArea)^(-0.53816)
+alt  = base − HFA_OFFSET
+newHours     = alt × 0.9 × categoryMultiplier × newArea
+remodelHours = alt × 0.77 × categoryMultiplier × existingArea
+
+
+Constants (HFA_OFFSET, HOURS_*, NEW/REMODEL factors) are in calculation_constants seeds .
+
+Spreadsheet mapping: your “Project Hours & Leverage” section: the same formula and per-phase/role distributions. (Admin-only visuals.)
+
+4) Fees (Top-Down vs Bottom-Up) and Contract
+
+Where it’s computed: calculateFees
+
+Top-Down (Market %) = totalBudget × MARKET_FEE_RATE × categoryMultiplier
+github.com
+.
+
+Bottom-Up (Louis Amy) = totalHours × (AVG_LABOR_RATE + AVG_OVERHEAD_RATE) × MARKUP
+github.com
+.
+
+Contract = max(market × (1−MAX_DISCOUNT), louisAmy)
+github.com
+.
+
+All constants (fee rate, discount cap, labor/overhead, markup) are in calculation_constants , and category multipliers in category_multipliers .
+
+Spreadsheet mapping: This is your “Top-Down Summary” (market % of construction) vs “Bottom-Up Summary” (hours × rates × overhead) with a discount slider and final Contract Price. Again, this is fee math, not construction cost.
+
+✅ Key separation: fees are derived from construction budget (Top-Down) or hours (Bottom-Up). They do not alter the construction budget breakdown. The UI must never present fee outputs as if they were construction components.
+
+C) “Spot the difference” checklist for your agent
+
+To make sure we never confuse construction cost components with fee components, instruct the agent to respect these section boundaries in the Admin dashboard:
+
+Construction Budget (minimum cost to build) — use only:
+
+calculateBudgets outputs: newBudget, remodelBudget, totalBudget, shellBudget, interiorBudget, landscapeBudget
+github.com
+.
+
+calculateDisciplineBudgets outputs: Architecture (remainder), Structural, Civil, Mechanical, Electrical, Plumbing, Telecom
+github.com
+.
+
+DB anchors for PSF and shares: PR cost index row (Use/Type/Tier) for bands and defaults
+github.com
+; normalize shares (e.g., 66/22/12).
+Never display hours, rates, discounts, or “contract” in this section.
+
+Design Fee Analysis (top-down & bottom-up) — use only:
+
+calculateProjectHours → total hours and phase/role distributions (Admin-only charts)
+github.com
+.
+
+calculateFees → marketFee, louisAmyFee, contractPrice = max(discounted market, LA)
+github.com
+.
+
+Fee constants & category multipliers from DB seeds (exact values) .
+Never relabel these values as “Shell/Interior/Discipline” or draw them in the construction charts.
+
+D) Mapping your Excel lines → current code (quick index)
+
+Area & PSF sliders → budgets: spreadsheet rows B16–B24 → calculateBudgets (areas, target PSF, multipliers, normalize shares)
+github.com
+github.com
+.
+
+Shell/Interior/Landscape cards: B29–B37 → the 3 outputs from calculateBudgets.
+
+Shell → disciplines: B39–B47 and B58–B74 → calculateDisciplineBudgets (Architecture remainder rule)
+github.com
+; discipline % come from PR index row fields (converted to decimals)
+github.com
+.
+
+Hours (non-linear): B114–B117 → calculateProjectHours with HFA_OFFSET and category factor
+github.com
+; constants in seeds .
+
+Top-Down vs Bottom-Up fee tables & Contract: D84–D94, E174/E175 & discount block → calculateFees (market % vs hours cost; contract = max after discount cap)
+github.com
+; constants & multipliers in seeds .
