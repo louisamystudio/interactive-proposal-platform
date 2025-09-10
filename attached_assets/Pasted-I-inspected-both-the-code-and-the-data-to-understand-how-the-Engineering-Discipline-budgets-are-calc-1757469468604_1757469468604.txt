@@ -1,0 +1,34 @@
+I inspected both the code and the data to understand how the Engineering Discipline budgets are calculated. In the calculation engine, the discipline budgets are computed by multiplying the shell budget by each engineering share and using the remainder as the Architecture budget:
+
+In calculateDisciplineBudgets, the structural, civil, mechanical, electrical, plumbing and telecom budgets are each shellBudget * engineering.<discipline>DesignShare, and then Architecture is calculated as the remainder
+github.com
+.
+
+These engineering.<discipline>DesignShare values are loaded from the cost‑index database. In construction-costs.ts the row fields structural_design_share_pct, civil_design_share_pct, etc. are simply divided by 100 to obtain decimal shares
+github.com
+.
+
+The problem is that the design share percentages in the data appear to be expressed as percent of the total project, not percent of the shell. For example, for “Custom Houses – Mid” the data row has project_shell_share_pct = 68 and engineering design shares summing to only about 6.3 % (1.6 % structural, 0.8 % civil, 1.3 % mechanical, etc.). The code treats those 6.3 % values as if they were already “percent of shell”, so when multiplied by the shell budget they produce very small engineering budgets. The UI then displays Architecture as the remainder, which leaves an implausibly high 93.7 % of the shell budget allocated to Architecture
+0c1f7391-c4f0-4fe8-9ab9-74f1b548228d-00-10qme853jg8su.spock.replit.dev
+.
+
+To fix this, the engineering shares must be converted to “percent of shell” before multiplying by the shell budget. The correct share of each discipline relative to the shell is:
+
+share_of_shell = (discipline_design_share_pct) / (project_shell_share_pct)
+
+
+For the Custom Houses example, structural_design_share_pct = 1.6 and project_shell_share_pct = 68, so structuralDesignShareOfShell should be 1.6 / 68 = 2.35 %. The shell budget should then be multiplied by 0.0235, not 0.016. Applying this conversion to all disciplines (and then recomputing Architecture as the remainder) will increase the engineering budgets and reduce the Architecture share to the intended level. Here is a pseudo‑code fix inside the engine:
+
+const shellSharePct = shares.projectShellShare;  // e.g. 0.68
+const structuralDesignShareOfShell = engineering.structuralDesignShare / shellSharePct;
+...
+const structuralBudget = round2(shellBudget * structuralDesignShareOfShell);
+...
+const architectureBudget = round2(shellBudget - (
+    structuralBudget + civilBudget + mechanicalBudget + electricalBudget +
+    plumbingBudget + telecomBudget));
+
+
+Alternatively, you could normalise the design share columns in the database to already reflect “percent of shell” rather than “percent of project”, which would avoid conversions in the code.
+
+In summary, the app is currently using project‑level design percentages as if they were shell‑level percentages, which results in a tiny engineering budget and an oversized Architecture remainder. Adjusting the shares to be relative to the shell (either by updating the data or by dividing by the shell share before computing budgets) will correct the discipline breakdown.

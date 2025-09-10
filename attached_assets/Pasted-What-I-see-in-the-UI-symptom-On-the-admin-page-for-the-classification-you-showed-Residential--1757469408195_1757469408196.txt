@@ -1,0 +1,119 @@
+What I see in the UI (symptom)
+
+On the admin page, for the classification you showed (Residential → Custom Houses → Tier 3), the Shell budget is about $1.09M. The discipline bars are:
+
+Structural ≈ 1.6% of Shell
+
+Civil ≈ 0.8% of Shell
+
+Mechanical ≈ 1.3% of Shell
+
+Electrical ≈ 1.3% of Shell
+
+Plumbing ≈ 0.9% of Shell
+
+Telecom ≈ 0.4% of Shell
+
+These six engineering bars only add up to ~6.3% of Shell, leaving Architecture ≈ 93.7% of Shell. That’s unusually high and doesn’t match the design-share intent embedded in your data.
+
+Why this is happening (root cause)
+
+The discipline design shares in your PR construction-cost index row are being treated as if they were already “% of Shell”, when they’re actually stored as % of total project (or they’re being applied as such in code). Then the UI divides them by Shell (or shows “of Shell” labels), which shrinks the bars:
+
+discipline % of Shell (as rendered) ≈ discipline % of Project ÷ project_shell_share_pct
+
+Example: If Structural in DB is 1.0% of project, and shell_share is 62%, the app will show 1.0 / 0.62 ≈ 1.61% of Shell—which is exactly what we’re seeing. The dollars are small for the same reason: the code multiplies Shell dollars by a “% of project” number.
+
+How it should work (SSOT)
+
+Per our single-source-of-truth and earlier blueprint:
+
+Compute Shell, Interior, Landscape from the project budget (min/target/max PSF, areas, multipliers, etc.) and normalize the Shell/Interior/Landscape shares. The defaults are typically 66/22/12 (unless the DB row overrides) .
+
+Break Shell into disciplines using discipline design shares, and set Architecture = remainder:
+
+discipline_budget = shell_budget × discipline_share_of_shell
+architecture_budget = shell_budget − Σ(engineering_budgets)
+
+UI: display each card as $ and % of Shell, not % of project.
+(This remainder rule is part of our design guide) .
+
+Those discipline shares come from the cost index table row for the current Use/Type/Tier. That row also stores the Shell/Interior/Landscape defaults and min/target/max PSF bands (which you already read for the overview and sliders) .
+
+The concrete fix
+
+A. Transform the shares to “% of Shell” before you compute dollars
+
+If the DB columns *_design_share_pct are percent of project, convert them to percent of Shell:
+
+// inputs from DB (all percentages expressed as 0–100, not 0–1):
+const shellSharePct = row.project_shell_share_pct;               // e.g., 62
+const sPctProj = row.structural_design_share_pct;                // e.g., 1.0
+const cPctProj = row.civil_design_share_pct;
+const mPctProj = row.mechanical_design_share_pct;
+const ePctProj = row.electrical_design_share_pct;
+const pPctProj = row.plumbing_design_share_pct;
+const tPctProj = row.telecommunication_design_share_pct;
+
+// convert to "percent of Shell"
+const sPctShell = sPctProj / shellSharePct;                      // ← key step
+const cPctShell = cPctProj / shellSharePct;
+const mPctShell = mPctProj / shellSharePct;
+const ePctShell = ePctProj / shellSharePct;
+const pPctShell = pPctProj / shellSharePct;
+const tPctShell = tPctProj / shellSharePct;
+
+// dollars
+const s$ = shellBudget * sPctShell;
+const c$ = shellBudget * cPctShell;
+const m$ = shellBudget * mPctShell;
+const e$ = shellBudget * ePctShell;
+const p$ = shellBudget * pPctShell;
+const t$ = shellBudget * tPctShell;
+
+// architecture is the remainder of Shell
+const arch$ = Math.max(0, shellBudget - (s$+c$+m$+e$+p$+t$));
+
+
+B. Or (preferable), store/use discipline shares already as “% of Shell”
+
+If you can guarantee the DB’s *_design_share_pct fields are percent of Shell (not percent of project), then skip the conversion in A and multiply directly by Shell. In other words, guarantee that the column semantics match the formula in our blueprint: “engineering split is taken off Shell; architecture gets the remainder” .
+
+Either way, the dollars must be computed from Shell and the UI “%” must be budget / shellBudget.
+
+Where to implement
+
+If you build the “disciplines” object inside the calculation engine, apply the conversion/fix there so UI stays presentation-only (no math in components), per our SSOT guidance .
+
+If you’re mapping DB → API in app/api/cost-config/route.ts, correct the mapping there and return shares already in % of Shell.
+
+Quick validation / unit tests
+
+Sum check
+architecture + Σ(engineering) == shellBudget (±$1 rounding).
+
+Fixture check (Residential / Custom Houses / Tier 3)
+Load the row from the PR 2025 cost index, read discipline shares and shell share, and confirm the “% of Shell” math produces sensible values (i.e., engineering is not ~6% total unless that’s truly what’s in the row) .
+
+Label check
+All discipline cards are explicitly labeled “% of Shell”; tooltips show $ and % (not % of project).
+
+Related cleanups (tie-ins)
+
+Budget shares card: show normalized 100% (defaults 66/22/12 unless row overrides). If you use the DB row’s project_shell_share_pct, surface a small “DB default” hint next to the slider. (This keeps us aligned with how we read sliders and bands) .
+
+Category multiplier is unrelated to discipline splits but is still part of fee math; keep reading from category_multipliers (1→0.9 … 5→1.3) for the Top-Down pane, as you already do .
+
+Constants (MAX_DISCOUNT, hours curve, etc.) live in the constants table / config; don’t hardcode per UI; the slider’s cap must respect MAX_DISCOUNT = 0.25 in the SSOT .
+
+TL;DR
+
+The discipline bars are low because the code is using % of project shares as if they were % of Shell (or dividing by Shell in the UI while computing dollars incorrectly).
+
+Fix: compute discipline budgets from Shell using shares in % of Shell. If the DB stores shares in % of project, convert by dividing by project_shell_share_pct first.
+
+Enforce Architecture = remainder.
+
+Add unit tests to assert sum(engineering)+architecture == Shell and that discipline “% of Shell” labels are consistent with dollar totals.
+
+Once this is corrected, you’ll see a sensible distribution across Structural/Civil/MEP/Telecom and Architecture will drop from ~94% to the intended remainder, driven by the row’s design shares from the PR cost index.

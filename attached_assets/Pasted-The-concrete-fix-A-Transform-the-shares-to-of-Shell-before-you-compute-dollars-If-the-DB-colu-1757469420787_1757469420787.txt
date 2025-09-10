@@ -1,0 +1,46 @@
+The concrete fix
+
+A. Transform the shares to “% of Shell” before you compute dollars
+
+If the DB columns *_design_share_pct are percent of project, convert them to percent of Shell:
+
+// inputs from DB (all percentages expressed as 0–100, not 0–1):
+const shellSharePct = row.project_shell_share_pct;               // e.g., 62
+const sPctProj = row.structural_design_share_pct;                // e.g., 1.0
+const cPctProj = row.civil_design_share_pct;
+const mPctProj = row.mechanical_design_share_pct;
+const ePctProj = row.electrical_design_share_pct;
+const pPctProj = row.plumbing_design_share_pct;
+const tPctProj = row.telecommunication_design_share_pct;
+
+// convert to "percent of Shell"
+const sPctShell = sPctProj / shellSharePct;                      // ← key step
+const cPctShell = cPctProj / shellSharePct;
+const mPctShell = mPctProj / shellSharePct;
+const ePctShell = ePctProj / shellSharePct;
+const pPctShell = pPctProj / shellSharePct;
+const tPctShell = tPctProj / shellSharePct;
+
+// dollars
+const s$ = shellBudget * sPctShell;
+const c$ = shellBudget * cPctShell;
+const m$ = shellBudget * mPctShell;
+const e$ = shellBudget * ePctShell;
+const p$ = shellBudget * pPctShell;
+const t$ = shellBudget * tPctShell;
+
+// architecture is the remainder of Shell
+const arch$ = Math.max(0, shellBudget - (s$+c$+m$+e$+p$+t$));
+
+
+B. Or (preferable), store/use discipline shares already as “% of Shell”
+
+If you can guarantee the DB’s *_design_share_pct fields are percent of Shell (not percent of project), then skip the conversion in A and multiply directly by Shell. In other words, guarantee that the column semantics match the formula in our blueprint: “engineering split is taken off Shell; architecture gets the remainder” .
+
+Either way, the dollars must be computed from Shell and the UI “%” must be budget / shellBudget.
+
+Where to implement
+
+If you build the “disciplines” object inside the calculation engine, apply the conversion/fix there so UI stays presentation-only (no math in components), per our SSOT guidance .
+
+If you’re mapping DB → API in app/api/cost-config/route.ts, correct the mapping there and return shares already in % of Shell.
