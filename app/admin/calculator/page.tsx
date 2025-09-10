@@ -18,6 +18,8 @@ import { FeeComparison } from '@/components/admin/FeeComparison'
 import { HoursBreakdown } from '@/components/admin/HoursBreakdown'
 import { DisciplineCards } from '@/components/admin/DisciplineCards'
 import { BudgetAllocationCard } from '@/components/admin/BudgetAllocationCard'
+import { ProjectSetupForm } from '@/components/admin/ProjectSetupForm'
+import { CostRangeSliders } from '@/components/admin/CostRangeSliders'
 
 export default function AdminCalculatorPage() {
   const [clientName, setClientName] = useState('Dr. Luis De Jesús')
@@ -26,15 +28,33 @@ export default function AdminCalculatorPage() {
   const [proposalUrl, setProposalUrl] = useState('')
   const [generating, setGenerating] = useState(false)
   const [discount, setDiscount] = useState(15) // Admin discount percentage
+  const [costConfig, setCostConfig] = useState<any>(null)
 
-  // Use project calculation hook - NO infinite loops, database-safe
-  const project = useProjectCalculation({
-    buildingUse: 'Residential',
-    buildingType: 'Custom Houses',
-    buildingTier: 'High',
-    category: 5,
-    designLevel: 3
-  })
+  // Use project calculation hook with database-driven config
+  const project = useProjectCalculation(
+    costConfig ? {
+      buildingUse: costConfig.classification.building_use,
+      buildingType: costConfig.classification.building_type,
+      buildingTier: costConfig.classification.design_tier === 3 ? 'High' : 
+                    costConfig.classification.design_tier === 2 ? 'Medium' : 'Low',
+      category: costConfig.classification.category,
+      designLevel: costConfig.classification.design_tier,
+      // PSF values from database
+      newConstructionPSF: costConfig.psf.new.target,
+      remodelPSF: costConfig.psf.remodel.target,
+      // Budget shares from database
+      shellPercentage: costConfig.shares_default.shell * 100,
+      interiorPercentage: costConfig.shares_default.interior * 100,
+      landscapePercentage: costConfig.shares_default.landscape * 100
+    } : {
+      // Fallback defaults (Dr. De Jesús case)
+      buildingUse: 'Residential',
+      buildingType: 'Custom Houses',
+      buildingTier: 'High',
+      category: 5,
+      designLevel: 3
+    }
+  )
 
   // Generate proposal (saves to separate proposals table)
   const generateProposal = async () => {
@@ -131,6 +151,12 @@ export default function AdminCalculatorPage() {
           {/* Input Controls - NON-DESTRUCTIVE OVERRIDES */}
           <div className="lg:col-span-1 space-y-6">
             
+            {/* Project Setup Form - Database Driven */}
+            <ProjectSetupForm 
+              onConfigChange={setCostConfig}
+              loading={project.loading}
+            />
+            
             {/* Project Information */}
             <Card>
               <CardHeader>
@@ -211,8 +237,29 @@ export default function AdminCalculatorPage() {
               </CardContent>
             </Card>
 
-            {/* Cost Targets - LIVE OVERRIDES within database ranges */}
-            {project.availableRanges && (
+            {/* Cost Range Sliders - Database Driven */}
+            {costConfig && (
+              <CostRangeSliders
+                newConstruction={{
+                  min: costConfig.psf.new.min,
+                  target: costConfig.psf.new.target,
+                  max: costConfig.psf.new.max,
+                  current: project.projectData.costs.newTargetPSF
+                }}
+                remodel={{
+                  min: costConfig.psf.remodel.min,
+                  target: costConfig.psf.remodel.target,
+                  max: costConfig.psf.remodel.max,
+                  current: project.projectData.costs.remodelTargetPSF
+                }}
+                onNewChange={(value) => project.updateCosts({ newTargetPSF: value })}
+                onRemodelChange={(value) => project.updateCosts({ remodelTargetPSF: value })}
+                disabled={project.loading}
+              />
+            )}
+            
+            {/* Legacy Cost Targets - LIVE OVERRIDES within database ranges */}
+            {!costConfig && project.availableRanges && (
               <Card>
                 <CardHeader>
                   <div className="flex justify-between items-center">
