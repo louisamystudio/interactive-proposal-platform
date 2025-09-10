@@ -27,10 +27,9 @@ export default function AdminCalculatorPage() {
   const [notes, setNotes] = useState('')
   const [proposalUrl, setProposalUrl] = useState('')
   const [generating, setGenerating] = useState(false)
-  const [discount, setDiscount] = useState(15) // Admin discount percentage
+  const [discount, setDiscount] = useState(15)
   const [costConfig, setCostConfig] = useState<any>(null)
 
-  // Use project calculation hook with database-driven config
   const project = useProjectCalculation(
     costConfig ? {
       buildingUse: costConfig.classification.building_use,
@@ -40,7 +39,6 @@ export default function AdminCalculatorPage() {
       category: costConfig.classification.category,
       designLevel: costConfig.classification.design_tier
     } : {
-      // Fallback defaults (Dr. De Jesús case)
       buildingUse: 'Residential',
       buildingType: 'Custom Houses',
       buildingTier: 'High',
@@ -49,7 +47,6 @@ export default function AdminCalculatorPage() {
     }
   )
   
-  // Apply cost config overrides when available
   useEffect(() => {
     if (costConfig && project.updateCosts) {
       project.updateCosts({
@@ -66,7 +63,6 @@ export default function AdminCalculatorPage() {
     }
   }, [costConfig])
 
-  // Generate proposal (saves to separate proposals table)
   const generateProposal = async () => {
     if (!project.results) return
 
@@ -77,7 +73,7 @@ export default function AdminCalculatorPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectData: project.projectData,
-          results: project.results, // Include full calculation results
+          results: project.results,
           clientName,
           clientEmail,
           notes: `Generated from admin calculator. Overrides: ${project.hasChanges ? 'YES' : 'NO'}`
@@ -121,6 +117,7 @@ export default function AdminCalculatorPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -158,200 +155,112 @@ export default function AdminCalculatorPage() {
 
       <div className="max-w-7xl mx-auto p-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Input Controls - NON-DESTRUCTIVE OVERRIDES */}
+          {/* Input Controls */}
           <div className="lg:col-span-1 space-y-6">
             
-            {/* Project Setup Form - Database Driven */}
             <ProjectSetupForm 
               onConfigChange={setCostConfig}
               loading={project.loading}
             />
             
-            {/* Project Information */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center">
                   <Building2 className="h-5 w-5 mr-2" />
                   Project Information
                 </CardTitle>
-                <CardDescription>Database defaults + Live overrides</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Client Name</label>
+                  <label className="text-sm font-medium mb-2 block">Client Name</label>
                   <Input
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
-                    placeholder="Enter client name"
+                    placeholder="Dr. Luis De Jesús"
                   />
                 </div>
-                
                 <div>
-                  <label className="block text-sm font-medium mb-2">Client Email</label>
+                  <label className="text-sm font-medium mb-2 block">Email</label>
                   <Input
-                    type="email"
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
                     placeholder="client@example.com"
+                    type="email"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Internal Notes</label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md text-sm"
+                    rows={3}
+                    placeholder="Any special requirements..."
                   />
                 </div>
               </CardContent>
             </Card>
 
-            {/* Project Areas - LIVE OVERRIDES */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Project Areas</CardTitle>
-                    <CardDescription>Building square footage</CardDescription>
-                  </div>
-                  {(project.overrides.areas?.newAreaFt2 !== undefined || project.overrides.areas?.existingAreaFt2 !== undefined) && (
-                    <Button variant="ghost" size="sm" onClick={() => 
-                      project.updateAreas({ newAreaFt2: undefined, existingAreaFt2: undefined })
-                    }>
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      Reset
-                    </Button>
-                  )}
-                </div>
+                <CardTitle className="text-lg flex items-center">
+                  <Building2 className="h-5 w-5 mr-2" />
+                  Project Areas
+                </CardTitle>
+                <CardDescription>
+                  Square footage for construction
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    New Construction: {project.projectData.areas.newAreaFt2.toLocaleString()} ft²
+                    New Construction (ft²)
+                    {project.overrides.areas?.newAreaFt2 !== undefined && (
+                      <span className="text-xs text-orange-600 ml-2">(modified)</span>
+                    )}
                   </label>
-                  <Slider
-                    value={[project.projectData.areas.newAreaFt2]}
-                    onValueChange={([value]) => project.updateAreas({ newAreaFt2: value })}
-                    min={0}
-                    max={10000}
-                    step={100}
-                    className="w-full"
+                  <Input
+                    type="number"
+                    value={project.projectData.areas.newAreaFt2}
+                    onChange={(e) => project.updateAreas({ newAreaFt2: Number(e.target.value) })}
+                    placeholder="2,000"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Remodel Area: {project.projectData.areas.existingAreaFt2.toLocaleString()} ft²
+                    Existing/Remodel (ft²)
+                    {project.overrides.areas?.existingAreaFt2 !== undefined && (
+                      <span className="text-xs text-orange-600 ml-2">(modified)</span>
+                    )}
                   </label>
-                  <Slider
-                    value={[project.projectData.areas.existingAreaFt2]}
-                    onValueChange={([value]) => project.updateAreas({ existingAreaFt2: value })}
-                    min={0}
-                    max={10000}
-                    step={100}
-                    className="w-full"
+                  <Input
+                    type="number"
+                    value={project.projectData.areas.existingAreaFt2}
+                    onChange={(e) => project.updateAreas({ existingAreaFt2: Number(e.target.value) })}
+                    placeholder="2,407"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            {/* Cost Range Sliders - Database Driven */}
             {costConfig && (
               <CostRangeSliders
-                newConstruction={{
-                  min: costConfig.psf.new.min,
-                  target: costConfig.psf.new.target,
-                  max: costConfig.psf.new.max,
-                  current: project.projectData.costs.newTargetPSF
-                }}
-                remodel={{
-                  min: costConfig.psf.remodel.min,
-                  target: costConfig.psf.remodel.target,
-                  max: costConfig.psf.remodel.max,
-                  current: project.projectData.costs.remodelTargetPSF
-                }}
-                onNewChange={(value) => project.updateCosts({ newTargetPSF: value })}
-                onRemodelChange={(value) => project.updateCosts({ remodelTargetPSF: value })}
-                disabled={project.loading}
+                costs={project.projectData.costs}
+                ranges={costConfig.psf}
+                onUpdate={project.updateCosts}
+                overrides={project.overrides.costs}
               />
             )}
-            
-            {/* Legacy Cost Targets - LIVE OVERRIDES within database ranges */}
-            {!costConfig && project.availableRanges && (
-              <Card>
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <CardTitle>Cost Targets</CardTitle>
-                      <CardDescription>Live overrides • Database read-only</CardDescription>
-                    </div>
-                    {(project.overrides.costs?.newTargetPSF !== undefined || project.overrides.costs?.remodelTargetPSF !== undefined) && (
-                      <Button variant="ghost" size="sm" onClick={project.resetCosts}>
-                        <RotateCcw className="h-3 w-3 mr-1" />
-                        Reset to DB
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      New Construction: ${project.projectData.costs.newTargetPSF}/ft²
-                      {project.overrides.costs?.newTargetPSF !== undefined && (
-                        <span className="text-xs text-orange-600 ml-2">(modified)</span>
-                      )}
-                    </label>
-                    <Slider
-                      value={[project.projectData.costs.newTargetPSF]}
-                      onValueChange={([value]) => project.updateCosts({ newTargetPSF: value })}
-                      min={project.availableRanges.newCost.min}
-                      max={project.availableRanges.newCost.max}
-                      step={5}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>${project.availableRanges.newCost.min}</span>
-                      <span className="font-medium">${project.availableRanges.newCost.default} (DB default)</span>
-                      <span>${project.availableRanges.newCost.max}</span>
-                    </div>
-                  </div>
 
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Remodel: ${project.projectData.costs.remodelTargetPSF}/ft²
-                      {project.overrides.costs?.remodelTargetPSF !== undefined && (
-                        <span className="text-xs text-orange-600 ml-2">(modified)</span>
-                      )}
-                    </label>
-                    <Slider
-                      value={[project.projectData.costs.remodelTargetPSF]}
-                      onValueChange={([value]) => project.updateCosts({ remodelTargetPSF: value })}
-                      min={project.availableRanges.remodelCost.min}
-                      max={project.availableRanges.remodelCost.max}
-                      step={5}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>${project.availableRanges.remodelCost.min}</span>
-                      <span className="font-medium">${project.availableRanges.remodelCost.default} (DB default)</span>
-                      <span>${project.availableRanges.remodelCost.max}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Budget Shares - LIVE OVERRIDES */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Budget Shares</CardTitle>
-                    <CardDescription>
-                      {project.hasChanges ? 'Modified from database defaults' : 'Using database defaults'}
-                    </CardDescription>
-                  </div>
-                  {(project.overrides.shares?.projectShellShare !== undefined || 
-                    project.overrides.shares?.projectInteriorShare !== undefined ||
-                    project.overrides.shares?.projectLandscapeShare !== undefined) && (
-                    <Button variant="ghost" size="sm" onClick={project.resetShares}>
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      Reset to DB
-                    </Button>
-                  )}
-                </div>
+                <CardTitle className="text-lg flex items-center">
+                  <PieChart className="h-5 w-5 mr-2" />
+                  Budget Distribution
+                </CardTitle>
+                <CardDescription>
+                  Adjust project component shares
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -408,10 +317,10 @@ export default function AdminCalculatorPage() {
             </Card>
           </div>
 
-          {/* Results Panel - Following the narrative flow from old version */}
+          {/* Results Panel */}
           <div className="lg:col-span-3 space-y-6">
             
-            {/* 1. PROJECT OVERVIEW - Context first, numbers second */}
+            {/* Project Overview */}
             {project.results && (
               <ProjectOverview
                 projectData={{
@@ -423,7 +332,7 @@ export default function AdminCalculatorPage() {
                   areas: {
                     newAreaFt2: project.projectData.areas.newAreaFt2,
                     existingAreaFt2: project.projectData.areas.existingAreaFt2,
-                    siteAreaM2: 972 // Default site area for Dr. De Jesus project
+                    siteAreaM2: 972
                   }
                 }}
                 budgets={project.results.budgets}
@@ -472,94 +381,174 @@ export default function AdminCalculatorPage() {
               </CardContent>
             </Card>
 
-            {/* 2. BUDGET DISTRIBUTION - Construction costs visualization */}
-            {project.results && (
-              <>
-                {/* Quick Summary Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">${project.results.budgets.totalBudget.toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {project.projectData.areas.newAreaFt2 + project.projectData.areas.existingAreaFt2} ft² total
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Contract Price</CardTitle>
-                      <PieChart className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">${project.results.fees.contractPrice.toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {project.results.hours.totalHours.toLocaleString()} hours
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Option A</CardTitle>
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">${project.results.options.A.investment.toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground">Premium anchor</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Changes Status</CardTitle>
-                      <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">
-                        {project.hasChanges ? 'Modified' : 'Defaults'}
-                      </div>
-                      <p className="text-xs text-muted-foreground">Database: Read-only</p>
-                    </CardContent>
-                  </Card>
+            {/* CONSTRUCTION COST PIPELINE */}
+            <div className="border-t-4 border-blue-500 bg-blue-50/30 rounded-lg p-6 space-y-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Building2 className="h-6 w-6 text-blue-600" />
+                    Construction Budget Analysis
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">Minimum cost to build the project</p>
                 </div>
+                <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                  Areas × PSF × Shares = Budget
+                </span>
+              </div>
 
-                {/* 2. BUDGET ALLOCATION - Shell/Interior/Landscape with normalization */}
-                <BudgetAllocationCard results={project.results} />
+              {project.results && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">${project.results.budgets.totalBudget.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {project.projectData.areas.newAreaFt2 + project.projectData.areas.existingAreaFt2} ft² total
+                        </p>
+                      </CardContent>
+                    </Card>
 
-                {/* 3. ENGINEERING DISCIPLINES - with Architecture as remainder */}
-                <DisciplineCards results={project.results} />
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Shell Budget</CardTitle>
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">${project.results.budgets.shellBudget.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {Math.round(project.projectData.shares.projectShellShare * 100)}% of total
+                        </p>
+                      </CardContent>
+                    </Card>
 
-                {/* 4. FEE COMPARISON - Top-Down vs Bottom-Up Analysis */}
-                {project.results && (
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Interior Budget</CardTitle>
+                        <PieChart className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">${project.results.budgets.interiorBudget.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {Math.round(project.projectData.shares.projectInteriorShare * 100)}% of total
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Landscape Budget</CardTitle>
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">${project.results.budgets.landscapeBudget.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {Math.round(project.projectData.shares.projectLandscapeShare * 100)}% of total
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <BudgetAllocationCard results={project.results} />
+                  <DisciplineCards results={project.results} />
+                </>
+              )}
+            </div>
+
+            {/* DESIGN FEES PIPELINE */}
+            <div className="border-t-4 border-green-500 bg-green-50/30 rounded-lg p-6 space-y-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <DollarSign className="h-6 w-6 text-green-600" />
+                    Design Fee Analysis
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">What Louis Amy charges for professional services</p>
+                </div>
+                <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                  Hours × Rates = Fees
+                </span>
+              </div>
+
+              {project.results && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Contract Price</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">${project.results.fees.contractPrice.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">
+                          Max(Market, LA) after discount
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
+                        <Calculator className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">{project.results.hours.totalHours.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">
+                          Non-linear formula
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Option A Price</CardTitle>
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">${project.results.options.A.investment.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">Premium anchor</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
                   <FeeComparison 
                     results={project.results}
                     discount={discount}
                     onDiscountChange={setDiscount}
                   />
-                )}
 
-                {/* 5. SANITY CHECK - Variance Analysis */}
-                {project.results && (
                   <SanityCheck 
                     results={project.results}
                     discount={discount}
                   />
-                )}
-                
-                {/* 6. HOURS BREAKDOWN - Phase and Role Distribution */}
-                {project.results && (
-                  <HoursBreakdown results={project.results} />
-                )}
 
-                {/* 7. INVESTMENT OPTIONS - Client-facing pricing */}
+                  <HoursBreakdown results={project.results} />
+                </>
+              )}
+            </div>
+
+            {/* CLIENT OPTIONS */}
+            {project.results && (
+              <div className="border-t-4 border-purple-500 bg-purple-50/30 rounded-lg p-6 space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                      <ChevronDown className="h-6 w-6 text-purple-600" />
+                      Client Presentation Options
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">Strategic pricing for client proposals</p>
+                  </div>
+                  <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
+                    Chris Do Compliant
+                  </span>
+                </div>
+
                 <Card>
                   <CardHeader>
-                    <CardTitle>Client Options (Chris Do Compliant)</CardTitle>
+                    <CardTitle>Client Options</CardTitle>
                     <CardDescription>
                       Strategic pricing options for client presentation
                     </CardDescription>
@@ -595,75 +584,79 @@ export default function AdminCalculatorPage() {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            )}
 
-                {/* Action Buttons - SAVE TO SEPARATE TABLE */}
-                <div className="flex justify-between items-center">
-                  <div className="flex space-x-4">
-                    <Button 
-                      onClick={() => project.saveProject(`Project-${Date.now()}`, { name: clientName, email: clientEmail })}
-                      disabled={!project.results}
-                      variant="outline"
-                    >
-                      <Copy className="h-4 w-4 mr-2" />
-                      Save Project Snapshot
-                    </Button>
-                    
-                    <Button
-                      onClick={generateProposal}
-                      disabled={!project.results || generating}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      {generating ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      ) : (
-                        <Send className="h-4 w-4 mr-2" />
-                      )}
-                      Generate Proposal
-                    </Button>
-                  </div>
-
-                  {proposalUrl && (
-                    <div className="flex space-x-2">
-                      <Button variant="outline" onClick={copyProposalUrl}>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy URL
-                      </Button>
-                      <Button onClick={openProposal}>
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Open Proposal
-                      </Button>
-                    </div>
-                  )}
+            {/* Action Buttons */}
+            {project.results && (
+              <div className="flex justify-between items-center">
+                <div className="flex space-x-4">
+                  <Button 
+                    onClick={() => project.saveProject(`Project-${Date.now()}`, { name: clientName, email: clientEmail })}
+                    disabled={!project.results}
+                    variant="outline"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Save Project Snapshot
+                  </Button>
+                  
+                  <Button
+                    onClick={generateProposal}
+                    disabled={!project.results || generating}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {generating ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    ) : (
+                      <Send className="h-4 w-4 mr-2" />
+                    )}
+                    Generate Proposal
+                  </Button>
                 </div>
 
-                {/* Architecture Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-sm">Database Architecture</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-xs space-y-2 text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Main Cost DB (pr_construction_cost_index_2025):</span>
-                        <span className="text-green-600 font-medium">READ-ONLY ✅</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Project Overrides:</span>
-                        <span className="text-blue-600 font-medium">LIVE STATE 🔄</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Final Proposals:</span>
-                        <span className="text-purple-600 font-medium">SEPARATE TABLE 💾</span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-3 p-2 bg-gray-50 rounded">
-                        <span className="font-medium">Architecture:</span> Database defaults → Live overrides → Proposal snapshots
-                        <br />
-                        <span className="font-medium">Result:</span> No infinite loops • No database corruption • Professional workflow
-                      </div>
+                {proposalUrl && (
+                  <div className="flex space-x-2">
+                    <Button variant="outline" onClick={copyProposalUrl}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy URL
+                    </Button>
+                    <Button onClick={openProposal}>
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Open Proposal
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Architecture Information */}
+            {project.results && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Database Architecture</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xs space-y-2 text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Main Cost DB (pr_construction_cost_index_2025):</span>
+                      <span className="text-green-600 font-medium">READ-ONLY ✅</span>
                     </div>
-                  </CardContent>
-                </Card>
-              </>
+                    <div className="flex justify-between">
+                      <span>Project Overrides:</span>
+                      <span className="text-blue-600 font-medium">LIVE STATE 🔄</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Final Proposals:</span>
+                      <span className="text-purple-600 font-medium">SEPARATE TABLE 💾</span>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-3 p-2 bg-gray-50 rounded">
+                      <span className="font-medium">Architecture:</span> Database defaults → Live overrides → Proposal snapshots
+                      <br />
+                      <span className="font-medium">Result:</span> No infinite loops • No database corruption • Professional workflow
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
             {project.error && (
