@@ -1,0 +1,41 @@
+What I’ll do next (if you want me to proceed)
+
+Run Step-1 code assertions against the current functions (no fees in construction), and file a tiny PR diff if any cross-contamination is found.
+
+Add unit tests for Architecture remainder and Contract max rule.
+
+Add a string-ban test on /proposal/[token] to ensure no “hour/rate/discount/overhead/markup” appears.
+
+Write a checklist that QA can tick for the Dr. De Jesús fixture (budget & shares, discipline sum, fee contract rule).
+
+Give me the word and I’ll execute the checks and deliver a short PASS/FAIL report with any required one-line patches.
+
+(References: construction spreadsheet spec and formulas ; category multipliers ; PR cost index seeds with project & discipline shares ; fee/constant seeds for hours and rates .)
+
+Worked for 1 minute
+
+Sounds good! I’ll proceed with your five‑step plan to verify (and keep) the construction cost pipeline completely separate from the design‑fee pipeline.
+
+Construction Cost Pipeline – I’ll inspect the calculateBudgets and calculateDisciplineBudgets functions to ensure they only use area, PSF bands, multipliers and project shares to compute New/Remodel budgets and Shell/Interior/Landscape splits
+raw.githubusercontent.com
+. I’ll confirm that discipline budgets are derived by multiplying the Shell budget by each engineering share and that Architecture is the remainder
+raw.githubusercontent.com
+—with no hours, rates, or discounts involved. I’ll also check that the PR cost‑index design shares are correctly converted to “% of Shell” where necessary
+raw.githubusercontent.com
+.
+
+Design Fees Pipeline – I’ll review calculateProjectHours and calculateFees to make sure they calculate hours using the non‑linear formula and category multipliers, then compute fees from hours and market percentages
+raw.githubusercontent.com
+. I’ll confirm that construction budgets or discipline breakdowns do not feed into fee calculations (except totalBudget for the market fee)
+raw.githubusercontent.com
+.
+
+UI Separation – I’ll audit the admin dashboard to ensure “Discipline Cards” show only construction budgets and percentages, while the “Fee Analysis” section shows only market vs. bottom‑up fees. There should be no mixing of labels or numbers between these sections. I’ll also check that the client proposal view hides all internal fee details and shows only Option A/B/C and a client‑safe budget donut.
+
+Database Validation – I’ll verify that pr_construction_cost_index_2025 stores discipline shares as percentages of the project and that the conversion to “% of Shell” happens only within the construction budget pipeline
+raw.githubusercontent.com
+. I’ll also confirm that fee constants (market rate, discount cap, labour/overhead rates) are stored in calculation_constants and not mixed with cost data.
+
+Real‑number Test – Using the Dr. De Jesús data, I’ll check that the construction components sum to the shell budget and that the fees are computed independently. For example, 4 407 ft² × $195/ft² should yield $859 365, and the discipline budgets should sum to the Shell budget while the design fees are derived solely from hours and rate constants.
+
+I’ll report back once I’ve completed these checks and applied any necessary fixes to keep the two pipelines cleanly separated.

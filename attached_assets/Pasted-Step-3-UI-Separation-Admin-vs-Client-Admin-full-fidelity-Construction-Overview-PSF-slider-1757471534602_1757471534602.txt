@@ -1,0 +1,65 @@
+Step 3 — UI Separation (Admin vs Client)
+
+Admin (full fidelity):
+
+Construction: Overview, PSF sliders, Budget shares (Shell/Interior/Landscape), DisciplineCards with Architecture remainder and New/Remodel sub-rows.
+
+Fees: FeeComparison (Top-Down vs Bottom-Up), discount slider, Contract tile, HoursBreakdown (phase ladder, role donut).
+
+Export: “Generate Proposal” persists a full admin blob and returns a token.
+
+Client (Chris-Do compliant):
+
+Option A/B/C (A first) with value copy only
+
+BudgetDonut with client-safe buckets (Scan-to-BIM, Building Shell, Interior, Landscape)
+
+ProofOfPrecision (Nira/imagery), ConversionCTA
+
+Never show hours, rates, discounts, discipline math, markup, or sliders.
+
+PASS/FAIL criteria:
+
+No “hour / rate / discount / overhead / markup” strings in /proposal/[token] HTML/JSON (can be unit-tested).
+
+Admin has visible fee mechanics; client does not.
+
+Step 4 — Database Validation
+
+4A. Cost Ranges & Shares:
+
+Verify cost bands (min/target/max) and project shares are pulled from PR index by (Use/Type/Tier/Category/Design Level).
+
+Defaults can differ by row; normalize if sliders are used.
+
+Do not apply any fee constants here.
+
+4B. Discipline shares:
+
+Confirm engineering fields (structural_design_share_pct, civil_design_share_pct, etc.) are read and used against Shell to produce discipline dollars.
+
+Architecture = Shell remainder.
+
+4C. Fee constants:
+
+Read MARKET_FEE_RATE, MAX_DISCOUNT, AVG_LABOR_RATE, AVG_OVERHEAD_RATE, PRICING_MARKUP, HFA_OFFSET, HOURS_*, NEW_CONSTRUCTION_FACTOR, REMODEL_FACTOR from calculation_constants.
+
+Category multipliers (1–5 → 0.9–1.3) must come from category_multipliers.
+
+Step 5 — Test with Real Numbers (Dr. De Jesús)
+
+Fixture (from your model):
+
+Total Budget: 4,407 ft² × $195/ft² = $859,365
+
+Default shares: 66 % / 22 % / 12 % (unless DB row overrides; normalize UI if sliders used)
+
+Discipline sum == Shell (±$1)
+
+Fees: market and LA computed from constants; contract = max(discounted market, LA) per cap.
+
+PASS/FAIL criteria:
+
+Construction components (Architecture + disciplines) add to Shell only; fees do not alter these totals.
+
+Client page renders only Option A/B/C, a client-safe donut, proof, and CTA.

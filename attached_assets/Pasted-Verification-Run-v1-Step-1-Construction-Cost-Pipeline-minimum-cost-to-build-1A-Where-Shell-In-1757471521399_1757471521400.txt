@@ -1,0 +1,91 @@
+Verification Run — v1
+Step 1 — Construction Cost Pipeline (minimum cost to build)
+1A. Where Shell/Interior/Landscape are computed
+
+What to check: calculateBudgets() must compute:
+
+newBudget = newArea × targetPSF(new) × historicMultiplier
+
+remodelBudget = existingArea × targetPSF(remodel) × remodelMultiplier
+
+totalBudget = newBudget + remodelBudget
+
+Then split to Shell/Interior/Landscape using normalized project shares
+
+Ground truth: your sheet’s “Total Budget”, then “Project Shell/Interior/Landscape Share” pulled from cost ranges (DB) and adjustable by slider (normalized 100%).
+
+Actionable checks (agent):
+
+Confirm the PSF bands (min/target/max for New/Remodel) are read from the PR cost index row (Use/Type/Tier) and shown as slider anchors.
+
+Confirm category multiplier is not applied here (that’s fee), and shares are normalized even if DB defaults don’t sum to 1.0.
+
+PASS/FAIL criteria:
+
+Changing target PSF moves newBudget/remodelBudget and updates Shell/Interior/Landscape ($ and %) with no fee/rate/hours involved.
+
+Donut “New vs Remodel” uses areas, not dollars (matches your sheet’s “New Construction” and “Existing to Remodel” split).
+
+1B. Where Shell is broken into discipline components
+
+What to check: calculateDisciplineBudgets(shellBudget, shares) must:
+
+Multiply Shell by each engineering share (Structural, Civil, Mech, Elec, Plumb, Telecom)
+
+Set Architecture = Shell − Σ(engineering) (remainder rule)
+
+Ground truth: your “Engineering_Costs” VLOOKUP × Shell share and “Architecture Design Share = 1 − Σ(eng shares)” (then multiplied by Shell).
+
+Nuance: discipline shares are stored alongside project shares (Shell/Interior/Landscape) in the PR cost index seeds. Verify that discipline shares are interpreted correctly relative to Shell.
+
+Actionable checks (agent):
+
+Compute dollars using Shell × {structural, civil, mechanical, electrical, plumbing, telecommunication}ℎares from DB.
+
+Architecture is remainder; do not hard-code an architecture %.
+
+PASS/FAIL criteria:
+
+Architecture + Σ(engineering) == Shell (±$1 rounding)
+
+No hours/rates/discounts present in this step.
+
+Step 2 — Design Fees Pipeline (what Louis Amy charges)
+2A. Bottom-Up (Louis Amy)
+
+What to check: calculateProjectHours() + calculateFees() use:
+
+Non-linear hours: 0.21767 + 11.21274 * area^-0.53816 minus HFA_OFFSET=0.08, with 0.9 new / 0.77 remodel multipliers and category multiplier applied (1→0.9 … 5→1.3)
+
+Fee: hours × (AVG_LABOR_RATE + AVG_OVERHEAD_RATE) × PRICING_MARKUP (markup is applied once overall)
+
+Ground truth: constants table you seeded: HFA_OFFSET, HOURS_*, AVG_LABOR_RATE, AVG_OVERHEAD_RATE, PRICING_MARKUP, NEW_CONSTRUCTION_FACTOR, REMODEL_FACTOR.
+Category multipliers are in the category_multipliers table.
+
+Actionable checks (agent):
+
+Ensure no construction components (Shell/Interior/Landscape dollars) are used here except total budget where needed for the market lens; Bottom-Up is hours→cost only.
+
+Keep this Admin only.
+
+2B. Top-Down (Market %)
+
+What to check: fees.marketFee = totalBudget × MARKET_FEE_RATE × categoryMultiplier using the seeded market percent and category multiplier.
+
+Actionable checks (agent):
+
+Confirm no Shell/discipline percentages (construction) are used to adjust the market % math.
+
+Per-scope table is presentation; the total market fee must remain totalBudget × rate × categoryMultiplier.
+
+2C. Contract Price rule
+
+What to check: contract = max(marketFee × (1 − discount≤25%), louisAmyFee); discount cap from constants.
+
+PASS/FAIL criteria (whole Step 2):
+
+Fees never modify construction budgets.
+
+Hours/fees are not shown outside Admin.
+
+Contract price recomputes via the 25% cap rule only.
