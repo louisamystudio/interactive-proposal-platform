@@ -1,0 +1,1 @@
+INSERT INTO "public"."category_multipliers" ("category", "multiplier") VALUES ('1', '0.9'), ('2', '1.0'), ('3', '1.1'), ('4', '1.2'), ('5', '1.3');

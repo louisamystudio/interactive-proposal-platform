@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { query, querySingle } from '@/lib/db'
 
 interface CostConfig {
   classification: {
@@ -47,33 +47,27 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Check if Supabase is configured
-    if (!supabase) {
-      console.warn('Supabase not configured, using fallback values')
-      return NextResponse.json(getFallbackConfig(buildingUse, buildingType, tierNumber))
-    }
+    // Fetch building cost data from PostgreSQL
+    const costData = await querySingle(`
+      SELECT * FROM building_cost_data 
+      WHERE building_use = $1 
+      AND building_type = $2 
+      AND design_tier = $3
+      LIMIT 1
+    `, [buildingUse, buildingType, tierNumber])
 
-    // Fetch building cost data
-    const { data: costData, error: costError } = await supabase
-      .from('building_cost_data')
-      .select('*')
-      .eq('building_use', buildingUse)
-      .eq('building_type', buildingType)
-      .eq('design_tier', tierNumber)
-      .single()
-
-    if (costError || !costData) {
-      // Fallback to default values if database is unavailable
-      console.warn('Database unavailable, using fallback values')
+    if (!costData) {
+      // Fallback to default values if data not found
+      console.warn('Data not found in database, using fallback values')
       return NextResponse.json(getFallbackConfig(buildingUse, buildingType, tierNumber))
     }
 
     // Fetch category multiplier
-    const { data: multiplierData, error: multiplierError } = await supabase
-      .from('category_multipliers')
-      .select('multiplier')
-      .eq('category', costData.category)
-      .single()
+    const multiplierData = await querySingle<{ multiplier: number }>(`
+      SELECT multiplier FROM category_multipliers 
+      WHERE category = $1
+      LIMIT 1
+    `, [costData.category])
 
     const categoryMultiplier = multiplierData?.multiplier || getCategoryMultiplier(costData.category)
 
@@ -186,20 +180,14 @@ function getCategoryMultiplier(category: number): number {
 
 // GET endpoint to fetch distinct building uses
 export async function OPTIONS() {
-  if (!supabase) {
-    // Return fallback options
-    return NextResponse.json({
-      uses: ['Residential', 'Commercial', 'Hospitality', 'Healthcare', 'Education', 'Industrial', 'Mixed Use']
-    })
-  }
-  
   try {
-    const { data, error } = await supabase
-      .from('building_cost_data')
-      .select('building_use')
-      .order('building_use')
+    const data = await query<{ building_use: string }>(`
+      SELECT DISTINCT building_use 
+      FROM building_cost_data 
+      ORDER BY building_use
+    `)
 
-    if (error || !data) {
+    if (!data || data.length === 0) {
       // Return fallback options
       return NextResponse.json({
         uses: ['Residential', 'Commercial', 'Hospitality', 'Healthcare', 'Education', 'Industrial', 'Mixed Use']
@@ -207,7 +195,7 @@ export async function OPTIONS() {
     }
 
     // Get unique building uses
-    const uniqueUses = [...new Set(data.map((item: any) => item.building_use))]
+    const uniqueUses = data.map(item => item.building_use)
     
     return NextResponse.json({ uses: uniqueUses })
   } catch (error) {

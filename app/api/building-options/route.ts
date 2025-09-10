@@ -1,33 +1,17 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { query } from '@/lib/db'
 
 export async function GET() {
   try {
-    // Check if Supabase is configured
-    if (!supabase) {
-      // Return fallback options
-      return NextResponse.json({
-        options: [
-          { use: 'Residential', types: ['Custom Houses', 'Standard Houses', 'Apartments'] },
-          { use: 'Commercial', types: ['Office Buildings', 'Retail Spaces'] },
-          { use: 'Hospitality', types: ['Hotels', 'Restaurants'] },
-          { use: 'Healthcare', types: ['Medical Offices', 'Hospitals'] },
-          { use: 'Education', types: ['Schools'] },
-          { use: 'Industrial', types: ['Warehouses'] },
-          { use: 'Mixed Use', types: ['Residential/Commercial'] }
-        ]
-      })
-    }
+    // Fetch all unique building uses and types from PostgreSQL database
+    const data = await query<{ building_use: string; building_type: string }>(`
+      SELECT DISTINCT building_use, building_type 
+      FROM building_cost_data 
+      ORDER BY building_use, building_type
+    `)
 
-    // Fetch all unique building uses and types from database
-    const { data, error } = await supabase
-      .from('building_cost_data')
-      .select('building_use, building_type')
-      .order('building_use')
-      .order('building_type')
-
-    if (error || !data) {
-      console.warn('Could not fetch building options from database:', error)
+    if (!data || data.length === 0) {
+      console.warn('No data found in database, using fallback options')
       // Return fallback options
       return NextResponse.json({
         options: [
@@ -45,7 +29,7 @@ export async function GET() {
     // Group by building use
     const optionsMap = new Map<string, Set<string>>()
     
-    data.forEach((row: any) => {
+    data.forEach((row) => {
       if (!optionsMap.has(row.building_use)) {
         optionsMap.set(row.building_use, new Set())
       }
